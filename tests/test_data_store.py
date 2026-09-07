@@ -11,7 +11,7 @@ class DataStoreTests(unittest.TestCase):
         clear_cache()
 
     def test_bundled_problem_b_data_loads(self):
-        self.assertEqual(len(load_table("referrals")), 15)
+        self.assertEqual(len(load_table("referrals")), 80)
         self.assertEqual(len(load_table("specialties")), 5)
         self.assertEqual(load_object("as_of"), {"as_of": "2026-09-09"})
 

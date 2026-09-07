@@ -97,7 +97,8 @@ def warn(msg):
 
 
 def load(letter, name):
-    path = os.path.join(HERE, "data_%s" % letter, name + ".json")
+    folder = "fixtures" if letter == "B" else "data_%s" % letter
+    path = os.path.join(HERE, folder, name + ".json")
     if not os.path.exists(path):
         return None
     with open(path, encoding="utf-8") as fh:
@@ -241,7 +242,7 @@ def main():
     print("Checking your fixture data …")
     found = [l for l in ("A", "B") if check_problem(l)]
     if not found:
-        sys.exit("\nNo data_A/ or data_B/ found. Run the generators first.")
+        sys.exit("\nNo fixture data found. Run the generators first.")
 
     print()
     for w in warnings:
