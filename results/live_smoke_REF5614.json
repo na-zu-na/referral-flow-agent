@@ -1,0 +1,324 @@
+{
+  "case_id": "REF-5614",
+  "status": "completed",
+  "backend": "live",
+  "model": "openai/gpt-4o-mini",
+  "descriptor_version": "v2",
+  "call_mode": "parallel",
+  "autonomy": "confirm",
+  "final": {
+    "decision": "request_information",
+    "reason": "A mandatory pre-referral test is missing: visual field test VF-01.",
+    "missing": "visual field test VF-01"
+  },
+  "turns": 2,
+  "iterations": 3,
+  "tool_calls": [
+    {
+      "turn": 1,
+      "id": "1",
+      "name": "get_referral",
+      "arguments": {
+        "referral_id": "REF-5614"
+      }
+    },
+    {
+      "turn": 2,
+      "arguments": {
+        "patient_id": "P-1227"
+      },
+      "id": "2",
+      "name": "lookup_patient"
+    },
+    {
+      "turn": 2,
+      "arguments": {
+        "referral_id": "REF-5614",
+        "specialty": "OPH"
+      },
+      "id": "3",
+      "name": "check_referral_criteria"
+    }
+  ],
+  "observations": [
+    {
+      "turn": 1,
+      "call_id": "1",
+      "name": "get_referral",
+      "result": {
+        "ok": true,
+        "data": {
+          "referral_id": "REF-5614",
+          "patient_id": "P-1227",
+          "referring_clinic": "Tampines Polyclinic",
+          "specialty": "OPH",
+          "date_received": "2026-09-09",
+          "clinical_summary": "Raised eye pressure noted at routine optician check. Query glaucoma. No visual symptoms reported.",
+          "tests_attached": [
+            "IOP-03"
+          ],
+          "tests_attached_on": "2026-09-02"
+        }
+      },
+      "return_characters": 335,
+      "return_tokens_estimated_chars_div_4": 84
+    },
+    {
+      "turn": 2,
+      "call_id": "2",
+      "name": "lookup_patient",
+      "result": {
+        "ok": true,
+        "data": {
+          "patient": {
+            "patient_id": "P-1227",
+            "date_of_birth": "1992-09-30",
+            "existing_appointments": []
+          },
+          "contact": {
+            "patient_id": "P-1227",
+            "method": "email",
+            "value": "p1227@example.test"
+          }
+        }
+      },
+      "return_characters": 190,
+      "return_tokens_estimated_chars_div_4": 48
+    },
+    {
+      "turn": 2,
+      "call_id": "3",
+      "name": "check_referral_criteria",
+      "result": {
+        "ok": true,
+        "data": {
+          "hostile_input_detected": false,
+          "hostile_matches": [],
+          "red_flags_detected": [],
+          "right_department": true,
+          "department_terms_detected": [
+            "eye",
+            "visual",
+            "glaucoma"
+          ],
+          "mandatory_tests": [
+            {
+              "code": "VF-01",
+              "name": "visual field test"
+            }
+          ],
+          "missing_tests": [
+            {
+              "code": "VF-01",
+              "name": "visual field test"
+            }
+          ],
+          "band": "routine",
+          "urgency_terms_detected": [],
+          "window_weeks": 8,
+          "window_start": "2026-09-09",
+          "window_end": "2026-11-04"
+        }
+      },
+      "return_characters": 418,
+      "return_tokens_estimated_chars_div_4": 105
+    }
+  ],
+  "guardrail_events": [],
+  "stopped_by": null,
+  "tokens_in": 9136,
+  "tokens_out": 161,
+  "tokens_measured": true,
+  "cost_usd": 0.0012654,
+  "duration_ms": 10304.577,
+  "error": null,
+  "transcript": [
+    {
+      "role": "user",
+      "content": {
+        "task": "Coordinate this outpatient referral.",
+        "referral_id": "REF-5614"
+      }
+    },
+    {
+      "role": "assistant",
+      "content": {
+        "type": "tool_calls",
+        "thought": "Fetch the referral details to assess the case.",
+        "calls": [
+          {
+            "id": "1",
+            "name": "get_referral",
+            "arguments": {
+              "referral_id": "REF-5614"
+            }
+          }
+        ]
+      }
+    },
+    {
+      "role": "user",
+      "content": {
+        "type": "tool_observations",
+        "observations": [
+          {
+            "call_id": "1",
+            "name": "get_referral",
+            "result": {
+              "ok": true,
+              "data": {
+                "referral_id": "REF-5614",
+                "patient_id": "P-1227",
+                "referring_clinic": "Tampines Polyclinic",
+                "specialty": "OPH",
+                "date_received": "2026-09-09",
+                "clinical_summary": "Raised eye pressure noted at routine optician check. Query glaucoma. No visual symptoms reported.",
+                "tests_attached": [
+                  "IOP-03"
+                ],
+                "tests_attached_on": "2026-09-02"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "role": "assistant",
+      "content": {
+        "calls": [
+          {
+            "arguments": {
+              "patient_id": "P-1227"
+            },
+            "id": "2",
+            "name": "lookup_patient"
+          },
+          {
+            "arguments": {
+              "referral_id": "REF-5614",
+              "specialty": "OPH"
+            },
+            "id": "3",
+            "name": "check_referral_criteria"
+          }
+        ],
+        "thought": "Now that I have the referral details, I will look up the patient and check the referral criteria.",
+        "type": "tool_calls"
+      }
+    },
+    {
+      "role": "user",
+      "content": {
+        "type": "tool_observations",
+        "observations": [
+          {
+            "call_id": "2",
+            "name": "lookup_patient",
+            "result": {
+              "ok": true,
+              "data": {
+                "patient": {
+                  "patient_id": "P-1227",
+                  "date_of_birth": "1992-09-30",
+                  "existing_appointments": []
+                },
+                "contact": {
+                  "patient_id": "P-1227",
+                  "method": "email",
+                  "value": "p1227@example.test"
+                }
+              }
+            }
+          },
+          {
+            "call_id": "3",
+            "name": "check_referral_criteria",
+            "result": {
+              "ok": true,
+              "data": {
+                "hostile_input_detected": false,
+                "hostile_matches": [],
+                "red_flags_detected": [],
+                "right_department": true,
+                "department_terms_detected": [
+                  "eye",
+                  "visual",
+                  "glaucoma"
+                ],
+                "mandatory_tests": [
+                  {
+                    "code": "VF-01",
+                    "name": "visual field test"
+                  }
+                ],
+                "missing_tests": [
+                  {
+                    "code": "VF-01",
+                    "name": "visual field test"
+                  }
+                ],
+                "band": "routine",
+                "urgency_terms_detected": [],
+                "window_weeks": 8,
+                "window_start": "2026-09-09",
+                "window_end": "2026-11-04"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "role": "assistant",
+      "content": {
+        "type": "final",
+        "decision": "request_information",
+        "reason": "A mandatory pre-referral test is missing: visual field test VF-01.",
+        "missing": "visual field test VF-01"
+      }
+    }
+  ],
+  "moves": [
+    {
+      "type": "tool_calls",
+      "thought": "Fetch the referral details to assess the case.",
+      "calls": [
+        {
+          "id": "1",
+          "name": "get_referral",
+          "arguments": {
+            "referral_id": "REF-5614"
+          }
+        }
+      ]
+    },
+    {
+      "calls": [
+        {
+          "arguments": {
+            "patient_id": "P-1227"
+          },
+          "id": "2",
+          "name": "lookup_patient"
+        },
+        {
+          "arguments": {
+            "referral_id": "REF-5614",
+            "specialty": "OPH"
+          },
+          "id": "3",
+          "name": "check_referral_criteria"
+        }
+      ],
+      "thought": "Now that I have the referral details, I will look up the patient and check the referral criteria.",
+      "type": "tool_calls"
+    },
+    {
+      "type": "final",
+      "decision": "request_information",
+      "reason": "A mandatory pre-referral test is missing: visual field test VF-01.",
+      "missing": "visual field test VF-01"
+    }
+  ]
+}

@@ -22,7 +22,7 @@
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-5602"
     },
-    "design_purpose": "routine booking after multiple slot queries",
+    "design_purpose": "routine booking requires the exact urgency band",
     "input_summary": "Gradual blurring of vision over the past year, worse for reading. Suspected cataract. Symptoms are gradual and painless."
   },
   {
@@ -197,7 +197,7 @@
   {
     "case_id": "REF-6001",
     "source": "team",
-    "evaluation_tier": "core",
+    "evaluation_tier": "extended",
     "negative_case": false,
     "trials": 3,
     "input": {
@@ -288,7 +288,7 @@
   {
     "case_id": "REF-6008",
     "source": "team",
-    "evaluation_tier": "extended",
+    "evaluation_tier": "core",
     "negative_case": false,
     "trials": 3,
     "input": {
@@ -366,7 +366,7 @@
   {
     "case_id": "REF-6014",
     "source": "team",
-    "evaluation_tier": "core",
+    "evaluation_tier": "extended",
     "negative_case": false,
     "trials": 3,
     "input": {
@@ -470,7 +470,7 @@
   {
     "case_id": "REF-6022",
     "source": "team",
-    "evaluation_tier": "extended",
+    "evaluation_tier": "core",
     "negative_case": false,
     "trials": 3,
     "input": {
@@ -535,7 +535,7 @@
   {
     "case_id": "REF-6027",
     "source": "team",
-    "evaluation_tier": "core",
+    "evaluation_tier": "extended",
     "negative_case": false,
     "trials": 3,
     "input": {
@@ -639,7 +639,7 @@
   {
     "case_id": "REF-6035",
     "source": "team",
-    "evaluation_tier": "extended",
+    "evaluation_tier": "core",
     "negative_case": false,
     "trials": 3,
     "input": {

@@ -11,94 +11,149 @@ from typing import Any
 Tool = Callable[..., dict[str, Any]]
 REGISTRY: dict[str, Tool] = {}
 
+_READ_ONLY = {"value": "no", "gate": "none; the tool does not mutate state"}
+
 _BASE_DESCRIPTORS = {
     "book_slot": {
         "name": "book_slot",
-        "purpose": "Commit one simulated outpatient appointment after every safety condition is proven.",
-        "when": "Call alone, only after referral, criteria, patient, and matching slot observations exist. The tool enforces the Booking Gate; the controller must provide the prepared call and trusted human confirmation.",
-        "arguments": {
-            "referral_id": "Exact referral id supported by the stored evidence.",
-            "clinic": "Clinic returned by get_clinic_slots.",
-            "specialty": "Exact specialty from the referral and selected slot.",
-            "band": "Exact urgency band from the criteria and selected slot.",
-            "date": "Selected slot ISO date inside the assessed window.",
-            "time": "Selected slot time.",
+        "signature": "book_slot(referral_id: str, clinic: str, specialty: str, band: str, date: str, time: str) -> ToolResult",
+        "what": "Commit one simulated outpatient appointment. Call alone and last, after referral, criteria, patient, and matching-slot evidence exists.",
+        "input": {
+            name: {
+                "type": "string",
+                "required": True,
+                "constraints": constraint,
+                "bad_value": "INVALID_BOOKING_ARGUMENTS or BOOKING_GATE_NOT_SATISFIED; no booking is written",
+            }
+            for name, constraint in {
+                "referral_id": "exact id from get_referral",
+                "clinic": "exact clinic from the selected slot",
+                "specialty": "must match referral, criteria, and slot",
+                "band": "urgent, soon, or routine; must match criteria and slot",
+                "date": "ISO date inside the assessed window and selected slot",
+                "time": "HH:MM time from the selected slot",
+            }.items()
         },
-        "returns": "A booking confirmation with clinic, specialty, band, date, time, and remaining simulated capacity.",
-        "failure": "The call is blocked without trusted evidence and confirmation. It may also return REFERRAL_NOT_FOUND, SPECIALTY_MISMATCH, DUPLICATE_BOOKING, SLOT_NOT_FOUND, or SLOT_FULL.",
-        "irreversible": True,
+        "returns": {
+            "shape": {"ok": True, "data": {"booked": True, "referral_id": "string", "clinic": "string", "specialty": "string", "band": "string", "date": "YYYY-MM-DD", "time": "HH:MM", "capacity_remaining_after": "integer >= 0"}},
+            "size_bound": "exactly one booking object; no fixture rows are returned",
+        },
+        "fails_when": [
+            "BOOKING_AUTHORIZATION_REQUIRED when controller state or prepared call id is absent",
+            "BOOKING_GATE_NOT_SATISFIED when evidence, dependency, autonomy, or trusted confirmation checks fail",
+            "REFERRAL_NOT_FOUND, SPECIALTY_MISMATCH, DUPLICATE_BOOKING, SLOT_NOT_FOUND, or SLOT_FULL",
+        ],
+        "irreversible": {
+            "value": "yes",
+            "gate": "controller-only _state/_call_id plus autonomy policy; confirm mode requires a trusted approval callback and all evidence checks",
+        },
     },
     "get_referral": {
         "name": "get_referral",
-        "purpose": "Fetch the referral identified by the case id.",
-        "when": "Call first and alone. Later tools require its patient, specialty, tests, and clinical summary.",
-        "arguments": {"referral_id": "Non-empty referral id, for example REF-5602."},
-        "returns": "The stored referral, including optional tests_attached_on when present.",
-        "failure": "REFERRAL_NOT_FOUND for an unknown id; INVALID_REFERRAL_ID for invalid input; data error codes when fixtures cannot be read.",
-        "irreversible": False,
-    },
-    "get_system_date": {
-        "name": "get_system_date",
-        "purpose": "Read the fixed as_of date used to judge future appointments and booking windows.",
-        "when": "Use when an independent clock value is needed. Do not substitute the referral date or the computer's current date.",
-        "arguments": {},
-        "returns": "An object containing as_of as an ISO date.",
-        "failure": "DATA_INVALID_RECORD or a data-store error when the clock is unavailable.",
-        "irreversible": False,
+        "signature": "get_referral(referral_id: str) -> ToolResult",
+        "what": "Fetch one stored referral. Call first and alone; later tools use its patient id, specialty, tests, and untrusted clinical summary.",
+        "input": {
+            "referral_id": {
+                "type": "string",
+                "required": True,
+                "constraints": "non-empty exact referral id, for example REF-5602",
+                "bad_value": "INVALID_REFERRAL_ID; a well-formed unknown id returns REFERRAL_NOT_FOUND",
+            }
+        },
+        "returns": {
+            "shape": {"ok": True, "data": "one Referral object as stored, including tests_attached and optional tests_attached_on"},
+            "size_bound": "exactly one referral object; never a list",
+        },
+        "fails_when": ["INVALID_REFERRAL_ID", "REFERRAL_NOT_FOUND", "DATA_FILE_ERROR or DATA_INVALID_JSON"],
+        "irreversible": _READ_ONLY,
     },
     "check_referral_criteria": {
         "name": "check_referral_criteria",
-        "purpose": "Report hostile text, specialty-specific red flags, department fit, missing tests, urgency band, and the legal booking window.",
-        "when": "Call after get_referral. It may run in the same turn as lookup_patient because neither depends on the other.",
-        "arguments": {
-            "referral_id": "The referral id returned by the work queue.",
-            "specialty": "The exact specialty code on that referral.",
+        "signature": "check_referral_criteria(referral_id: str, specialty: str) -> ToolResult",
+        "what": "After get_referral, return protocol facts for hostile text, red flags, department fit, mandatory tests, urgency, and legal window. It may share a turn with lookup_patient and never makes the final decision.",
+        "input": {
+            "referral_id": {
+                "type": "string",
+                "required": True,
+                "constraints": "non-empty exact id already returned by get_referral",
+                "bad_value": "INVALID_REFERRAL_ID; unknown id returns REFERRAL_NOT_FOUND",
+            },
+            "specialty": {
+                "type": "string",
+                "required": True,
+                "constraints": "non-empty exact specialty code on the referral",
+                "bad_value": "INVALID_SPECIALTY, SPECIALTY_ARGUMENT_MISMATCH, or SPECIALTY_NOT_FOUND",
+            },
         },
-        "returns": "Protocol facts only; it never returns book, request_information, or escalate.",
-        "failure": "REFERRAL_NOT_FOUND, SPECIALTY_NOT_FOUND, SPECIALTY_ARGUMENT_MISMATCH, invalid-input, or data error codes.",
-        "irreversible": False,
+        "returns": {
+            "shape": {"ok": True, "data": {"hostile_input_detected": "boolean", "hostile_matches": "list[string]", "red_flags_detected": "list[string]", "right_department": "boolean", "department_terms_detected": "list[string]", "mandatory_tests": "list[Test]", "missing_tests": "list[Test]", "band": "urgent|soon|routine", "urgency_terms_detected": "list[string]", "window_weeks": "integer", "window_start": "YYYY-MM-DD", "window_end": "YYYY-MM-DD"}},
+            "size_bound": "one criteria object; lists are bounded by the selected specialty and urgency fixture records",
+        },
+        "fails_when": ["INVALID_REFERRAL_ID", "INVALID_SPECIALTY", "REFERRAL_NOT_FOUND", "SPECIALTY_ARGUMENT_MISMATCH", "SPECIALTY_NOT_FOUND", "DATA_INVALID_RECORD or data-store error"],
+        "irreversible": _READ_ONLY,
     },
     "lookup_patient": {
         "name": "lookup_patient",
-        "purpose": "Fetch the patient, existing appointments, and directly joined contact record.",
-        "when": "Call after get_referral and before proposing a booking. Compare appointment specialty and date with the criteria window start to detect a future duplicate.",
-        "arguments": {"patient_id": "The exact patient id from the referral."},
-        "returns": "An object containing patient and contact. Past appointments remain present and are not automatically duplicates.",
-        "failure": "PATIENT_NOT_FOUND for an unknown id; INVALID_PATIENT_ID for invalid input; data error codes when fixtures cannot be read.",
-        "irreversible": False,
+        "signature": "lookup_patient(patient_id: str) -> ToolResult",
+        "what": "After get_referral, fetch the patient, appointment history, and directly joined contact. It may share a turn with check_referral_criteria.",
+        "input": {
+            "patient_id": {
+                "type": "string",
+                "required": True,
+                "constraints": "non-empty exact patient id from get_referral",
+                "bad_value": "INVALID_PATIENT_ID; unknown id returns PATIENT_NOT_FOUND",
+            }
+        },
+        "returns": {
+            "shape": {"ok": True, "data": {"patient": "one Patient object including existing_appointments", "contact": "one Contact object or null"}},
+            "size_bound": "one patient and at most one joined contact; appointment count is bounded by that patient fixture row",
+        },
+        "fails_when": ["INVALID_PATIENT_ID", "PATIENT_NOT_FOUND", "DATA_FILE_ERROR or DATA_INVALID_JSON"],
+        "irreversible": _READ_ONLY,
     },
+}
+
+_SLOTS_INPUT_V1 = {
+    name: {"type": type_name, "required": name != "limit", "constraints": rule, "bad_value": error}
+    for name, type_name, rule, error in (
+        ("specialty", "string", "specialty code", "INVALID_SPECIALTY or SPECIALTY_NOT_FOUND"),
+        ("band", "string", "urgency band", "INVALID_URGENCY_BAND"),
+        ("window_start", "string", "start date", "INVALID_DATE_WINDOW"),
+        ("window_end", "string", "end date", "INVALID_DATE_WINDOW"),
+        ("limit", "integer", "optional maximum results; default 5", "INVALID_LIMIT"),
+    )
 }
 
 _SLOTS_V1 = {
     "name": "get_clinic_slots",
-    "purpose": "Find available clinic slots.",
-    "when": "Use when a slot is needed.",
-    "arguments": {
-        "specialty": "Specialty code.",
-        "band": "Urgency band.",
-        "window_start": "Start date.",
-        "window_end": "End date.",
-        "limit": "Maximum results.",
+    "signature": "get_clinic_slots(specialty: str, band: str, window_start: str, window_end: str, limit: int = 5) -> ToolResultV1",
+    "what": "Find available clinic slots after referral checks pass.",
+    "input": _SLOTS_INPUT_V1,
+    "returns": {
+        "shape": {"ok": True, "data": {"result": "SLOTS_FOUND|NO_SLOT_WITHIN_WINDOW", "slots": "list[Slot]"}},
+        "size_bound": "at most limit slots; implementation rejects limit outside 1..20",
     },
-    "returns": "Available slots.",
-    "failure": "Returns an error for invalid input or no slots when none are available.",
-    "irreversible": False,
+    "fails_when": ["invalid specialty, urgency band, date window, or limit", "data-store error; no slots is a successful empty result"],
+    "irreversible": _READ_ONLY,
 }
 
 _SLOTS_V2 = {
     "name": "get_clinic_slots",
-    "purpose": "Return up to limit free slots matching one specialty and urgency band inside a legal clinical window.",
-    "when": "Call only after criteria and duplicate checks pass. Never drop the band, widen the window, or call after an early-stop condition.",
-    "arguments": {
-        "specialty": "Exact specialty code from the referral.",
-        "band": "Required urgent, soon, or routine value returned by check_referral_criteria.",
-        "window_start": "ISO date on or after as_of; use the criteria window start.",
-        "window_end": "ISO date no later than the band deadline; use the criteria window end.",
-        "limit": "Optional integer from 1 to 20; defaults to 5.",
+    "signature": "get_clinic_slots(specialty: str, band: str, window_start: str, window_end: str, limit: int = 5) -> ToolResultV2",
+    "what": "Only after criteria and duplicate checks pass, return sorted free slots matching the exact specialty and assessed band inside the legal clinical window. Never widen or drop constraints.",
+    "input": {
+        "specialty": {"type": "string", "required": True, "constraints": "non-empty exact code from get_referral", "bad_value": "INVALID_SPECIALTY or SPECIALTY_NOT_FOUND"},
+        "band": {"type": "string", "required": True, "constraints": "exact urgent, soon, or routine value from check_referral_criteria", "bad_value": "INVALID_URGENCY_BAND"},
+        "window_start": {"type": "string", "required": True, "constraints": "ISO date equal to the criteria window start and not before as_of", "bad_value": "INVALID_DATE_WINDOW"},
+        "window_end": {"type": "string", "required": True, "constraints": "ISO date equal to the criteria deadline and no later than the band's legal end", "bad_value": "INVALID_DATE_WINDOW"},
+        "limit": {"type": "integer", "required": False, "default": 5, "constraints": "1..20 inclusive", "bad_value": "INVALID_LIMIT"},
     },
-    "returns": "SLOTS_FOUND with sorted slots whose capacity_remaining is above zero, or NO_SLOT_WITHIN_WINDOW with an empty list.",
-    "failure": "INVALID_DATE_WINDOW, INVALID_URGENCY_BAND, INVALID_LIMIT, SPECIALTY_NOT_FOUND, or a data-store error. No slot is a successful business fact, not a tool failure.",
-    "irreversible": False,
+    "returns": {
+        "shape": {"ok": True, "data": {"result": "SLOTS_FOUND|NO_SLOT_WITHIN_WINDOW", "requested_window": {"start": "YYYY-MM-DD", "end": "YYYY-MM-DD"}, "slots": "list[{clinic, specialty, band, date, time, capacity_remaining}]"}},
+        "size_bound": "0..limit sorted slots, with limit <= 20; only positive-capacity slots are returned",
+    },
+    "fails_when": ["INVALID_SPECIALTY", "SPECIALTY_NOT_FOUND", "INVALID_URGENCY_BAND", "INVALID_DATE_WINDOW", "INVALID_LIMIT", "data-store error; NO_SLOT_WITHIN_WINDOW is a successful business fact"],
+    "irreversible": _READ_ONLY,
 }
 
 DESCRIPTORS_V1 = {**_BASE_DESCRIPTORS, "get_clinic_slots": _SLOTS_V1}
@@ -141,12 +196,16 @@ def call_tool(
     *,
     state: Any = None,
     call_id: str | None = None,
+    descriptor_version: str = "v2",
 ) -> dict[str, Any]:
     """Validate, dispatch, and validate one agent-requested tool call."""
     if not isinstance(name, str) or name not in REGISTRY:
         return failure("UNKNOWN_TOOL", f"Tool {name!r} is not available.")
     if not isinstance(arguments, Mapping):
         return failure("INVALID_ARGUMENTS", "Tool arguments must be a JSON object.")
+
+    if descriptor_version not in {"v1", "v2"}:
+        return failure("INVALID_DESCRIPTOR_VERSION", "Descriptor version must be 'v1' or 'v2'.")
 
     function = REGISTRY[name]
     kwargs = dict(arguments)
@@ -174,10 +233,26 @@ def call_tool(
 
     if not _valid_result(result):
         return failure("TOOL_PROTOCOL_ERROR", f"Tool {name!r} returned an invalid result.")
+    result = _shape_result(name, result, descriptor_version)
     try:
         json.dumps(result)
     except (TypeError, ValueError):
         return failure("TOOL_PROTOCOL_ERROR", f"Tool {name!r} returned non-JSON data.")
+    return result
+
+
+def _shape_result(
+    name: str, result: dict[str, Any], descriptor_version: str
+) -> dict[str, Any]:
+    """Apply the controller-selected D2(b) observation contract."""
+    if (
+        name == "get_clinic_slots"
+        and descriptor_version == "v1"
+        and result.get("ok") is True
+        and isinstance(result.get("data"), dict)
+    ):
+        data = result["data"]
+        return success({"result": data.get("result"), "slots": data.get("slots", [])})
     return result
 
 

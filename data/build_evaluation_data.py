@@ -18,7 +18,7 @@ BASE_IDS = (
 )
 BASE_PURPOSES = {
     "REF-5590": "red flag overrides completeness and slot availability",
-    "REF-5602": "routine booking after multiple slot queries",
+    "REF-5602": "routine booking requires the exact urgency band",
     "REF-5614": "wrong test does not satisfy the mandatory-test rule",
     "REF-5620": "short run because DER has no mandatory tests",
     "REF-5631": "urgent booking is distinct from red-flag escalation",
@@ -34,12 +34,34 @@ BASE_PURPOSES = {
     "REF-5738": "ordinary ENT booking with two mandatory tests",
 }
 
-CORE_NEW_IDS = {
-    *(f"REF-{number}" for number in range(6001, 6006)),
-    *(f"REF-{number}" for number in range(6014, 6019)),
-    *(f"REF-{number}" for number in range(6027, 6032)),
-    *(f"REF-{number}" for number in range(6040, 6045)),
-    *(f"REF-{number}" for number in range(6050, 6055)),
+CORE_NEW_IDS = (
+    {
+        *(f"REF-{number}" for number in range(6001, 6006)),
+        *(f"REF-{number}" for number in range(6014, 6019)),
+        *(f"REF-{number}" for number in range(6027, 6032)),
+        *(f"REF-{number}" for number in range(6040, 6045)),
+        *(f"REF-{number}" for number in range(6050, 6055)),
+    }
+    - {"REF-6001", "REF-6014", "REF-6027"}
+    | {"REF-6008", "REF-6022", "REF-6035"}
+)
+
+BASE_ANSWER_CORRECTIONS = {
+    "REF-5602": {
+        "family": "routine_booking_exact_band",
+        "note": (
+            "The brief's worked booking. Earlier OPH slots use urgent or soon "
+            "bands; one exact-band query returns OPH-C2 on 2026-10-14 as the "
+            "first legal routine slot."
+        ),
+    },
+    "REF-5697": {
+        "must_record": [
+            "urgent band, 2-week window ending 2026-09-23",
+            "the exact urgent-band query returned NO_SLOT_WITHIN_WINDOW",
+            "no slot was booked",
+        ],
+    },
 }
 
 SLOTS = {
@@ -269,6 +291,8 @@ def main():
     base_patients = [row for row in load(FIXTURES / "patients.json") if row["patient_id"] not in {f"P-{number}" for number in range(6001, 6066)}]
     base_contacts = [row for row in load(FIXTURES / "contacts.json") if row["patient_id"] not in {f"P-{number}" for number in range(6001, 6066)}]
     base_answers = [row for row in load(HERE / "expected_outcomes_B.json") if row["case_id"] in BASE_IDS]
+    for answer in base_answers:
+        answer.update(BASE_ANSWER_CORRECTIONS.get(answer["case_id"], {}))
 
     referrals = base_referrals + new_referrals
     patients = base_patients + new_patients

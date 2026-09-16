@@ -39,18 +39,6 @@ def get_referral(referral_id: str) -> dict[str, Any]:
     return success(referral)
 
 
-def get_system_date() -> dict[str, Any]:
-    """Return the fixed clock used for every Problem B booking window."""
-    try:
-        value = load_object("as_of").get("as_of")
-        _parse_date(value)
-    except DataStoreError as exc:
-        return _data_failure(exc)
-    except (TypeError, ValueError):
-        return failure("DATA_INVALID_RECORD", "as_of.json must contain a valid ISO date.")
-    return success({"as_of": value})
-
-
 def check_referral_criteria(referral_id: str, specialty: str) -> dict[str, Any]:
     """Report protocol facts; the Agent remains responsible for the decision."""
     if not isinstance(referral_id, str) or not referral_id.strip():
@@ -235,7 +223,6 @@ def _data_failure(exc: DataStoreError) -> dict[str, Any]:
 
 READ_TOOLS = {
     "get_referral": get_referral,
-    "get_system_date": get_system_date,
     "check_referral_criteria": check_referral_criteria,
     "lookup_patient": lookup_patient,
     "get_clinic_slots": get_clinic_slots,
