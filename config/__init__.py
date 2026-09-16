@@ -29,6 +29,7 @@ class RunConfig:
     model: str | None = None
     base_url: str = "https://openrouter.ai/api/v1"
     api_key: str = ""
+    prompt_version: str = "v2"
     descriptor_version: str = "v2"
     call_mode: str = "parallel"
     autonomy: str = "confirm"
@@ -47,6 +48,8 @@ class RunConfig:
             raise ValueError("A live run requires a model name.")
         if self.descriptor_version not in {"v1", "v2"}:
             raise ValueError("descriptor_version must be 'v1' or 'v2'.")
+        if self.prompt_version not in {"v1", "v2"}:
+            raise ValueError("prompt_version must be 'v1' or 'v2'.")
         if self.call_mode not in {"sequential", "parallel"}:
             raise ValueError("call_mode must be 'sequential' or 'parallel'.")
         if self.autonomy not in {"suggest", "confirm", "act"}:
@@ -72,6 +75,7 @@ class RunConfig:
             model=model,
             base_url=os.getenv("A2_BASE_URL", "https://openrouter.ai/api/v1"),
             api_key=os.getenv("OPENROUTER_API_KEY", ""),
+            prompt_version=os.getenv("A2_PROMPT_VERSION", "v2"),
             descriptor_version=os.getenv("A2_DESCRIPTOR_VERSION", "v2"),
             call_mode=os.getenv("A2_CALL_MODE", "parallel"),
             autonomy=os.getenv("A2_AUTONOMY", "confirm"),
@@ -94,7 +98,8 @@ class RunConfig:
     def summary(self) -> str:
         model = self.model or "(none: deterministic scripted backend)"
         return (
-            f"backend={self.backend} model={model} descriptors={self.descriptor_version} "
+            f"backend={self.backend} model={model} prompt={self.prompt_version} "
+            f"descriptors={self.descriptor_version} "
             f"call_mode={self.call_mode} autonomy={self.autonomy} max_turns={self.max_turns} "
             f"max_tokens={self.max_tokens}"
         )

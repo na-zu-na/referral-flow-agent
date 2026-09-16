@@ -64,7 +64,11 @@ def run_case(
         controller = make_backend(
             case_id,
             settings,
-            build_system_prompt(settings.descriptor_version, settings.call_mode),
+            build_system_prompt(
+                settings.descriptor_version,
+                settings.call_mode,
+                settings.prompt_version,
+            ),
             backend=backend,
         )
         for iteration in range(1, settings.implementation_iteration_cap + 1):
@@ -138,6 +142,7 @@ def run_case(
         "status": status,
         "backend": backend_name,
         "model": model_name,
+        "prompt_version": settings.prompt_version,
         "descriptor_version": settings.descriptor_version,
         "call_mode": settings.call_mode,
         "autonomy": settings.autonomy,
@@ -166,18 +171,10 @@ def _execute_call(
     approve: ApprovalCallback | None,
 ) -> dict[str, Any]:
     if call["name"] != "book_slot":
-        return call_tool(
-            call["name"],
-            call["arguments"],
-            descriptor_version=settings.descriptor_version,
-        )
+        return call_tool(call["name"], call["arguments"])
     try:
         return call_tool(
-            call["name"],
-            call["arguments"],
-            state=state,
-            call_id=call["id"],
-            descriptor_version=settings.descriptor_version,
+            call["name"], call["arguments"], state=state, call_id=call["id"]
         )
     except ConfirmationRequired as pause:
         callback = approve
@@ -187,11 +184,7 @@ def _execute_call(
             raise
         state.approve(call["id"])
         return call_tool(
-            call["name"],
-            call["arguments"],
-            state=state,
-            call_id=call["id"],
-            descriptor_version=settings.descriptor_version,
+            call["name"], call["arguments"], state=state, call_id=call["id"]
         )
 
 

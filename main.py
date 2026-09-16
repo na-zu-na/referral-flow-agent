@@ -17,6 +17,7 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("case_id", nargs="?", default="REF-5602")
     parser.add_argument("--backend", choices=("scripted", "live"))
     parser.add_argument("--model")
+    parser.add_argument("--prompt-version", choices=("v1", "v2"))
     parser.add_argument("--descriptors", choices=("v1", "v2"))
     parser.add_argument("--call-mode", choices=("sequential", "parallel"))
     parser.add_argument("--autonomy", choices=("suggest", "confirm", "act"))
@@ -33,6 +34,7 @@ def main() -> int:
         for name, value in {
             "backend": args.backend,
             "model": args.model,
+            "prompt_version": args.prompt_version,
             "descriptor_version": args.descriptors,
             "call_mode": args.call_mode,
             "autonomy": args.autonomy,
@@ -41,7 +43,16 @@ def main() -> int:
     }
     config = RunConfig.from_env(**overrides)
     if args.show_prompt:
-        print(json.dumps(prompt_audit(config.descriptor_version, config.call_mode), indent=2))
+        print(
+            json.dumps(
+                prompt_audit(
+                    config.descriptor_version,
+                    config.call_mode,
+                    config.prompt_version,
+                ),
+                indent=2,
+            )
+        )
         return 0
     print(config.summary())
     record = run_case(args.case_id, config, verbose=args.verbose)
