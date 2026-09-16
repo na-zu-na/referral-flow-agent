@@ -1,0 +1,582 @@
+{
+  "case_id": "REF-5602",
+  "status": "completed",
+  "backend": "scripted",
+  "model": null,
+  "descriptor_version": "v2",
+  "call_mode": "parallel",
+  "autonomy": "confirm",
+  "final": {
+    "booked": {
+      "clinic": "OPH-C2",
+      "date": "2026-10-14",
+      "time": "11:20"
+    },
+    "decision": "book",
+    "reason": "All checks passed: routine band, window 2026-09-09 to 2026-11-04, mandatory tests VF-01, and no future same-specialty appointment. The first observed slot was booked."
+  },
+  "turns": 4,
+  "iterations": 5,
+  "tool_calls": [
+    {
+      "turn": 1,
+      "arguments": {
+        "referral_id": "REF-5602"
+      },
+      "id": "REF-5602-t1-c1",
+      "name": "get_referral"
+    },
+    {
+      "turn": 2,
+      "arguments": {
+        "referral_id": "REF-5602",
+        "specialty": "OPH"
+      },
+      "id": "REF-5602-t2-c1",
+      "name": "check_referral_criteria"
+    },
+    {
+      "turn": 2,
+      "arguments": {
+        "patient_id": "P-1180"
+      },
+      "id": "REF-5602-t2-c2",
+      "name": "lookup_patient"
+    },
+    {
+      "turn": 3,
+      "arguments": {
+        "band": "routine",
+        "limit": 5,
+        "specialty": "OPH",
+        "window_end": "2026-11-04",
+        "window_start": "2026-09-09"
+      },
+      "id": "REF-5602-t3-c1",
+      "name": "get_clinic_slots"
+    },
+    {
+      "turn": 4,
+      "arguments": {
+        "band": "routine",
+        "clinic": "OPH-C2",
+        "date": "2026-10-14",
+        "referral_id": "REF-5602",
+        "specialty": "OPH",
+        "time": "11:20"
+      },
+      "id": "REF-5602-t4-c1",
+      "name": "book_slot"
+    }
+  ],
+  "observations": [
+    {
+      "turn": 1,
+      "call_id": "REF-5602-t1-c1",
+      "name": "get_referral",
+      "result": {
+        "ok": true,
+        "data": {
+          "referral_id": "REF-5602",
+          "patient_id": "P-1180",
+          "referring_clinic": "Clementi Medical",
+          "specialty": "OPH",
+          "date_received": "2026-09-09",
+          "clinical_summary": "Gradual blurring of vision over the past year, worse for reading. Suspected cataract. Symptoms are gradual and painless.",
+          "tests_attached": [
+            "VF-01"
+          ],
+          "tests_attached_on": "2026-08-28"
+        }
+      }
+    },
+    {
+      "turn": 2,
+      "call_id": "REF-5602-t2-c1",
+      "name": "check_referral_criteria",
+      "result": {
+        "ok": true,
+        "data": {
+          "hostile_input_detected": false,
+          "hostile_matches": [],
+          "red_flags_detected": [],
+          "right_department": true,
+          "department_terms_detected": [
+            "vision",
+            "cataract"
+          ],
+          "mandatory_tests": [
+            {
+              "code": "VF-01",
+              "name": "visual field test"
+            }
+          ],
+          "missing_tests": [],
+          "band": "routine",
+          "urgency_terms_detected": [],
+          "window_weeks": 8,
+          "window_start": "2026-09-09",
+          "window_end": "2026-11-04"
+        }
+      }
+    },
+    {
+      "turn": 2,
+      "call_id": "REF-5602-t2-c2",
+      "name": "lookup_patient",
+      "result": {
+        "ok": true,
+        "data": {
+          "patient": {
+            "patient_id": "P-1180",
+            "date_of_birth": "1968-03-14",
+            "existing_appointments": []
+          },
+          "contact": {
+            "patient_id": "P-1180",
+            "method": "sms",
+            "value": "+65 8\u2022\u2022\u2022 \u2022\u202221"
+          }
+        }
+      }
+    },
+    {
+      "turn": 3,
+      "call_id": "REF-5602-t3-c1",
+      "name": "get_clinic_slots",
+      "result": {
+        "ok": true,
+        "data": {
+          "result": "SLOTS_FOUND",
+          "requested_window": {
+            "start": "2026-09-09",
+            "end": "2026-11-04"
+          },
+          "slots": [
+            {
+              "clinic": "OPH-C2",
+              "specialty": "OPH",
+              "band": "routine",
+              "date": "2026-10-14",
+              "time": "11:20",
+              "capacity_remaining": 2
+            },
+            {
+              "clinic": "OPH-C2",
+              "specialty": "OPH",
+              "band": "routine",
+              "date": "2026-10-14",
+              "time": "14:00",
+              "capacity_remaining": 1
+            },
+            {
+              "clinic": "OPH-C2",
+              "specialty": "OPH",
+              "band": "routine",
+              "date": "2026-10-28",
+              "time": "09:00",
+              "capacity_remaining": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "turn": 4,
+      "call_id": "REF-5602-t4-c1",
+      "name": "book_slot",
+      "result": {
+        "ok": true,
+        "data": {
+          "booked": true,
+          "referral_id": "REF-5602",
+          "clinic": "OPH-C2",
+          "specialty": "OPH",
+          "band": "routine",
+          "date": "2026-10-14",
+          "time": "11:20",
+          "capacity_remaining_after": 1
+        }
+      }
+    }
+  ],
+  "guardrail_events": [
+    {
+      "type": "confirmation_required",
+      "code": "HUMAN_CONFIRMATION_REQUIRED",
+      "message": "A trusted human must confirm the irreversible action.",
+      "call": {
+        "id": "REF-5602-t4-c1",
+        "name": "book_slot",
+        "arguments": {
+          "referral_id": "REF-5602",
+          "clinic": "OPH-C2",
+          "specialty": "OPH",
+          "band": "routine",
+          "date": "2026-10-14",
+          "time": "11:20"
+        }
+      },
+      "terminal": false
+    },
+    {
+      "type": "guardrail_event",
+      "code": "AUTONOMY_GATE_PASSED",
+      "message": "Action approved by a trusted human.",
+      "call_id": "REF-5602-t4-c1"
+    },
+    {
+      "type": "guardrail_event",
+      "code": "BOOKING_GATE_PASSED",
+      "message": "All booking conditions were satisfied.",
+      "call_id": "REF-5602-t4-c1"
+    }
+  ],
+  "stopped_by": null,
+  "tokens_in": 0,
+  "tokens_out": 0,
+  "tokens_measured": false,
+  "cost_usd": 0.0,
+  "duration_ms": 3.152,
+  "error": null,
+  "transcript": [
+    {
+      "role": "user",
+      "content": {
+        "task": "Coordinate this outpatient referral.",
+        "referral_id": "REF-5602"
+      }
+    },
+    {
+      "role": "assistant",
+      "content": {
+        "calls": [
+          {
+            "arguments": {
+              "referral_id": "REF-5602"
+            },
+            "id": "REF-5602-t1-c1",
+            "name": "get_referral"
+          }
+        ],
+        "thought": "Fetch the referral before choosing dependent checks.",
+        "type": "tool_calls"
+      }
+    },
+    {
+      "role": "user",
+      "content": {
+        "type": "tool_observations",
+        "observations": [
+          {
+            "call_id": "REF-5602-t1-c1",
+            "name": "get_referral",
+            "result": {
+              "ok": true,
+              "data": {
+                "referral_id": "REF-5602",
+                "patient_id": "P-1180",
+                "referring_clinic": "Clementi Medical",
+                "specialty": "OPH",
+                "date_received": "2026-09-09",
+                "clinical_summary": "Gradual blurring of vision over the past year, worse for reading. Suspected cataract. Symptoms are gradual and painless.",
+                "tests_attached": [
+                  "VF-01"
+                ],
+                "tests_attached_on": "2026-08-28"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "role": "assistant",
+      "content": {
+        "calls": [
+          {
+            "arguments": {
+              "referral_id": "REF-5602",
+              "specialty": "OPH"
+            },
+            "id": "REF-5602-t2-c1",
+            "name": "check_referral_criteria"
+          },
+          {
+            "arguments": {
+              "patient_id": "P-1180"
+            },
+            "id": "REF-5602-t2-c2",
+            "name": "lookup_patient"
+          }
+        ],
+        "thought": "Assess the referral and independently check the patient appointment history.",
+        "type": "tool_calls"
+      }
+    },
+    {
+      "role": "user",
+      "content": {
+        "type": "tool_observations",
+        "observations": [
+          {
+            "call_id": "REF-5602-t2-c1",
+            "name": "check_referral_criteria",
+            "result": {
+              "ok": true,
+              "data": {
+                "hostile_input_detected": false,
+                "hostile_matches": [],
+                "red_flags_detected": [],
+                "right_department": true,
+                "department_terms_detected": [
+                  "vision",
+                  "cataract"
+                ],
+                "mandatory_tests": [
+                  {
+                    "code": "VF-01",
+                    "name": "visual field test"
+                  }
+                ],
+                "missing_tests": [],
+                "band": "routine",
+                "urgency_terms_detected": [],
+                "window_weeks": 8,
+                "window_start": "2026-09-09",
+                "window_end": "2026-11-04"
+              }
+            }
+          },
+          {
+            "call_id": "REF-5602-t2-c2",
+            "name": "lookup_patient",
+            "result": {
+              "ok": true,
+              "data": {
+                "patient": {
+                  "patient_id": "P-1180",
+                  "date_of_birth": "1968-03-14",
+                  "existing_appointments": []
+                },
+                "contact": {
+                  "patient_id": "P-1180",
+                  "method": "sms",
+                  "value": "+65 8\u2022\u2022\u2022 \u2022\u202221"
+                }
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "role": "assistant",
+      "content": {
+        "calls": [
+          {
+            "arguments": {
+              "band": "routine",
+              "limit": 5,
+              "specialty": "OPH",
+              "window_end": "2026-11-04",
+              "window_start": "2026-09-09"
+            },
+            "id": "REF-5602-t3-c1",
+            "name": "get_clinic_slots"
+          }
+        ],
+        "thought": "All pre-slot checks passed; query the exact assessed band and legal window.",
+        "type": "tool_calls"
+      }
+    },
+    {
+      "role": "user",
+      "content": {
+        "type": "tool_observations",
+        "observations": [
+          {
+            "call_id": "REF-5602-t3-c1",
+            "name": "get_clinic_slots",
+            "result": {
+              "ok": true,
+              "data": {
+                "result": "SLOTS_FOUND",
+                "requested_window": {
+                  "start": "2026-09-09",
+                  "end": "2026-11-04"
+                },
+                "slots": [
+                  {
+                    "clinic": "OPH-C2",
+                    "specialty": "OPH",
+                    "band": "routine",
+                    "date": "2026-10-14",
+                    "time": "11:20",
+                    "capacity_remaining": 2
+                  },
+                  {
+                    "clinic": "OPH-C2",
+                    "specialty": "OPH",
+                    "band": "routine",
+                    "date": "2026-10-14",
+                    "time": "14:00",
+                    "capacity_remaining": 1
+                  },
+                  {
+                    "clinic": "OPH-C2",
+                    "specialty": "OPH",
+                    "band": "routine",
+                    "date": "2026-10-28",
+                    "time": "09:00",
+                    "capacity_remaining": 3
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "role": "assistant",
+      "content": {
+        "calls": [
+          {
+            "arguments": {
+              "band": "routine",
+              "clinic": "OPH-C2",
+              "date": "2026-10-14",
+              "referral_id": "REF-5602",
+              "specialty": "OPH",
+              "time": "11:20"
+            },
+            "id": "REF-5602-t4-c1",
+            "name": "book_slot"
+          }
+        ],
+        "thought": "Book the first observed slot with capacity; this call is alone and passes through confirmation.",
+        "type": "tool_calls"
+      }
+    },
+    {
+      "role": "user",
+      "content": {
+        "type": "tool_observations",
+        "observations": [
+          {
+            "call_id": "REF-5602-t4-c1",
+            "name": "book_slot",
+            "result": {
+              "ok": true,
+              "data": {
+                "booked": true,
+                "referral_id": "REF-5602",
+                "clinic": "OPH-C2",
+                "specialty": "OPH",
+                "band": "routine",
+                "date": "2026-10-14",
+                "time": "11:20",
+                "capacity_remaining_after": 1
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "role": "assistant",
+      "content": {
+        "booked": {
+          "clinic": "OPH-C2",
+          "date": "2026-10-14",
+          "time": "11:20"
+        },
+        "decision": "book",
+        "reason": "All checks passed: routine band, window 2026-09-09 to 2026-11-04, mandatory tests VF-01, and no future same-specialty appointment. The first observed slot was booked.",
+        "type": "final"
+      }
+    }
+  ],
+  "moves": [
+    {
+      "calls": [
+        {
+          "arguments": {
+            "referral_id": "REF-5602"
+          },
+          "id": "REF-5602-t1-c1",
+          "name": "get_referral"
+        }
+      ],
+      "thought": "Fetch the referral before choosing dependent checks.",
+      "type": "tool_calls"
+    },
+    {
+      "calls": [
+        {
+          "arguments": {
+            "referral_id": "REF-5602",
+            "specialty": "OPH"
+          },
+          "id": "REF-5602-t2-c1",
+          "name": "check_referral_criteria"
+        },
+        {
+          "arguments": {
+            "patient_id": "P-1180"
+          },
+          "id": "REF-5602-t2-c2",
+          "name": "lookup_patient"
+        }
+      ],
+      "thought": "Assess the referral and independently check the patient appointment history.",
+      "type": "tool_calls"
+    },
+    {
+      "calls": [
+        {
+          "arguments": {
+            "band": "routine",
+            "limit": 5,
+            "specialty": "OPH",
+            "window_end": "2026-11-04",
+            "window_start": "2026-09-09"
+          },
+          "id": "REF-5602-t3-c1",
+          "name": "get_clinic_slots"
+        }
+      ],
+      "thought": "All pre-slot checks passed; query the exact assessed band and legal window.",
+      "type": "tool_calls"
+    },
+    {
+      "calls": [
+        {
+          "arguments": {
+            "band": "routine",
+            "clinic": "OPH-C2",
+            "date": "2026-10-14",
+            "referral_id": "REF-5602",
+            "specialty": "OPH",
+            "time": "11:20"
+          },
+          "id": "REF-5602-t4-c1",
+          "name": "book_slot"
+        }
+      ],
+      "thought": "Book the first observed slot with capacity; this call is alone and passes through confirmation.",
+      "type": "tool_calls"
+    },
+    {
+      "booked": {
+        "clinic": "OPH-C2",
+        "date": "2026-10-14",
+        "time": "11:20"
+      },
+      "decision": "book",
+      "reason": "All checks passed: routine band, window 2026-09-09 to 2026-11-04, mandatory tests VF-01, and no future same-specialty appointment. The first observed slot was booked.",
+      "type": "final"
+    }
+  ]
+}

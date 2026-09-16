@@ -16,7 +16,6 @@ from .referral_tools import (
     check_referral_criteria,
     get_clinic_slots,
     get_referral,
-    get_system_date,
     lookup_patient,
 )
 from .booking import book_slot
@@ -41,7 +40,6 @@ __all__ = [
     "get_clinic_slots",
     "get_descriptors",
     "get_referral",
-    "get_system_date",
     "lookup_patient",
     "register_tool",
     "success",

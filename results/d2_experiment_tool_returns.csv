@@ -1,0 +1,16 @@
+model,variant,tool,calls,avg_return_tokens_estimated_chars_div_4,min_return_tokens_estimated_chars_div_4,max_return_tokens_estimated_chars_div_4
+scripted,callmode_v2_sequential,book_slot,90,44.1667,44,45
+scripted,callmode_v2_sequential,check_referral_criteria,120,97.4,79,110
+scripted,callmode_v2_sequential,get_clinic_slots,93,72.5484,32,114
+scripted,callmode_v2_sequential,get_referral,120,76.075,57,104
+scripted,callmode_v2_sequential,lookup_patient,114,50.2895,48,67
+scripted,descriptor_v1_parallel,book_slot,90,44.1667,44,45
+scripted,descriptor_v1_parallel,check_referral_criteria,120,97.4,79,110
+scripted,descriptor_v1_parallel,get_clinic_slots,93,57.3226,16,98
+scripted,descriptor_v1_parallel,get_referral,120,76.075,57,104
+scripted,descriptor_v1_parallel,lookup_patient,114,50.2895,48,67
+scripted,descriptor_v2_parallel,book_slot,90,44.1667,44,45
+scripted,descriptor_v2_parallel,check_referral_criteria,120,97.4,79,110
+scripted,descriptor_v2_parallel,get_clinic_slots,93,72.5484,32,114
+scripted,descriptor_v2_parallel,get_referral,120,76.075,57,104
+scripted,descriptor_v2_parallel,lookup_patient,114,50.2895,48,67

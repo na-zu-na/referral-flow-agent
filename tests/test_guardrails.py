@@ -115,7 +115,7 @@ class GuardrailTests(unittest.TestCase):
         self.assertEqual(state.events[-1]["blocked_call_id"], "c1")
 
         with self.assertRaises(GuardrailStop) as repeated:
-            state.prepare_turn([tool_call("later", "get_system_date")])
+            state.prepare_turn([tool_call("later", "custom")])
 
         self.assertEqual(repeated.exception.code, "HOSTILE_INPUT_DETECTED")
         self.assertNotIn("later", state.prepared_calls)
@@ -159,7 +159,7 @@ class GuardrailTests(unittest.TestCase):
             state.prepare_turn(
                 [
                     tool_call("c1", "book_slot", {"referral_id": "REF-5602"}),
-                    tool_call("c2", "get_system_date"),
+                    tool_call("c2", "custom"),
                 ]
             )
 

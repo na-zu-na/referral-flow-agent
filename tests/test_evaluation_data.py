@@ -18,6 +18,7 @@ class EvaluationDataTests(unittest.TestCase):
     def test_all_80_cases_match_the_answer_key(self):
         cases = json.loads((DATA / "evaluation_cases_B.json").read_text(encoding="utf-8"))
         answers = json.loads((DATA / "expected_outcomes_B.json").read_text(encoding="utf-8"))
+        case_by_id = {row["case_id"]: row for row in cases}
         answer_by_id = {row["case_id"]: row for row in answers}
 
         self.assertEqual(80, len(cases))
@@ -25,6 +26,29 @@ class EvaluationDataTests(unittest.TestCase):
         core = [row for row in cases if row["evaluation_tier"] == "core"]
         self.assertEqual(40, len(core))
         self.assertEqual(10, sum(row["negative_case"] for row in core))
+        self.assertEqual(
+            "routine booking requires the exact urgency band",
+            case_by_id["REF-5602"]["design_purpose"],
+        )
+        self.assertEqual(
+            "routine_booking_exact_band", answer_by_id["REF-5602"]["family"]
+        )
+        self.assertIn(
+            "the exact urgent-band query returned NO_SLOT_WITHIN_WINDOW",
+            answer_by_id["REF-5697"]["must_record"],
+        )
+        urgent_bookings = 0
+        for case in core:
+            referral = get_referral(case["case_id"])["data"]
+            criteria = check_referral_criteria(
+                case["case_id"], referral["specialty"]
+            )["data"]
+            if (
+                criteria["band"] == "urgent"
+                and answer_by_id[case["case_id"]]["expected_decision"] == "book"
+            ):
+                urgent_bookings += 1
+        self.assertEqual(4, urgent_bookings)
 
         for case in cases:
             with self.subTest(case_id=case["case_id"]):

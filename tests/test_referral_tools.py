@@ -8,7 +8,6 @@ from tools import (
     check_referral_criteria,
     get_clinic_slots,
     get_referral,
-    get_system_date,
     lookup_patient,
 )
 from tools.data_store import load_table
@@ -19,7 +18,6 @@ class ReferralToolTests(unittest.TestCase):
         self.assertTrue(
             {
                 "get_referral",
-                "get_system_date",
                 "check_referral_criteria",
                 "lookup_patient",
                 "get_clinic_slots",
@@ -35,9 +33,6 @@ class ReferralToolTests(unittest.TestCase):
         self.assertEqual(found["data"]["patient_id"], "P-1180")
         self.assertNotIn("tests_attached_on", optional_absent["data"])
         self.assertEqual(missing["error"]["code"], "REFERRAL_NOT_FOUND")
-
-    def test_get_system_date(self):
-        self.assertEqual(get_system_date(), {"ok": True, "data": {"as_of": "2026-09-09"}})
 
     def test_criteria_reports_facts_without_deciding(self):
         result = check_referral_criteria("REF-5631", "CARD")
