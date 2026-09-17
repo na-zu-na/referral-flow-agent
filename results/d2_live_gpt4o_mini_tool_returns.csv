@@ -1,0 +1,17 @@
+model,variant,tool,calls,avg_return_tokens_estimated_chars_div_4,min_return_tokens_estimated_chars_div_4,max_return_tokens_estimated_chars_div_4
+openai/gpt-4o-mini,callmode_v2_sequential,book_slot,11,44,44,44
+openai/gpt-4o-mini,callmode_v2_sequential,check_referral_criteria,119,97.5546,79,110
+openai/gpt-4o-mini,callmode_v2_sequential,get_clinic_slots,33,77.5758,32,114
+openai/gpt-4o-mini,callmode_v2_sequential,get_referral,120,76.075,57,104
+openai/gpt-4o-mini,callmode_v2_sequential,lookup_patient,45,51.4,48,67
+openai/gpt-4o-mini,callmode_v2_sequential,request_information,1,26,26,26
+openai/gpt-4o-mini,descriptor_v1_parallel,book_slot,5,44,44,44
+openai/gpt-4o-mini,descriptor_v1_parallel,check_referral_criteria,115,98.1565,79,110
+openai/gpt-4o-mini,descriptor_v1_parallel,get_clinic_slots,59,57.7458,16,98
+openai/gpt-4o-mini,descriptor_v1_parallel,get_referral,120,76.075,57,104
+openai/gpt-4o-mini,descriptor_v1_parallel,lookup_patient,95,51.4737,48,67
+openai/gpt-4o-mini,descriptor_v2_parallel,book_slot,2,44,44,44
+openai/gpt-4o-mini,descriptor_v2_parallel,check_referral_criteria,120,97.4,79,110
+openai/gpt-4o-mini,descriptor_v2_parallel,get_clinic_slots,37,79.2432,56,114
+openai/gpt-4o-mini,descriptor_v2_parallel,get_referral,120,76.075,57,104
+openai/gpt-4o-mini,descriptor_v2_parallel,lookup_patient,69,51.087,48,67
