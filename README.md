@@ -38,6 +38,17 @@ python3 experiments/run_d2_experiments.py
 The design table, poka-yoke evidence, measurements, and live reproduction
 command are in [`D2_TOOL_EVIDENCE.md`](D2_TOOL_EVIDENCE.md).
 
+Reproduce the two D7 controlled failures and regenerate their evidence:
+
+```bash
+python3 -m experiments.d7_failures
+```
+
+The experiment contract, report-ready analysis, and Chinese demo script are in
+[`doc/D7_README.md`](doc/D7_README.md),
+[`doc/D7_REPORT_SECTION.md`](doc/D7_REPORT_SECTION.md), and
+[`doc/D7_DEMO_SCRIPT_CN.md`](doc/D7_DEMO_SCRIPT_CN.md).
+
 Run a live OpenRouter model only when intentionally doing the model battery:
 
 ```bash

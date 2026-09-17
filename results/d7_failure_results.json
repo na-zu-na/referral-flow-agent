@@ -1,0 +1,96 @@
+{
+  "method": {
+    "backend": "deterministic scripted moves through real tools and guardrails",
+    "token_basis": "ceil((system prompt + transcript UTF-8 characters) / 4)",
+    "prices_usd_per_million": {
+      "input": 0.1,
+      "output": 0.4
+    },
+    "note": "D7 estimates are offline and reproducible; D5 live usage remains authoritative for deployment cost."
+  },
+  "turn_distribution": {
+    "variant": "working_agent",
+    "cases": 40,
+    "passed": 40,
+    "pass_rate": 1.0,
+    "median_turns": 4.0,
+    "worst_turns": 4,
+    "step_cap_hits": 0
+  },
+  "dedup_regression": {
+    "working_pass_rate": 1.0,
+    "dedup_deleted_pass_rate": 1.0,
+    "cases": 40
+  },
+  "recommended_step_cap": 5,
+  "failure_1": {
+    "failure": "loop_control",
+    "deleted_component": "persistent action de-duplication",
+    "success_criterion": "Repeated action is stopped before the step cap.",
+    "broken": {
+      "status": "guardrail_stopped",
+      "decision": "escalate",
+      "trigger": "guardrail_stop",
+      "turns": 5,
+      "tokens_in": 27103,
+      "tokens_out": 252,
+      "cost_usd": 0.0028111,
+      "stopped_by": "STEP_LIMIT_REACHED",
+      "error": null,
+      "experiment_passed": false
+    },
+    "fixed": {
+      "status": "guardrail_stopped",
+      "decision": "escalate",
+      "trigger": "guardrail_stop",
+      "turns": 1,
+      "tokens_in": 8351,
+      "tokens_out": 84,
+      "cost_usd": 0.0008687,
+      "stopped_by": "DUPLICATE_ACTION_BLOCKED",
+      "error": null,
+      "experiment_passed": true
+    },
+    "finding": "Without de-duplication the repeated read survives until STEP_LIMIT_REACHED; with it restored the second identical action is stopped immediately."
+  },
+  "failure_2": {
+    "failure": "prompt_dependency_ordering",
+    "layer": "system prompt",
+    "deleted_component": "A dependent call must wait for successful prerequisite observations from earlier turns.",
+    "controlled_variable": {
+      "same_backend": "scripted-d7-prompt-aware",
+      "same_case": "REF-5697",
+      "same_descriptor_version": "v2",
+      "same_controller_tools_and_guardrails": true,
+      "working_prompt_characters": 16260,
+      "broken_prompt_characters": 16173,
+      "deleted_characters": 87
+    },
+    "success_criterion": "REF-5697 reaches its evidence-supported expected decision.",
+    "broken": {
+      "status": "guardrail_stopped",
+      "decision": "escalate",
+      "trigger": "guardrail_stop",
+      "turns": 1,
+      "tokens_in": 8309,
+      "tokens_out": 163,
+      "cost_usd": 0.0008961,
+      "stopped_by": "DEPENDENCY_VIOLATION",
+      "error": null,
+      "case_passed": false
+    },
+    "fixed": {
+      "status": "completed",
+      "decision": "escalate",
+      "trigger": "no_slot_in_window",
+      "turns": 3,
+      "tokens_in": 17609,
+      "tokens_out": 239,
+      "cost_usd": 0.0018565,
+      "stopped_by": null,
+      "error": null,
+      "case_passed": true
+    },
+    "finding": "Without the ordering rule, the policy batches get_clinic_slots with its prerequisites and is loudly stopped by DEPENDENCY_VIOLATION; restoring the rule recovers no_slot_in_window."
+  }
+}
