@@ -1,8 +1,10 @@
 import json
 import unittest
 from pathlib import Path
+from unittest.mock import patch
 
 from agent import run_case
+from backends.live import LiveBackend
 from config import RunConfig
 
 
@@ -13,15 +15,16 @@ class SequenceBackend:
     name = "live"
     model = "test/fake-model"
 
-    def __init__(self, moves):
+    def __init__(self, moves, usage=None):
         self.moves = list(moves)
+        self.usage = usage or {"input_tokens": 10, "output_tokens": 5, "measured": True}
 
     def next_move(self, transcript):
         del transcript
         move = self.moves.pop(0)
         return {
             "move": move,
-            "usage": {"input_tokens": 10, "output_tokens": 5, "measured": True},
+            "usage": dict(self.usage),
         }
 
 
@@ -39,6 +42,17 @@ class Member1AgentTests(unittest.TestCase):
         self.assertEqual(len(record["tool_calls"]), 5)
         self.assertEqual(record["tool_calls"][1]["turn"], record["tool_calls"][2]["turn"])
         self.assertIn("BOOKING_GATE_PASSED", {event["code"] for event in record["guardrail_events"]})
+        self.assertTrue(record["run_id"])
+        self.assertTrue(record["timestamp"].endswith("Z"))
+        self.assertEqual(len(record["prompt_hash"]), 64)
+        self.assertEqual(record["execution_mode"], "parallel")
+        self.assertEqual(record["cost_source"], "locally_calculated")
+        self.assertIsNone(record["provider_cost_usd"])
+        for call in record["tool_calls"]:
+            self.assertIsInstance(call["latency_ms"], float)
+            self.assertIsInstance(call["observation_tokens"], int)
+            self.assertIsInstance(call["observation_chars"], int)
+            self.assertIsInstance(call["ok"], bool)
 
     def test_missing_test_finishes_without_slot_lookup(self):
         record = run_case("REF-5614")
@@ -116,6 +130,68 @@ class Member1AgentTests(unittest.TestCase):
 
         self.assertEqual(record["status"], "invalid_model_output")
         self.assertIn("not supported", record["error"]["message"])
+
+    def test_provider_usage_details_and_cost_sources_are_preserved(self):
+        script = json.loads(
+            (ROOT / "backends/scripts/problem_b.json").read_text(encoding="utf-8")
+        )["REF-5602"]
+        usage = {
+            "input_tokens": 10,
+            "output_tokens": 5,
+            "measured": True,
+            "cached_input_tokens": 2,
+            "reasoning_tokens": 1,
+            "provider_cost_usd": 0.001,
+        }
+        config = RunConfig(
+            backend="live",
+            model="test/exact-model-id",
+            autonomy="act",
+            price_input_per_million=1.0,
+            price_output_per_million=2.0,
+        )
+        record = run_case(
+            "REF-5602",
+            config,
+            backend=SequenceBackend(script, usage=usage),
+        )
+
+        calls = len(script)
+        self.assertEqual(record["model"], "test/fake-model")
+        self.assertEqual(record["cached_input_tokens"], calls * 2)
+        self.assertEqual(record["reasoning_tokens"], calls)
+        self.assertEqual(record["provider_cost_usd"], calls * 0.001)
+        self.assertGreater(record["calculated_cost_usd"], 0)
+        self.assertEqual(record["cost_usd"], record["provider_cost_usd"])
+        self.assertEqual(record["cost_source"], "provider_reported")
+
+    def test_live_backend_extracts_optional_provider_usage_details(self):
+        config = RunConfig(
+            backend="live",
+            model="provider/exact-model",
+            api_key="test-key",
+        )
+        payload = {
+            "choices": [{"message": {"content": json.dumps({
+                "type": "final",
+                "decision": "escalate",
+                "reason": "Test response.",
+                "trigger": "tool_failure",
+            })}}],
+            "usage": {
+                "prompt_tokens": 100,
+                "completion_tokens": 20,
+                "cost": 0.0123,
+                "prompt_tokens_details": {"cached_tokens": 30},
+                "completion_tokens_details": {"reasoning_tokens": 7},
+            },
+        }
+        with patch("backends.live._post_openrouter", return_value=payload):
+            response = LiveBackend(config, "system prompt").next_move([])
+
+        self.assertEqual(response["usage"]["cached_input_tokens"], 30)
+        self.assertEqual(response["usage"]["reasoning_tokens"], 7)
+        self.assertEqual(response["usage"]["provider_cost_usd"], 0.0123)
 
     def test_all_authored_scripts_match_the_supplied_code_check_fields(self):
         expected = json.loads(

@@ -39,14 +39,31 @@ class LiveBackend:
             isinstance(value, int) and not isinstance(value, bool) and value >= 0
             for value in (input_tokens, output_tokens)
         ) and bool(usage)
+        cached_input_tokens = _usage_token_detail(
+            usage,
+            "cached_input_tokens",
+            ("prompt_tokens_details", "cached_tokens"),
+            ("input_tokens_details", "cached_tokens"),
+        )
+        reasoning_tokens = _usage_token_detail(
+            usage,
+            "reasoning_tokens",
+            ("completion_tokens_details", "reasoning_tokens"),
+            ("output_tokens_details", "reasoning_tokens"),
+        )
+        normalized_usage = {
+            "input_tokens": input_tokens if measured else 0,
+            "output_tokens": output_tokens if measured else 0,
+            "measured": measured,
+            "provider_cost_usd": _nonnegative_number(usage.get("cost")),
+        }
+        if cached_input_tokens is not None:
+            normalized_usage["cached_input_tokens"] = cached_input_tokens
+        if reasoning_tokens is not None:
+            normalized_usage["reasoning_tokens"] = reasoning_tokens
         return {
             "move": move,
-            "usage": {
-                "input_tokens": input_tokens if measured else 0,
-                "output_tokens": output_tokens if measured else 0,
-                "measured": measured,
-                "provider_cost_usd": _nonnegative_number(usage.get("cost")),
-            },
+            "usage": normalized_usage,
         }
 
 
@@ -102,4 +119,18 @@ def _post_openrouter(config: RunConfig, messages: list[dict[str, str]]) -> dict[
 def _nonnegative_number(value: Any) -> float | None:
     if isinstance(value, (int, float)) and not isinstance(value, bool) and value >= 0:
         return float(value)
+    return None
+
+
+def _usage_token_detail(
+    usage: dict[str, Any], direct_name: str, *nested_paths: tuple[str, str]
+) -> int | None:
+    value = usage.get(direct_name)
+    if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+        return value
+    for container_name, field_name in nested_paths:
+        container = usage.get(container_name)
+        value = container.get(field_name) if isinstance(container, dict) else None
+        if isinstance(value, int) and not isinstance(value, bool) and value >= 0:
+            return value
     return None

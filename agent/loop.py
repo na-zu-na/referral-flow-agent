@@ -2,9 +2,11 @@
 
 from __future__ import annotations
 
+import hashlib
 import time
+import uuid
 from copy import deepcopy
-from datetime import date
+from datetime import date, datetime, timezone
 from typing import Any, Callable
 
 from backends import Backend, make_backend
@@ -36,6 +38,14 @@ def run_case(
     if not isinstance(case_id, str) or not case_id.strip():
         raise ValueError("case_id must be a non-empty string.")
     settings = config or RunConfig.from_env()
+    run_id = str(uuid.uuid4())
+    timestamp = datetime.now(timezone.utc).isoformat().replace("+00:00", "Z")
+    system_prompt = build_system_prompt(
+        settings.descriptor_version,
+        settings.call_mode,
+        settings.prompt_version,
+    )
+    prompt_hash = hashlib.sha256(system_prompt.encode("utf-8")).hexdigest()
     state = GuardrailState(
         max_turns=settings.max_turns,
         max_tokens=settings.max_tokens,
@@ -59,16 +69,14 @@ def run_case(
     error: dict[str, str] | None = None
     usage_flags: list[bool] = []
     provider_costs: list[float] = []
+    cached_input_tokens: list[int] = []
+    reasoning_tokens: list[int] = []
 
     try:
         controller = make_backend(
             case_id,
             settings,
-            build_system_prompt(
-                settings.descriptor_version,
-                settings.call_mode,
-                settings.prompt_version,
-            ),
+            system_prompt,
             backend=backend,
         )
         for iteration in range(1, settings.implementation_iteration_cap + 1):
@@ -78,6 +86,10 @@ def run_case(
             usage_flags.append(usage["measured"])
             if usage.get("provider_cost_usd") is not None:
                 provider_costs.append(usage["provider_cost_usd"])
+            if usage.get("cached_input_tokens") is not None:
+                cached_input_tokens.append(usage["cached_input_tokens"])
+            if usage.get("reasoning_tokens") is not None:
+                reasoning_tokens.append(usage["reasoning_tokens"])
             trace.add_move(move)
             if verbose:
                 _print_move(iteration, state.turns, move)
@@ -94,8 +106,20 @@ def run_case(
             observations = []
             for call in calls:
                 trace.add_call(state.turns, call)
-                result = _execute_call(call, state, settings, approve)
-                trace.add_observation(state.turns, call, result)
+                call_started = time.perf_counter()
+                try:
+                    result = _execute_call(call, state, settings, approve)
+                except (ConfirmationRequired, GuardrailStop) as exc:
+                    latency_ms = round((time.perf_counter() - call_started) * 1000, 3)
+                    trace.finish_call(
+                        call,
+                        latency_ms=latency_ms,
+                        ok=False,
+                        error_code=exc.event.get("code"),
+                    )
+                    raise
+                latency_ms = round((time.perf_counter() - call_started) * 1000, 3)
+                trace.add_observation(state.turns, call, result, latency_ms)
                 state.record_observation(call, result)
                 observation = {
                     "call_id": call["id"],
@@ -134,18 +158,32 @@ def run_case(
         state.tokens_in / 1_000_000 * settings.price_input_per_million
         + state.tokens_out / 1_000_000 * settings.price_output_per_million
     )
-    cost_usd = sum(provider_costs) if provider_costs else calculated_cost
+    provider_cost = sum(provider_costs) if provider_costs else None
+    provider_cost_complete = bool(usage_flags) and len(provider_costs) == len(usage_flags)
+    cost_usd = provider_cost if provider_cost_complete else calculated_cost
+    if provider_cost_complete:
+        cost_source = "provider_reported"
+    elif provider_costs:
+        cost_source = "locally_calculated_provider_partial"
+    else:
+        cost_source = "locally_calculated"
     backend_name = getattr(locals().get("controller", backend), "name", settings.backend)
     model_name = getattr(locals().get("controller", backend), "model", settings.model)
     return {
+        "run_id": run_id,
+        "timestamp": timestamp,
         "case_id": case_id,
         "status": status,
         "backend": backend_name,
         "model": model_name,
         "prompt_version": settings.prompt_version,
+        "prompt_hash": prompt_hash,
         "descriptor_version": settings.descriptor_version,
         "call_mode": settings.call_mode,
+        "execution_mode": settings.call_mode,
+        "temperature": settings.temperature,
         "autonomy": settings.autonomy,
+        "config": settings.public_dict(),
         "final": final,
         "turns": state.turns,
         "iterations": len(trace.moves),
@@ -156,8 +194,14 @@ def run_case(
         "tokens_in": state.tokens_in,
         "tokens_out": state.tokens_out,
         "tokens_measured": bool(usage_flags) and all(usage_flags),
+        "cached_input_tokens": sum(cached_input_tokens) if cached_input_tokens else None,
+        "reasoning_tokens": sum(reasoning_tokens) if reasoning_tokens else None,
+        "provider_cost_usd": round(provider_cost, 8) if provider_cost is not None else None,
+        "calculated_cost_usd": round(calculated_cost, 8),
+        "cost_source": cost_source,
         "cost_usd": round(cost_usd, 8),
         "duration_ms": duration_ms,
+        "latency_ms": duration_ms,
         "error": error,
         "transcript": trace.transcript,
         "moves": trace.moves,
@@ -209,7 +253,11 @@ def _validate_backend_response(response: Any) -> tuple[dict[str, Any], dict[str,
     if not isinstance(usage, dict):
         raise InvalidModelOutput("Backend usage must be an object.")
     required = {"input_tokens", "output_tokens", "measured"}
-    allowed = required | {"provider_cost_usd"}
+    allowed = required | {
+        "provider_cost_usd",
+        "cached_input_tokens",
+        "reasoning_tokens",
+    }
     if not required <= set(usage) or not set(usage) <= allowed:
         raise InvalidModelOutput("Backend usage fields are invalid.")
     for name in ("input_tokens", "output_tokens"):
@@ -218,6 +266,12 @@ def _validate_backend_response(response: Any) -> tuple[dict[str, Any], dict[str,
             raise InvalidModelOutput(f"usage.{name} must be a non-negative integer.")
     if not isinstance(usage["measured"], bool):
         raise InvalidModelOutput("usage.measured must be boolean.")
+    for name in ("cached_input_tokens", "reasoning_tokens"):
+        value = usage.get(name)
+        if value is not None and (
+            isinstance(value, bool) or not isinstance(value, int) or value < 0
+        ):
+            raise InvalidModelOutput(f"usage.{name} must be a non-negative integer.")
     cost = usage.get("provider_cost_usd")
     if cost is not None and (
         isinstance(cost, bool) or not isinstance(cost, (int, float)) or cost < 0

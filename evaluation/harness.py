@@ -20,6 +20,20 @@ from typing import Any, Callable
 DATA = Path(__file__).resolve().parents[1] / "data"
 Runner = Callable[[str], dict[str, Any]]
 
+RUN_LOG_FIELDS = [
+    "run_id", "timestamp", "case_id", "trial", "model", "prompt_version",
+    "descriptor_version", "backend", "execution_mode", "negative_case",
+    "expected_decision", "decision", "passed", "failure_reason", "status",
+    "turns", "tokens_in", "tokens_out", "tokens_measured", "cost_usd",
+    "latency_ms", "error", "cached_input_tokens", "reasoning_tokens",
+    "provider_cost_usd", "calculated_cost_usd", "cost_source", "temperature",
+    "autonomy", "prompt_hash",
+]
+TOOL_CALL_LOG_FIELDS = [
+    "run_id", "turn", "tool_name", "descriptor_version", "observation_tokens",
+    "observation_chars", "latency_ms", "ok", "error_code",
+]
+
 
 def _load_json(path: Path) -> Any:
     with path.open(encoding="utf-8") as stream:
@@ -548,6 +562,105 @@ def summarize(results: list[dict[str, Any]]) -> dict[str, Any]:
     }
 
 
+def run_log_row(item: dict[str, Any]) -> dict[str, Any]:
+    """Flatten one scored run into the stable experiment log schema."""
+    record = item.get("record")
+    if not isinstance(record, dict):
+        raise ValueError("A run log item requires its original record.")
+    final = record.get("final") or {}
+    failures = item.get("failures") or []
+    failure_reason = item.get("failure_reason")
+    if failure_reason is None:
+        failure_reason = ";".join(str(value) for value in failures)
+    error = record.get("error")
+    return {
+        "run_id": record.get("run_id"),
+        "timestamp": record.get("timestamp"),
+        "case_id": item.get("case_id", record.get("case_id")),
+        "trial": item.get("trial"),
+        "model": record.get("model"),
+        "prompt_version": record.get("prompt_version"),
+        "descriptor_version": record.get("descriptor_version"),
+        "backend": record.get("backend"),
+        "execution_mode": record.get("execution_mode", record.get("call_mode")),
+        "negative_case": item.get("negative_case"),
+        "expected_decision": item.get("expected_decision"),
+        "decision": item.get("actual_decision", final.get("decision")),
+        "passed": item.get("passed"),
+        "failure_reason": failure_reason,
+        "status": record.get("status", item.get("status")),
+        "turns": record.get("turns"),
+        "tokens_in": record.get("tokens_in"),
+        "tokens_out": record.get("tokens_out"),
+        "tokens_measured": record.get("tokens_measured"),
+        "cost_usd": record.get("cost_usd"),
+        "latency_ms": record.get("latency_ms", record.get("duration_ms")),
+        "error": json.dumps(error, ensure_ascii=False, separators=(",", ":")) if error else "",
+        "cached_input_tokens": record.get("cached_input_tokens"),
+        "reasoning_tokens": record.get("reasoning_tokens"),
+        "provider_cost_usd": record.get("provider_cost_usd"),
+        "calculated_cost_usd": record.get("calculated_cost_usd"),
+        "cost_source": record.get("cost_source"),
+        "temperature": record.get("temperature"),
+        "autonomy": record.get("autonomy"),
+        "prompt_hash": record.get("prompt_hash"),
+    }
+
+
+def tool_call_log_rows(item: dict[str, Any]) -> list[dict[str, Any]]:
+    """Flatten every attempted tool call and its observation metrics."""
+    record = item.get("record")
+    if not isinstance(record, dict):
+        raise ValueError("A tool-call log item requires its original record.")
+    observations = {
+        observation.get("call_id"): observation
+        for observation in record.get("observations", [])
+        if observation.get("call_id")
+    }
+    rows = []
+    for call in record.get("tool_calls", []):
+        observation = observations.get(call.get("id"), {})
+        result = observation.get("result") or {}
+        error = result.get("error") or {}
+        rows.append(
+            {
+                "run_id": record.get("run_id"),
+                "turn": call.get("turn", observation.get("turn")),
+                "tool_name": call.get("name", observation.get("name")),
+                "descriptor_version": record.get("descriptor_version"),
+                "observation_tokens": call.get(
+                    "observation_tokens",
+                    observation.get(
+                        "observation_tokens",
+                        observation.get("return_tokens_estimated_chars_div_4"),
+                    ),
+                ),
+                "observation_chars": call.get(
+                    "observation_chars",
+                    observation.get("observation_chars", observation.get("return_characters")),
+                ),
+                "latency_ms": call.get("latency_ms", observation.get("latency_ms")),
+                "ok": call.get("ok", observation.get("ok", result.get("ok"))),
+                "error_code": call.get("error_code", observation.get("error_code", error.get("code"))),
+            }
+        )
+    return rows
+
+
+def write_run_logs(results: list[dict[str, Any]], out_dir: Path) -> None:
+    """Write the two canonical, joinable experiment tables."""
+    out_dir.mkdir(parents=True, exist_ok=True)
+    with (out_dir / "runs.csv").open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=RUN_LOG_FIELDS)
+        writer.writeheader()
+        writer.writerows(run_log_row(item) for item in results)
+    with (out_dir / "tool_calls.csv").open("w", newline="", encoding="utf-8") as stream:
+        writer = csv.DictWriter(stream, fieldnames=TOOL_CALL_LOG_FIELDS)
+        writer.writeheader()
+        for item in results:
+            writer.writerows(tool_call_log_rows(item))
+
+
 def write_results(results: list[dict[str, Any]], out_dir: Path) -> None:
     out_dir.mkdir(parents=True, exist_ok=True)
     summary = summarize(results)
@@ -593,3 +706,4 @@ def write_results(results: list[dict[str, Any]], out_dir: Path) -> None:
                     "reviewed_at": detail.get("reviewed_at", ""),
                     "reviewer_notes": "",
                 })
+    write_run_logs(results, out_dir)

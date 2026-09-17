@@ -5,7 +5,18 @@ import tempfile
 import unittest
 from pathlib import Path
 
-from evaluation.harness import DATA, evaluate, load_reviews, rescore_saved, score_record, select_cases, summarize
+from evaluation.harness import (
+    DATA,
+    RUN_LOG_FIELDS,
+    TOOL_CALL_LOG_FIELDS,
+    evaluate,
+    load_reviews,
+    rescore_saved,
+    score_record,
+    select_cases,
+    summarize,
+    write_results,
+)
 
 
 class EvaluationHarnessTests(unittest.TestCase):
@@ -197,6 +208,60 @@ class EvaluationHarnessTests(unittest.TestCase):
         query["arguments"]["band"] = "soon"
         wrong_band = score_record(case, answer, record, 1)
         self.assertIn("slot_search_exact_assessed_band", wrong_band["failures"])
+
+    def test_write_results_exports_canonical_run_and_tool_call_logs(self):
+        record = copy.deepcopy(self.record)
+        record.update({
+            "run_id": "run-1",
+            "timestamp": "2026-09-17T00:00:00Z",
+            "model": "test/exact-model",
+            "prompt_version": "v2",
+            "prompt_hash": "a" * 64,
+            "descriptor_version": "v2",
+            "backend": "live",
+            "execution_mode": "parallel",
+            "temperature": 0.0,
+            "tokens_in": 12,
+            "tokens_out": 3,
+            "tokens_measured": True,
+            "cached_input_tokens": 2,
+            "reasoning_tokens": 1,
+            "provider_cost_usd": 0.01,
+            "calculated_cost_usd": 0.02,
+            "cost_source": "provider_reported",
+            "cost_usd": 0.01,
+            "latency_ms": 4.5,
+            "error": None,
+        })
+        for turn, call in enumerate(record["tool_calls"], 1):
+            call.update({
+                "turn": turn,
+                "observation_tokens": 10,
+                "observation_chars": 40,
+                "latency_ms": 1.25,
+                "ok": True,
+                "error_code": None,
+            })
+        result = score_record(self.case, self.answer, record, 1, review_verdict=True)
+
+        with tempfile.TemporaryDirectory() as directory:
+            out = Path(directory)
+            write_results([result], out)
+            with (out / "runs.csv").open(newline="", encoding="utf-8") as stream:
+                run_reader = csv.DictReader(stream)
+                run_rows = list(run_reader)
+                self.assertEqual(run_reader.fieldnames, RUN_LOG_FIELDS)
+            with (out / "tool_calls.csv").open(newline="", encoding="utf-8") as stream:
+                tool_reader = csv.DictReader(stream)
+                tool_rows = list(tool_reader)
+                self.assertEqual(tool_reader.fieldnames, TOOL_CALL_LOG_FIELDS)
+
+        self.assertEqual(run_rows[0]["run_id"], "run-1")
+        self.assertEqual(run_rows[0]["decision"], "escalate")
+        self.assertEqual(run_rows[0]["provider_cost_usd"], "0.01")
+        self.assertEqual(len(tool_rows), 2)
+        self.assertEqual(tool_rows[0]["tool_name"], "get_referral")
+        self.assertEqual(tool_rows[0]["observation_tokens"], "10")
 
 
 if __name__ == "__main__":

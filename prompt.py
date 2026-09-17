@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import hashlib
 import json
 from typing import Any
 
@@ -280,6 +281,7 @@ def prompt_audit(
         "prompt_version": prompt_version,
         "descriptor_version": descriptor_version,
         "call_mode": call_mode,
+        "prompt_hash": hashlib.sha256(text.encode("utf-8")).hexdigest(),
         "characters": len(text),
         "estimated_tokens_chars_div_4": (len(text) + 3) // 4,
         "tool_count": len(get_descriptors(descriptor_version)),

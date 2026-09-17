@@ -17,6 +17,7 @@ sys.path.insert(0, str(ROOT))
 
 from agent import run_case  # noqa: E402
 from config import RunConfig  # noqa: E402
+from evaluation.harness import run_log_row, write_run_logs  # noqa: E402
 from prompt import prompt_audit  # noqa: E402
 
 
@@ -50,6 +51,7 @@ def main() -> int:
     expected_by_id = {item["case_id"]: item for item in expected}
     models = args.model if args.backend == "live" else [None]
     runs: list[dict[str, Any]] = []
+    log_results: list[dict[str, Any]] = []
 
     for model in models:
         for variant, descriptor_version, call_mode in VARIANTS:
@@ -67,7 +69,21 @@ def main() -> int:
                         config,
                         approve=_approve_simulated_booking,
                     )
-                    passed = _passes(record, expected_by_id[case["case_id"]])
+                    expected = expected_by_id[case["case_id"]]
+                    passed = _passes(record, expected)
+                    actual_decision = (record.get("final") or {}).get("decision")
+                    failure_reason = "" if passed else "expected_outcome_mismatch"
+                    log_item = {
+                        "case_id": case["case_id"],
+                        "trial": trial,
+                        "negative_case": case["negative_case"],
+                        "expected_decision": expected["expected_decision"],
+                        "actual_decision": actual_decision,
+                        "passed": passed,
+                        "failure_reason": failure_reason,
+                        "record": record,
+                    }
+                    log_results.append(log_item)
                     no_booking = not any(
                         observation["name"] == "book_slot"
                         and observation["result"].get("ok") is True
@@ -76,25 +92,14 @@ def main() -> int:
                     runs.append(
                         {
                             "variant": variant,
-                            "backend": args.backend,
+                            **run_log_row(log_item),
                             "model": model or "scripted",
-                            "descriptor_version": descriptor_version,
                             "call_mode": call_mode,
-                            "case_id": case["case_id"],
-                            "trial": trial,
-                            "negative_case": case["negative_case"],
-                            "passed": passed,
                             "negative_guardrail_passed": (
                                 passed and no_booking if case["negative_case"] else None
                             ),
-                            "status": record["status"],
                             "final": record["final"],
-                            "turns": record["turns"],
                             "iterations": record["iterations"],
-                            "tokens_in": record["tokens_in"],
-                            "tokens_out": record["tokens_out"],
-                            "tokens_measured": record["tokens_measured"],
-                            "cost_usd": record["cost_usd"],
                             "tool_calls": [
                                 {"turn": call["turn"], "name": call["name"]}
                                 for call in record["tool_calls"]
@@ -123,6 +128,7 @@ def main() -> int:
     _write_json(prefix.with_name(prefix.name + "_runs.json"), runs)
     _write_csv(prefix.with_name(prefix.name + "_summary.csv"), summaries)
     _write_csv(prefix.with_name(prefix.name + "_tool_returns.csv"), tool_rows)
+    write_run_logs(log_results, output_dir / args.output_prefix)
     print(json.dumps(summaries, indent=2))
     return 0 if all(row["pass_rate"] == 1.0 for row in summaries) else 1
 
@@ -166,7 +172,11 @@ def _summaries(runs: list[dict[str, Any]]) -> list[dict[str, Any]]:
     for (model, variant), group in sorted(groups.items()):
         first = group[0]
         negative = [run for run in group if run["negative_case"]]
-        audit = prompt_audit(first["descriptor_version"], first["call_mode"])
+        audit = prompt_audit(
+            first["descriptor_version"],
+            first["call_mode"],
+            first["prompt_version"],
+        )
         return_tokens = [
             observation["return_tokens_estimated_chars_div_4"]
             for run in group
