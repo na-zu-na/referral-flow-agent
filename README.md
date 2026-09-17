@@ -38,6 +38,20 @@ python3 experiments/run_d2_experiments.py
 The design table, poka-yoke evidence, measurements, and live reproduction
 command are in [`D2_TOOL_EVIDENCE.md`](D2_TOOL_EVIDENCE.md).
 
+Run the D4 evaluation harness on the 40-case team-authored core set, including
+six negative cases (three isolated trials per case):
+
+```bash
+python3 run_eval.py --tier core --prompt-version v2 --descriptors v2 \
+  --call-mode parallel --autonomy confirm --temperature 0 \
+  --out results/member4_core_scripted
+```
+
+The scoring and judgement-review workflow is documented in
+[`doc/MEMBER4_EVALUATION_README.md`](doc/MEMBER4_EVALUATION_README.md).
+Reviewed scripted V1/V2 evidence is summarized in
+[`results/d4_policy_model_summary.csv`](results/d4_policy_model_summary.csv).
+
 Reproduce the two D7 controlled failures and regenerate their evidence:
 
 ```bash

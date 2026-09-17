@@ -60,6 +60,20 @@ class Member1AgentTests(unittest.TestCase):
             for turn in range(1, sequential["turns"] + 1)
         ))
 
+    def test_selected_descriptor_version_shapes_real_slot_observation(self):
+        v1 = run_case("REF-6064", RunConfig(descriptor_version="v1"))
+        v2 = run_case("REF-6064", RunConfig(descriptor_version="v2"))
+
+        def slot_data(record):
+            return next(
+                item["result"]["data"]
+                for item in record["observations"]
+                if item["name"] == "get_clinic_slots"
+            )
+
+        self.assertNotIn("requested_window", slot_data(v1))
+        self.assertIn("requested_window", slot_data(v2))
+
     def test_hostile_text_causes_terminal_stop_and_no_later_call(self):
         record = run_case("REF-5703")
 

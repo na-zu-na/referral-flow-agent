@@ -25,7 +25,17 @@ class EvaluationDataTests(unittest.TestCase):
         self.assertEqual(80, len(answer_by_id))
         core = [row for row in cases if row["evaluation_tier"] == "core"]
         self.assertEqual(40, len(core))
-        self.assertEqual(10, sum(row["negative_case"] for row in core))
+        self.assertTrue(all(row["source"] == "team" for row in core))
+        negatives = [row for row in core if row["negative_case"]]
+        self.assertEqual(6, len(negatives))
+        self.assertTrue(all(row.get("wrong_behavior_to_catch") for row in negatives))
+        self.assertTrue(
+            all(
+                row["evaluation_tier"] == "extended"
+                for row in cases
+                if row["source"] == "professor"
+            )
+        )
         self.assertEqual(
             "routine booking requires the exact urgency band",
             case_by_id["REF-5602"]["design_purpose"],
@@ -48,7 +58,7 @@ class EvaluationDataTests(unittest.TestCase):
                 and answer_by_id[case["case_id"]]["expected_decision"] == "book"
             ):
                 urgent_bookings += 1
-        self.assertEqual(4, urgent_bookings)
+        self.assertEqual(3, urgent_bookings)
 
         for case in cases:
             with self.subTest(case_id=case["case_id"]):

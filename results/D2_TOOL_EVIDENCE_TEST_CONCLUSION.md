@@ -1,8 +1,8 @@
 # D2 Tool Design Evidence
 
 This file is the repository evidence for D2(a)-D2(c). The deterministic
-baseline below was generated on the 40 core cases, three isolated trials per
-case. Live-model results must be generated with the same script before final
+baseline below was generated on the 40 team-authored core cases, including six
+negative cases, with three isolated trials per case. Live-model results must be generated with the same script before final
 submission; they are not fabricated when an API key is unavailable.
 
 ## D2(a) Tool necessity and prompt cost
@@ -58,13 +58,13 @@ The controlled variable is `get_clinic_slots`:
 
 | Variant | Runs | Eval pass | Negative guardrail pass | Prompt tokens/call (estimated) | Mean tool-return tokens/call (estimated) |
 |---|---:|---:|---:|---:|---:|
-| v1 descriptor + v1 return, batched | 120 | 120/120 (100%) | 30/30 (100%) | 2,736 | 66.7709 |
-| v2 descriptor + v2 return, batched | 120 | 120/120 (100%) | 30/30 (100%) | 2,887 | 69.4078 |
+| v1 descriptor + v1 return, batched | 120 | 120/120 (100%) | 18/18 (100%) | 3,738 | 63.3989 |
+| v2 descriptor + v2 return, batched | 120 | 120/120 (100%) | 18/18 (100%) | 4,065 | 66.2234 |
 
 For `get_clinic_slots` alone, the observed mean return estimate changes from
-57.3226 tokens in v1 to 72.5484 tokens in v2. The deterministic baseline shows
+51.3429 tokens in v1 to 66.5143 tokens in v2. The deterministic baseline shows
 that the stricter contract preserves correctness while making the requested
-window auditable, at a cost of about 151 prompt tokens per model call and 15.2
+window auditable, at a cost of about 327 prompt tokens per model call and 15.2
 slot-observation tokens per slot call. These are character/4 estimates, not
 provider-token claims.
 
@@ -82,12 +82,12 @@ concurrency claim is made.
 
 | v2 mode | Runs | Eval pass | Negative guardrail pass | Mean tool turns | Mean model iterations | Mean retransmitted prompt tokens (estimated) |
 |---|---:|---:|---:|---:|---:|---:|
-| Sequential | 120 | 120/120 (100%) | 30/30 (100%) | 4.475 | 5.425 | 15,661.975 |
-| Same-turn batched | 120 | 120/120 (100%) | 30/30 (100%) | 3.525 | 4.475 | 12,919.325 |
+| Sequential | 120 | 120/120 (100%) | 18/18 (100%) | 4.700 | 5.675 | 23,068.875 |
+| Same-turn batched | 120 | 120/120 (100%) | 18/18 (100%) | 3.725 | 4.700 | 19,105.500 |
 
-Correctness is identical in the scripted control. Batching saves 0.95 tool
-turns and 0.95 model iterations per run on average, reducing estimated prompt
-retransmission by about 17.5%. Scripted cost is $0 because it uses no provider;
+Correctness is identical in the scripted control. Batching saves 0.975 tool
+turns and 0.975 model iterations per run on average, reducing estimated prompt
+retransmission by about 17.2%. Scripted cost is $0 because it uses no provider;
 live cost is recorded from OpenRouter usage when available.
 
 ## Reproduction

@@ -1,0 +1,3 @@
+policy,backend,model,cases,trials_per_case,runs,automatic_pass_rate,final_pass_rate,negative_runs,negative_final_pass_rate,pending_review,judge
+"prompt_version=v1|descriptor_version=v1|call_mode=parallel|autonomy=confirm",scripted,None,40,3,120,1.0,1.0,18,1.0,0,"OpenAI Codex (GPT-5)"
+"prompt_version=v2|descriptor_version=v2|call_mode=parallel|autonomy=confirm",scripted,None,40,3,120,1.0,1.0,18,1.0,0,"OpenAI Codex (GPT-5)"

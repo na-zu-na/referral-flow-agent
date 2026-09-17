@@ -171,10 +171,14 @@ def _execute_call(
     approve: ApprovalCallback | None,
 ) -> dict[str, Any]:
     if call["name"] != "book_slot":
-        return call_tool(call["name"], call["arguments"])
+        return call_tool(
+            call["name"], call["arguments"],
+            descriptor_version=settings.descriptor_version,
+        )
     try:
         return call_tool(
-            call["name"], call["arguments"], state=state, call_id=call["id"]
+            call["name"], call["arguments"], state=state, call_id=call["id"],
+            descriptor_version=settings.descriptor_version,
         )
     except ConfirmationRequired as pause:
         callback = approve
@@ -184,7 +188,8 @@ def _execute_call(
             raise
         state.approve(call["id"])
         return call_tool(
-            call["name"], call["arguments"], state=state, call_id=call["id"]
+            call["name"], call["arguments"], state=state, call_id=call["id"],
+            descriptor_version=settings.descriptor_version,
         )
 
 
