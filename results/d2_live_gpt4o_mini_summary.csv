@@ -1,0 +1,4 @@
+variant,backend,model,descriptor_version,call_mode,runs,passed,pass_rate,negative_runs,negative_guardrail_passed,negative_guardrail_pass_rate,avg_turns,avg_iterations,avg_tokens_in,avg_tokens_out,all_provider_tokens_measured,avg_cost_usd,prompt_tokens_estimated_chars_div_4_per_call,avg_retransmitted_prompt_tokens_estimated,avg_tool_return_tokens_estimated_chars_div_4
+callmode_v2_sequential,live,openai/gpt-4o-mini,v2,sequential,120,30,0.25,30,19,0.633333,2.45,3.3833,10417.4,205.4167,True,0.00097138,2887,9767.6833,79.3951
+descriptor_v1_parallel,live,openai/gpt-4o-mini,v1,parallel,120,32,0.266667,30,27,0.9,2.6833,3.5333,10547.0333,200.5833,True,0.00097408,2736,9667.2,73.4365
+descriptor_v2_parallel,live,openai/gpt-4o-mini,v2,parallel,120,23,0.191667,30,21,0.7,2.3417,3.1917,9783.8417,186.7167,True,0.00091409,2887,9214.3417,78.6264
