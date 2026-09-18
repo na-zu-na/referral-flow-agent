@@ -1,0 +1,9 @@
+scope,experiment_id,model_id,provider_recorded_usd,provider_cost_coverage,note
+SELECTED_FINAL_EXPERIMENT_SPEND,openai_gpt4o_mini_v2,openai/gpt-4o-mini,0.06240015,52/52,Scored selected runs only; no error attempt or superseded Llama
+SELECTED_FINAL_EXPERIMENT_SPEND,qwen3_30b_v2,qwen/qwen3-30b-a3b-instruct-2507,0.07621029,52/52,Scored selected runs only; no error attempt or superseded Llama
+SELECTED_FINAL_EXPERIMENT_SPEND,mistral_small_3_2_v2,mistralai/mistral-small-3.2-24b-instruct,0.10114050,52/52,Scored selected runs only; no error attempt or superseded Llama
+SELECTED_FINAL_EXPERIMENT_SPEND,gemini2_5_flash_v2,google/gemini-2.5-flash,0.18117530,52/52,Scored selected runs only; no error attempt or superseded Llama
+SELECTED_FINAL_EXPERIMENT_SPEND,claude_opus5_frontier_negative_v2,anthropic/claude-opus-5,1.644405,18/18,Scored selected runs only; no error attempt or superseded Llama
+SELECTED_FINAL_EXPERIMENT_SPEND,qwen3_30b_v1,qwen/qwen3-30b-a3b-instruct-2507,0.06968878,52/52,Scored selected runs only; no error attempt or superseded Llama
+SELECTED_FINAL_EXPERIMENT_SPEND_TOTAL,ALL_SELECTED,,2.13502002,278/278,Provider-recorded scored rows only
+SEPARATE_CHARGED_PROVIDER_ERROR,mistral_small_3_2_v2,mistralai/mistral-small-3.2-24b-instruct,0.00031845,1 charged attempt,"Evaluation expenditure only, excluded from selected scored-run total"

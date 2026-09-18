@@ -1,0 +1,126 @@
+{
+  "runs": 52,
+  "cases": 40,
+  "trials_per_case": {
+    "REF-6002": 1,
+    "REF-6003": 1,
+    "REF-6004": 1,
+    "REF-6005": 1,
+    "REF-6006": 1,
+    "REF-6007": 1,
+    "REF-6008": 1,
+    "REF-6015": 1,
+    "REF-6016": 1,
+    "REF-6017": 1,
+    "REF-6018": 1,
+    "REF-6019": 1,
+    "REF-6020": 1,
+    "REF-6022": 1,
+    "REF-6028": 1,
+    "REF-6029": 1,
+    "REF-6030": 1,
+    "REF-6031": 1,
+    "REF-6032": 1,
+    "REF-6033": 1,
+    "REF-6035": 1,
+    "REF-6040": 1,
+    "REF-6041": 1,
+    "REF-6042": 1,
+    "REF-6043": 1,
+    "REF-6044": 1,
+    "REF-6045": 1,
+    "REF-6046": 1,
+    "REF-6050": 1,
+    "REF-6051": 1,
+    "REF-6052": 1,
+    "REF-6053": 1,
+    "REF-6054": 1,
+    "REF-6055": 1,
+    "REF-6060": 3,
+    "REF-6061": 3,
+    "REF-6062": 3,
+    "REF-6063": 3,
+    "REF-6064": 3,
+    "REF-6065": 3
+  },
+  "automatic_pass": 31,
+  "automatic_pass_rate": 0.5961538461538461,
+  "final_pass": 28,
+  "final_pass_rate": 0.5384615384615384,
+  "pending_review": 0,
+  "final_failures": 24,
+  "manual_rejections": 3,
+  "automatic_failure_categories": {
+    "run_status": 21,
+    "decision": 17,
+    "booked_slot": 12,
+    "one_booking_attempt": 12,
+    "one_proposed_booking": 12,
+    "one_successful_booking": 12,
+    "booking_record_matches": 12,
+    "booking_gate": 12,
+    "confirmation_gate": 12,
+    "trigger": 6,
+    "no_unnecessary_slot_search": 9,
+    "no_booking_attempt": 7,
+    "missing_item": 3
+  },
+  "negative_runs": 18,
+  "negative_automatic_pass": 9,
+  "negative_final_pass": 6,
+  "negative_pending_review": 0,
+  "negative_final_pass_rate": 0.3333333333333333,
+  "negative_booking_attempts": 7,
+  "statuses": {
+    "completed": 28,
+    "invalid_model_output": 14,
+    "guardrail_stopped": 10
+  },
+  "by_expected_decision": {
+    "book": {
+      "runs": 34,
+      "automatic_pass": 22,
+      "final_pass": 22,
+      "pending_review": 0
+    },
+    "request_information": {
+      "runs": 3,
+      "automatic_pass": 0,
+      "final_pass": 0,
+      "pending_review": 0
+    },
+    "escalate": {
+      "runs": 15,
+      "automatic_pass": 9,
+      "final_pass": 6,
+      "pending_review": 0
+    }
+  },
+  "by_policy_model": [
+    {
+      "policy": "prompt_version=v2|descriptor_version=v2|call_mode=parallel|autonomy=confirm",
+      "backend": "live",
+      "model": "qwen/qwen3-30b-a3b-instruct-2507",
+      "runs": 52,
+      "cases": 40,
+      "automatic_pass_rate": 0.5961538461538461,
+      "final_pass_rate": 0.5384615384615384,
+      "negative_final_pass_rate": 0.3333333333333333,
+      "pending_review": 0
+    }
+  ],
+  "policies": [
+    "prompt_version=v2|descriptor_version=v2|call_mode=parallel|autonomy=confirm"
+  ],
+  "backend": [
+    "live"
+  ],
+  "models": [
+    "qwen/qwen3-30b-a3b-instruct-2507"
+  ],
+  "tokens_measured_runs": 52,
+  "mean_turns": 3.4423076923076925,
+  "median_turns": 4.0,
+  "worst_turns": 4,
+  "total_cost_usd": 0.07621028999999999
+}

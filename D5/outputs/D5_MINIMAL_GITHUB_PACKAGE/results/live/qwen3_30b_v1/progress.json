@@ -1,0 +1,9 @@
+{
+  "updated_at_utc": "2026-09-17T13:28:24.455489Z",
+  "completed": 52,
+  "planned": 52,
+  "complete": true,
+  "charge_usd_recorded": 0.06968878,
+  "cost_cap_usd": 0.25,
+  "review_status": "not reviewed; see scored_unreviewed/judgement_queue.csv"
+}

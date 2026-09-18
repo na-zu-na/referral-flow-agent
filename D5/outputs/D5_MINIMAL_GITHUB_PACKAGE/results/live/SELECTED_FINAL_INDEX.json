@@ -1,0 +1,89 @@
+{
+  "selected_v2": [
+    {
+      "experiment_id": "openai_gpt4o_mini_v2",
+      "model_id": "openai/gpt-4o-mini",
+      "family": "OpenAI",
+      "scope": "full_battery",
+      "team_price_tier": "lower_price",
+      "tier_basis": "team_selected_experiment_not_official_model_mapping",
+      "prompt_version": "v2",
+      "source_commit": "3d842b705afb58610a781b2351ddc27d3d9ccc0b",
+      "runs": 52,
+      "unique_cases": 40,
+      "selected_final": true
+    },
+    {
+      "experiment_id": "qwen3_30b_v2",
+      "model_id": "qwen/qwen3-30b-a3b-instruct-2507",
+      "family": "Qwen",
+      "scope": "full_battery",
+      "team_price_tier": "lower_price",
+      "tier_basis": "team_selected_experiment_not_official_model_mapping",
+      "prompt_version": "v2",
+      "source_commit": "3d842b705afb58610a781b2351ddc27d3d9ccc0b",
+      "runs": 52,
+      "unique_cases": 40,
+      "selected_final": true
+    },
+    {
+      "experiment_id": "mistral_small_3_2_v2",
+      "model_id": "mistralai/mistral-small-3.2-24b-instruct",
+      "family": "Mistral",
+      "scope": "full_battery",
+      "team_price_tier": "lower_price",
+      "tier_basis": "team_selected_experiment_not_official_model_mapping",
+      "prompt_version": "v2",
+      "source_commit": "3d842b705afb58610a781b2351ddc27d3d9ccc0b",
+      "runs": 52,
+      "unique_cases": 40,
+      "selected_final": true
+    },
+    {
+      "experiment_id": "gemini2_5_flash_v2",
+      "model_id": "google/gemini-2.5-flash",
+      "family": "Google",
+      "scope": "full_battery",
+      "team_price_tier": "lower_price",
+      "tier_basis": "team_selected_experiment_not_official_model_mapping",
+      "prompt_version": "v2",
+      "source_commit": "3d842b705afb58610a781b2351ddc27d3d9ccc0b",
+      "runs": 52,
+      "unique_cases": 40,
+      "selected_final": true
+    },
+    {
+      "experiment_id": "claude_opus5_frontier_negative_v2",
+      "model_id": "anthropic/claude-opus-5",
+      "family": "Anthropic",
+      "scope": "negative_only",
+      "team_price_tier": "frontier",
+      "tier_basis": "team_selected_experiment_not_official_model_mapping",
+      "prompt_version": "v2",
+      "source_commit": "a009c01c5343313a11eeddd895dd2faa0836e378",
+      "runs": 18,
+      "unique_cases": 6,
+      "selected_final": true
+    }
+  ],
+  "prompt_control": [
+    {
+      "experiment_id": "qwen3_30b_v1",
+      "model_id": "qwen/qwen3-30b-a3b-instruct-2507",
+      "family": "Qwen",
+      "scope": "prompt_control",
+      "team_price_tier": "lower_price",
+      "tier_basis": "team_selected_experiment_not_official_model_mapping",
+      "prompt_version": "v1",
+      "source_commit": "3d842b705afb58610a781b2351ddc27d3d9ccc0b",
+      "runs": 52,
+      "unique_cases": 40,
+      "selected_final": true
+    }
+  ],
+  "scoring_basis": "D5/SCORING_NORMALIZATION_AUDIT.md",
+  "normalization_rows": 278,
+  "changed_score_rows": 0,
+  "claude_overall_pass_rate": "N/A_NEGATIVE_ONLY_SCOPE",
+  "claude_full_battery_pass_rate": "N/A_NEGATIVE_ONLY_SCOPE"
+}

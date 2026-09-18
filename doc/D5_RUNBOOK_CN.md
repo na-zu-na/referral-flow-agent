@@ -1,3 +1,7 @@
+> 历史运行手册：下文的 Llama-era 选择和旧汇总命令仅供追溯，不代表最终 D5。
+> 最终冻结 5+1 结果见 [D5/FINAL_5PLUS1_QA.md](../D5/FINAL_5PLUS1_QA.md)；
+> 离线核验请运行 `python D5/final_5plus1.py --audit-only`，勿重跑模型。
+
 # D5 Live Model Battery 执行说明
 
 ## 已合并的 live 证据

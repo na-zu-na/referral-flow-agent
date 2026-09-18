@@ -52,26 +52,27 @@ The scoring and judgement-review workflow is documented in
 Reviewed scripted V1/V2 evidence is summarized in
 [`results/d4_policy_model_summary.csv`](results/d4_policy_model_summary.csv).
 
-Run the resumable D5 live battery only after choosing five models and approving
-the budget. Each battery runs 52 trials: all 40 cases once plus two additional
-trials for each of the six negative cases. This exceeds the 30-case/6-negative
-passing floor without claiming the recommended 40-case/8-negative shape.
+The frozen final D5 5+1 selection is in [`D5/`](D5/FINAL_5PLUS1_QA.md).
+Its authoritative [model comparison](D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/D5_COMPARISON.md),
+[cost reconciliation](D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/D5_COST_RECONCILIATION.md),
+[selected inventory](D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/SELECTED_5PLUS1_INVENTORY.csv),
+and [scoring audit](D5/SCORING_NORMALIZATION_AUDIT.md) are based on 278 saved
+scored runs: four 52-run full V2 batteries, 18 Claude Opus 5 negative-only
+runs, and the 52-run Qwen V1 prompt control. The V2 models span five families
+and two team-selected price tiers (GPT/Qwen/Mistral/Gemini lower-price;
+Claude Frontier under the Section 7 exception). This is not a claim that the
+course officially maps these exact model IDs to tiers. The selected scored
+provider spend is US$2.13502002. Claude has no full-battery pass rate; Llama
+is not in the final selection.
 
-```bash
-python3 run_d5_battery.py --model PROVIDER/MODEL --prompt-version v2 \
-  --operator "ACTUAL OPERATOR" --max-cost-usd 1.50 --out results/d5_model_v2
-```
-
-The five-model plan, one-model V1/V2 comparison, review workflow, resume rules,
-and final aggregation command are documented in
-[`doc/D5_RUNBOOK_CN.md`](doc/D5_RUNBOOK_CN.md).
-
-The preserved D5 evidence contains 260 V2 runs across Qwen 3 30B, Mistral
-Small 3.2, GPT-4o-mini, Llama 3.3 70B, and Gemini 2.5 Flash, plus 52 Qwen V1
-runs. See [`doc/D5_COMPARISON.md`](doc/D5_COMPARISON.md) for measured performance and
-[`doc/D5_COST_RECONCILIATION.md`](doc/D5_COST_RECONCILIATION.md) for the US$0.653968992
-account-level cost increment. Raw and reviewed records are under
-[`results/live/`](results/live/).
+For offline verification, run `python D5/final_5plus1.py --audit-only` and
+`python -m unittest discover -s D5/tests -v`. These commands do not call a
+model or provider. The source-run archive in [`results/live/`](results/live/)
+is retained, including superseded Llama evidence; it is not the final selected
+inventory. The older [`D5 runbook`](doc/D5_RUNBOOK_CN.md),
+[`comparison`](doc/D5_COMPARISON.md), and
+[`cost report`](doc/D5_COST_RECONCILIATION.md) document that historical
+Llama-era selection and must not be used as the final D5 result.
 
 Reproduce the two D7 controlled failures and regenerate their evidence:
 

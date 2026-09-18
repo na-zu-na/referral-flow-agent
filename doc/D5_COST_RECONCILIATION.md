@@ -1,4 +1,9 @@
-# D5 cost reconciliation
+# D5 cost reconciliation (historical archive)
+
+> This account snapshot and Llama-era battery set are not the final selected
+> 5+1 experiment spend. See the frozen [D5 cost reconciliation](../D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/D5_COST_RECONCILIATION.md)
+> for the US$2.13502002 selected scored provider spend; the historical
+> account-level residual remains unattributed.
 
 ## Account-level check
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Validate six reviewed D5 batteries and write the comparison report."""
+"""Legacy D5 helpers; the CLI now delegates to the frozen final 5+1 builder."""
 
 from __future__ import annotations
 
@@ -266,4 +266,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    main()
+    from D5.final_5plus1 import main as final_main
+
+    final_main()

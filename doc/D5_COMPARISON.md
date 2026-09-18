@@ -1,4 +1,8 @@
-# D5 live-model comparison
+# D5 live-model comparison (historical archive)
+
+> Superseded Llama-era selection. The final frozen 5+1 comparison is
+> [D5_COMPARISON.md](../D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/D5_COMPARISON.md).
+> Do not use the figures below as the final D5 inventory or selected spend.
 
 Source commit: `3d842b705afb58610a781b2351ddc27d3d9ccc0b`. Each model uses 40 cases and 52 trials.
 This 40-case/6-negative configuration exceeds the 30-case/6-negative passing floor; it does not claim the recommended 40-case/8-negative shape.
