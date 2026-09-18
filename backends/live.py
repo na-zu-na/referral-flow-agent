@@ -7,7 +7,7 @@ import urllib.error
 import urllib.request
 from typing import Any
 
-from agent.schemas import BackendError, parse_json_move
+from agent.schemas import BackendError, InvalidModelOutput, parse_json_move
 from config import RunConfig
 
 
@@ -31,7 +31,6 @@ class LiveBackend:
             content = payload["choices"][0]["message"]["content"]
         except (KeyError, IndexError, TypeError) as exc:
             raise BackendError("Live provider response did not contain message content.") from exc
-        move = parse_json_move(content)
         usage = payload.get("usage") or {}
         input_tokens = usage.get("prompt_tokens", usage.get("input_tokens", 0))
         output_tokens = usage.get("completion_tokens", usage.get("output_tokens", 0))
@@ -61,6 +60,11 @@ class LiveBackend:
             normalized_usage["cached_input_tokens"] = cached_input_tokens
         if reasoning_tokens is not None:
             normalized_usage["reasoning_tokens"] = reasoning_tokens
+        try:
+            move = parse_json_move(content)
+        except InvalidModelOutput as exc:
+            exc.usage = normalized_usage
+            raise
         return {
             "move": move,
             "usage": normalized_usage,
