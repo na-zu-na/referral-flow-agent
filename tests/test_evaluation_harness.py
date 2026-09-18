@@ -75,6 +75,21 @@ class EvaluationHarnessTests(unittest.TestCase):
         result = score_record(self.case, self.answer, self.record, 1)
         self.assertIn("trigger_supported_by_observation", result["failures"])
 
+    def test_harmless_extra_lookup_is_diagnostic_not_outcome_failure(self):
+        record = copy.deepcopy(self.record)
+        query = {"id": "r3", "name": "get_clinic_slots", "arguments": {}}
+        record["moves"].insert(-1, {"type": "tool_calls", "calls": [query]})
+        record["observations"].append({
+            "name": "get_clinic_slots",
+            "result": {"ok": True, "data": {"slots": []}},
+        })
+        result = score_record(self.case, self.answer, record, 1, review_verdict=True)
+        self.assertTrue(result["automatic_pass"])
+        self.assertTrue(result["passed"])
+        self.assertFalse(result["diagnostic_clean"])
+        self.assertIn("no_unnecessary_slot_search", result["diagnostic_warnings"])
+        self.assertNotIn("no_unnecessary_slot_search", result["outcome_failures"])
+
     def test_claim_level_reviews_require_all_claims_to_be_accepted(self):
         with tempfile.TemporaryDirectory() as directory:
             path = Path(directory) / "reviews.csv"
@@ -174,12 +189,30 @@ class EvaluationHarnessTests(unittest.TestCase):
         self.assertEqual(settled["negative_pending_review"], 0)
         self.assertEqual(settled["negative_final_pass_rate"], 0.5)
         self.assertEqual(settled["automatic_failure_categories"], {"decision": 1})
+        self.assertEqual(settled["outcome_pass_rate"], 2 / 3)
+        self.assertEqual(settled["diagnostic_clean_rate"], 1.0)
         self.assertEqual(settled["final_failures"], 1)
         self.assertEqual(settled["median_turns"], 2)
         self.assertEqual(settled["worst_turns"], 2)
         self.assertEqual(settled["trials_per_case"], 1)
         self.assertEqual(len(settled["by_policy_model"]), 1)
         self.assertEqual(settled["by_policy_model"][0]["final_pass_rate"], 2 / 3)
+
+    def test_negative_pending_total_spans_policy_model_groups(self):
+        base = {
+            "automatic_pass": True, "failures": [], "diagnostic_clean": True,
+            "diagnostic_warnings": [], "expected_decision": "escalate",
+            "status": "completed", "backend": "scripted", "model": None,
+            "tokens_measured": False, "turns": 2, "cost_usd": 0,
+            "negative_case": True, "passed": None,
+        }
+        results = [
+            {**base, "case_id": "N1", "policy": "policy-a"},
+            {**base, "case_id": "N2", "policy": "policy-b"},
+        ]
+        summary = summarize(results)
+        self.assertEqual(summary["negative_pending_review"], 2)
+        self.assertEqual(len(summary["by_policy_model"]), 2)
 
     def test_no_slot_escalation_requires_query_in_assessed_band(self):
         case = next(x for x in select_cases(data_dir=DATA, tier="core") if x["case_id"] == "REF-6064")
