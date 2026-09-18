@@ -193,6 +193,21 @@ class Member1AgentTests(unittest.TestCase):
         self.assertEqual(response["usage"]["reasoning_tokens"], 7)
         self.assertEqual(response["usage"]["provider_cost_usd"], 0.0123)
 
+    def test_invalid_live_output_still_records_provider_usage(self):
+        config = RunConfig(backend="live", model="provider/exact-model", api_key="test-key")
+        payload = {
+            "choices": [{"message": {"content": "{} trailing"}}],
+            "usage": {"prompt_tokens": 100, "completion_tokens": 20, "cost": 0.0123},
+        }
+        with patch("backends.live._post_openrouter", return_value=payload):
+            record = run_case("REF-5602", config)
+
+        self.assertEqual(record["status"], "invalid_model_output")
+        self.assertTrue(record["tokens_measured"])
+        self.assertEqual(record["tokens_in"], 100)
+        self.assertEqual(record["tokens_out"], 20)
+        self.assertEqual(record["provider_cost_usd"], 0.0123)
+
     def test_all_authored_scripts_match_the_supplied_code_check_fields(self):
         expected = json.loads(
             (ROOT / "data/expected_outcomes_B.json").read_text(encoding="utf-8")
