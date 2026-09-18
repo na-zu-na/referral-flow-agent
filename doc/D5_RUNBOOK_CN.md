@@ -1,3 +1,7 @@
+> 历史运行手册：下文的 Llama-era 选择和旧汇总命令仅供追溯，不代表最终 D5。
+> 最终冻结 5+1 结果见 [D5/FINAL_5PLUS1_QA.md](../D5/FINAL_5PLUS1_QA.md)；
+> 离线核验请运行 `python D5/final_5plus1.py --audit-only`，勿重跑模型。
+
 # D5 Live Model Battery 执行说明
 
 ## 已合并的 live 证据
@@ -11,6 +15,15 @@ Claude。这些结果使用符合最低通过配置的 52-run 计划：40 个案
 - 模型对比：`D5_COMPARISON.md`
 - 费用对账：`D5_COST_RECONCILIATION.md`
 - 原始和审核记录：`results/live/`
+
+在上述 312 次完整 battery 之外，CHEN CHANG 另行完成了
+`anthropic/claude-opus-5` frontier negative-only 补跑：6 个 negative cases
+各运行 3 次，共 18 次，最终通过 10/18，错误预约尝试为 0，实测输入/输出
+tokens 为 272,906/11,195，记录费用为 $1.644405。结果保存在
+`results/live/claude_opus5_frontier_negative_v2_a009c01/`。该结果不包含
+ordinary cases，只能用于 negative-case 对比，不能作为第六个 52-run 全量
+battery。补跑署名及 live-run operator：**CHEN CHANG**；AI judgement review
+由 OpenAI Codex 于 2026-09-18 完成，并建议 operator sign-off。
 
 用当前评分器重现这批历史结果（不调用模型）：
 
@@ -146,22 +159,22 @@ python3 build_d5_comparison.py \
 
 最终报告还需要人工解释模型家族、价格档、具体失败案例、最便宜达标模型，以及昂贵模型是否值得差价。实际 token 与费用数据应交给 D6 使用。
 
-## Frontier 模型补跑：仅 negative cases
+## Frontier 模型 negative-only 运行
 
-准备使用 OpenRouter 模型 `anthropic/claude-opus-5`，仅补跑 6 个 negative cases，每个 case 运行 trial 1、2、3，共 18 runs。运行预算上限为 US$1.34；使用另建的同额硬额度 API key。实际运行前须重新核对模型 ID、当日价格及剩余额度，并在干净的已提交 worktree 中执行。本节只说明准备与操作方式，不表示已启动 live battery。
-
-将独立 key 仅在运行进程的环境中设为 `OPENROUTER_API_KEY`，同时按当天官方价格设置 `A2_PRICE_INPUT` 和 `A2_PRICE_OUTPUT`；不要将 key 写入命令、日志或提交记录。运行时使用：
+`--negative-only` 只运行 6 个 negative cases，每个 case 运行 3 次，共 18
+runs。新实验应使用新的输出目录；模型、operator、Git commit 与 manifest
+必须保持一致才能使用 `--resume`：
 
 ```bash
 python3 run_d5_battery.py \
   --model 'anthropic/claude-opus-5' \
   --prompt-version v2 \
-  --operator 'ACTUAL OPERATOR' \
   --negative-only \
-  --max-cost-usd 1.34 \
-  --out results/d5_claude_opus_5_negative_v2
+  --operator 'ACTUAL OPERATOR' \
+  --max-cost-usd 10.00 \
+  --out results/live/claude_opus5_frontier_negative_v2
 ```
 
-manifest 的 `scope` 为 `negative_only`、`case_count` 为 6、`planned_run_count` 和 `negative_run_count` 均为 18。程序预算检查发生在下一次调用之前，单次调用仍可能超过软件上限，因此必须使用独立硬额度 key。
-
-这组结果只能与其他模型的 negative-case 指标比较，不能当作完整的 40-case battery，也不能并入要求完整 battery 的五模型汇总。
+该模式生成 `scope=negative_only`、`case_count=6`、
+`planned_run_count=18` 的 manifest。结果只能与其他模型的 negative-case
+指标比较，不能当作完整的 40-case battery。

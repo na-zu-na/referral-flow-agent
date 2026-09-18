@@ -1,0 +1,46 @@
+{
+  "identity": {
+    "source_commit": "3d842b705afb58610a781b2351ddc27d3d9ccc0b",
+    "operator": "ZHOU YU",
+    "model": "mistralai/mistral-small-3.2-24b-instruct",
+    "prompt_version": "v2",
+    "descriptor_version": "v2",
+    "call_mode": "parallel",
+    "autonomy": "confirm",
+    "temperature": 0.0,
+    "case_count": 40,
+    "negative_case_count": 6,
+    "planned_run_count": 52,
+    "trial_policy": "one ordinary run; three negative-case runs",
+    "source_hashes": {
+      "agent/loop.py": "ea12b5a26267dd05d4fcd7ad7d8a429fbf64414307e272be8fd5650f31e809d2",
+      "prompt.py": "1a18f63be3722d906d762e95e8537c1f1a169ecd8ef47f229061c87b29e0a70f",
+      "tools/registry.py": "0e68a3588ee01563b4a0e4b14bd236e503aef42d39f0dded23f56e51c4c32b02",
+      "guardrails/__init__.py": "96558e6bea047ba0293b08cf1540a2f8ee6dc14ac9c6cb9c9f82ba349c914762",
+      "evaluation/harness.py": "96a053c7707d8e6106967ef49f3eb21d75d3523bb0054d6d80883b755b396c9b",
+      "data/evaluation_cases_B.json": "37574602d29a5a1c1ca3be396a2757577b9264dc5838205c37fd7b52441f329a",
+      "data/expected_outcomes_B.json": "2fd87f6f8c850f8603ee251f842bd3b410c8739b444c69e047d4e6bb6431bb92",
+      "data/fixtures/referrals.json": "e602e161b7458ed1c4cdee264b0bd7e485da22a086c885f7c8ff8fa6198febef",
+      "data/fixtures/patients.json": "cf337f1bd20391d83e275951ba496c4e0dc52cd64179b2bf209a219a5a7546b7",
+      "data/fixtures/clinic_slots.json": "7ef02b829f5f9b028de13cec96032d7c738031629a1c126a8c8971f01cbf1279",
+      "data/fixtures/urgency_bands.json": "48b1fc7e61022f88293e088e40d7242c7d84b67de635ef27a3be8dd670a81b44"
+    },
+    "public_config": {
+      "backend": "live",
+      "model": "mistralai/mistral-small-3.2-24b-instruct",
+      "base_url": "https://openrouter.ai/api/v1",
+      "prompt_version": "v2",
+      "descriptor_version": "v2",
+      "call_mode": "parallel",
+      "autonomy": "confirm",
+      "max_turns": 8,
+      "max_tokens": 60000,
+      "implementation_iteration_cap": 12,
+      "temperature": 0.0,
+      "request_timeout_seconds": 90
+    }
+  },
+  "started_at_utc": "2026-09-17T13:09:04.562596Z",
+  "cost_cap_usd": 0.25,
+  "disclosure": "One operator ran all batteries with instructor approval; results are not attributed to other operators."
+}

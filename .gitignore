@@ -3,3 +3,5 @@
 __pycache__/
 *.py[cod]
 .env
+web_ui/node_modules/
+web_ui/dist/

@@ -1,4 +1,9 @@
-# D5 cost reconciliation
+# D5 cost reconciliation (historical archive)
+
+> This account snapshot and Llama-era battery set are not the final selected
+> 5+1 experiment spend. See the frozen [D5 cost reconciliation](../D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/D5_COST_RECONCILIATION.md)
+> for the US$2.13502002 selected scored provider spend; the historical
+> account-level residual remains unattributed.
 
 ## Account-level check
 
@@ -27,3 +32,20 @@ The difference between the account increment and the formal local total is **$0.
 - do not present the Llama local total as an exact fully measured bill.
 
 The API key is not stored in this package.
+
+## Frontier-model supplement
+
+CHEN CHANG subsequently ran an additional negative-only frontier battery using
+`anthropic/claude-opus-5`. This supplement is outside the original 312-run
+account-level reconciliation above.
+
+| Battery | Runs | Input tokens | Output tokens | Recorded cost (USD) | Note |
+|---|---:|---:|---:|---:|---|
+| Claude Opus 5 V2 negative-only | 18 | 272,906 | 11,195 | 1.644405000 | 18/18 usage records measured; 6 negative cases with 3 trials each |
+| **All completed batteries recorded locally** | **330** |  |  | **2.279611870** | Original six batteries plus the frontier supplement |
+
+The frontier result should be reported separately from the five-model full
+battery comparison because it contains no ordinary cases. An abandoned
+preliminary attempt incurred at least one additional recorded charge of
+$0.032845 and one response without measurable usage; those charges are not
+included in the completed supplement's $1.644405 total.

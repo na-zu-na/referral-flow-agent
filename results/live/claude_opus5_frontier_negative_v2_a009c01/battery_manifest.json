@@ -1,0 +1,39 @@
+{
+  "identity": {
+    "source_commit": "a009c01c5343313a11eeddd895dd2faa0836e378",
+    "operator": "CHEN CHANG",
+    "model": "anthropic/claude-opus-5",
+    "prompt_version": "v2",
+    "descriptor_version": "v2",
+    "call_mode": "parallel",
+    "autonomy": "confirm",
+    "temperature": 0.0,
+    "scope": "negative_only",
+    "case_count": 6,
+    "negative_case_count": 6,
+    "planned_run_count": 18,
+    "negative_run_count": 18,
+    "trial_policy": "negative cases only; three trials per case",
+    "local_token_prices_usd_per_million": {
+      "input": 0.0,
+      "output": 0.0
+    },
+    "public_config": {
+      "backend": "live",
+      "model": "anthropic/claude-opus-5",
+      "base_url": "https://openrouter.ai/api/v1",
+      "prompt_version": "v2",
+      "descriptor_version": "v2",
+      "call_mode": "parallel",
+      "autonomy": "confirm",
+      "max_turns": 8,
+      "max_tokens": 60000,
+      "implementation_iteration_cap": 12,
+      "temperature": 0.0,
+      "request_timeout_seconds": 90
+    }
+  },
+  "started_at_utc": "2026-09-18T12:10:07.994660Z",
+  "initial_cost_cap_usd": 1.34,
+  "disclosure": "Operator records who actually executed this battery."
+}

@@ -72,6 +72,16 @@ def run_case(
     cached_input_tokens: list[int] = []
     reasoning_tokens: list[int] = []
 
+    def record_usage(usage: dict[str, Any]) -> None:
+        state.add_tokens(usage["input_tokens"], usage["output_tokens"])
+        usage_flags.append(usage["measured"])
+        if usage.get("provider_cost_usd") is not None:
+            provider_costs.append(usage["provider_cost_usd"])
+        if usage.get("cached_input_tokens") is not None:
+            cached_input_tokens.append(usage["cached_input_tokens"])
+        if usage.get("reasoning_tokens") is not None:
+            reasoning_tokens.append(usage["reasoning_tokens"])
+
     try:
         controller = make_backend(
             case_id,
@@ -82,14 +92,7 @@ def run_case(
         for iteration in range(1, settings.implementation_iteration_cap + 1):
             response = controller.next_move(deepcopy(trace.transcript))
             move, usage = _validate_backend_response(response)
-            state.add_tokens(usage["input_tokens"], usage["output_tokens"])
-            usage_flags.append(usage["measured"])
-            if usage.get("provider_cost_usd") is not None:
-                provider_costs.append(usage["provider_cost_usd"])
-            if usage.get("cached_input_tokens") is not None:
-                cached_input_tokens.append(usage["cached_input_tokens"])
-            if usage.get("reasoning_tokens") is not None:
-                reasoning_tokens.append(usage["reasoning_tokens"])
+            record_usage(usage)
             trace.add_move(move)
             if verbose:
                 _print_move(iteration, state.turns, move)
@@ -147,6 +150,9 @@ def run_case(
         stopped_by = stop.to_event()
         final = _safe_stop_final(stopped_by)
     except InvalidModelOutput as exc:
+        usage = getattr(exc, "usage", None)
+        if isinstance(usage, dict):
+            record_usage(usage)
         status = "invalid_model_output"
         error = {"type": type(exc).__name__, "message": str(exc)}
     except BackendError as exc:

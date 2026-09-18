@@ -65,14 +65,17 @@ def build_plan(cases: list[dict], *, negative_only: bool = False) -> list[tuple[
     if len(cases) != EXPECTED_CASES or len(negatives) != EXPECTED_NEGATIVE_CASES:
         raise ValueError("D5 requires the final 40-case core set with 6 negative cases")
     if negative_only:
-        plan = [(case["case_id"], trial) for case in negatives for trial in range(1, 4)]
-        expected_runs = NEGATIVE_ONLY_RUNS
+        plan = [
+            (case["case_id"], trial)
+            for case in negatives
+            for trial in range(1, 4)
+        ]
     else:
         plan = [(case["case_id"], 1) for case in cases]
         plan += [(case["case_id"], trial) for case in negatives for trial in range(2, 4)]
-        expected_runs = EXPECTED_RUNS
-    if len(plan) != expected_runs or len(set(plan)) != expected_runs:
-        raise AssertionError(f"D5 plan must contain {expected_runs} unique case/trial pairs")
+    expected = NEGATIVE_ONLY_RUNS if negative_only else EXPECTED_RUNS
+    if len(plan) != expected or len(set(plan)) != expected:
+        raise AssertionError(f"D5 plan must contain {expected} unique case/trial pairs")
     return plan
 
 
@@ -120,8 +123,12 @@ def main() -> None:
     parser.add_argument("--out", required=True, type=Path, help="new or resumable output directory")
     parser.add_argument("--max-cost-usd", required=True, type=float, help="cap for this battery")
     parser.add_argument("--operator", required=True, help="person actually operating this battery")
+    parser.add_argument(
+        "--negative-only",
+        action="store_true",
+        help="run only the three trials for each negative case (for a frontier model)",
+    )
     parser.add_argument("--resume", action="store_true")
-    parser.add_argument("--negative-only", action="store_true", help="run only negative cases (18 trials)")
     args = parser.parse_args()
     if args.max_cost_usd <= 0:
         parser.error("--max-cost-usd must be positive")
@@ -163,7 +170,8 @@ def main() -> None:
         "planned_run_count": len(plan),
         "negative_run_count": EXPECTED_NEGATIVE_RUNS,
         "trial_policy": (
-            "negative cases three trials each" if args.negative_only
+            "negative cases only; three trials per case"
+            if args.negative_only
             else "all cases once; two additional trials per negative case"
         ),
         "local_token_prices_usd_per_million": {

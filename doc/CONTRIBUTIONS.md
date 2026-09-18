@@ -29,3 +29,11 @@ ran Gemini 2.5 Flash V2. CHEN CHANG owned the Qwen 3 30B V1/V2 prompt
 comparison: CHEN CHANG ran the additional V1 battery and compared it with
 FAN YANXI's matching Qwen V2 battery. Together the team preserved 312 formal
 live traces and their cost evidence.
+
+## D5 frontier supplement
+
+**CHEN CHANG** completed the additional `anthropic/claude-opus-5` V2
+negative-only battery: six negative cases with three trials each (18 live
+runs), including resumable evidence capture, cost recording, and preservation
+of the reviewed result set. OpenAI Codex performed the disclosed AI judgement
+review on 2026-09-18; operator sign-off is recommended.

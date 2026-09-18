@@ -1,0 +1,84 @@
+{
+  "runs": 18,
+  "cases": 6,
+  "trials_per_case": 3,
+  "automatic_pass": 10,
+  "automatic_pass_rate": 0.5555555555555556,
+  "outcome_pass": 0,
+  "outcome_pass_rate": null,
+  "diagnostic_clean": 13,
+  "diagnostic_clean_rate": 0.7222222222222222,
+  "diagnostic_warning_categories": {
+    "moves_logged": 5
+  },
+  "final_pass": 0,
+  "final_pass_rate": null,
+  "pending_review": 10,
+  "final_failures": 8,
+  "manual_rejections": 0,
+  "automatic_failure_categories": {
+    "run_status": 8,
+    "decision": 8,
+    "referral_observed": 5,
+    "criteria_observed": 8,
+    "trigger": 7,
+    "trigger_supported_by_observation": 7,
+    "missing_item": 1,
+    "missing_supported_by_criteria": 1,
+    "slot_search_exact_assessed_band": 1
+  },
+  "negative_runs": 18,
+  "negative_automatic_pass": 10,
+  "negative_final_pass": 0,
+  "negative_pending_review": 10,
+  "negative_final_pass_rate": null,
+  "negative_booking_attempts": 0,
+  "statuses": {
+    "invalid_model_output": 8,
+    "completed": 9,
+    "guardrail_stopped": 1
+  },
+  "by_expected_decision": {
+    "request_information": {
+      "runs": 3,
+      "automatic_pass": 2,
+      "final_pass": 0,
+      "pending_review": 2
+    },
+    "escalate": {
+      "runs": 15,
+      "automatic_pass": 8,
+      "final_pass": 0,
+      "pending_review": 8
+    }
+  },
+  "by_policy_model": [
+    {
+      "policy": "prompt_version=v2|descriptor_version=v2|call_mode=parallel|autonomy=confirm",
+      "backend": "live",
+      "model": "anthropic/claude-opus-5",
+      "runs": 18,
+      "cases": 6,
+      "automatic_pass_rate": 0.5555555555555556,
+      "outcome_pass_rate": null,
+      "diagnostic_clean_rate": 0.7222222222222222,
+      "final_pass_rate": null,
+      "negative_final_pass_rate": null,
+      "pending_review": 10
+    }
+  ],
+  "policies": [
+    "prompt_version=v2|descriptor_version=v2|call_mode=parallel|autonomy=confirm"
+  ],
+  "backend": [
+    "live"
+  ],
+  "models": [
+    "anthropic/claude-opus-5"
+  ],
+  "tokens_measured_runs": 18,
+  "mean_turns": 1.3888888888888888,
+  "median_turns": 2.0,
+  "worst_turns": 3,
+  "total_cost_usd": 1.6444050000000001
+}

@@ -1,4 +1,8 @@
-# D5 live-model comparison
+# D5 live-model comparison (historical archive)
+
+> Superseded Llama-era selection. The final frozen 5+1 comparison is
+> [D5_COMPARISON.md](../D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/D5_COMPARISON.md).
+> Do not use the figures below as the final D5 inventory or selected spend.
 
 Source commit: `3d842b705afb58610a781b2351ddc27d3d9ccc0b`. Each model uses 40 cases and 52 trials.
 This 40-case/6-negative configuration exceeds the 30-case/6-negative passing floor; it does not claim the recommended 40-case/8-negative shape.
@@ -63,8 +67,26 @@ Comparison owner: CHEN CHANG. The V1 battery was operated by CHEN CHANG; the mat
 
 Interpret the measured failure cases, price tiers, and whether the more expensive models justify their cost in the final report.
 
+## Frontier-model negative-case supplement
+
+This supplement is separate from the six 52-run batteries above. It evaluates
+only the six negative cases, with three trials per case, and therefore must not
+be used as a 40-case overall-pass comparison.
+
+| Model | Operator | Scope | Final pass | Unsafe booking attempts | Usage measured | Tokens in/out | Cost USD | Mean/median/worst turns |
+|---|---|---|---:|---:|---:|---:|---:|---:|
+| `anthropic/claude-opus-5` | CHEN CHANG | 6 negative cases, 18 trials | 10/18 (55.6%) | 0 | 18/18 | 272,906/11,195 | 1.644405 | 1.39/2/3 |
+
+The run used V2 prompts, V2 descriptors, parallel calls, confirm autonomy, and
+temperature 0 at source commit `a009c01c5343313a11eeddd895dd2faa0836e378`.
+All 18 trials were saved without provider errors; eight trials failed because
+the model returned invalid output. AI judgement review was completed by
+OpenAI Codex on 2026-09-18 with operator sign-off recommended.
+
+Supplement owner and live-run operator: **CHEN CHANG**.
+
 ## Evidence limitations
 
-- The six batteries contain 312 formal runs; no additional live calls are needed for the declared 40-case/6-negative passing-floor configuration.
+- The six full batteries contain 312 formal runs for the declared 40-case/6-negative passing-floor configuration. The frontier supplement adds 18 negative-only runs, for 330 preserved live runs in total.
 - Incomplete provider usage: `meta-llama/llama-3.3-70b-instruct` 51/52.
 - Account-level billing is reconciled separately in `D5_COST_RECONCILIATION.md`.

@@ -1,0 +1,5 @@
+experiment_id,model,prompt_version,expected_cost_per_referral,trial_weighted_pass_rate,pareto_status,measurement_status
+openai_gpt4o_mini_v2,openai/gpt-4o-mini,v2,6.17107179775641,0.3269230769230769,DOMINATED,PROVIDER_REPORTED_AI_PLUS_ASSUMED_FALLBACK
+qwen3_30b_v2,qwen/qwen3-30b-a3b-instruct-2507,v2,4.232234813269231,0.5384615384615384,DOMINATED,PROVIDER_REPORTED_AI_PLUS_ASSUMED_FALLBACK
+mistral_small_3_2_v2,mistralai/mistral-small-3.2-24b-instruct,v2,2.6461757788461533,0.7115384615384616,DOMINATED,PROVIDER_REPORTED_AI_PLUS_ASSUMED_FALLBACK
+gemini2_5_flash_v2,google/gemini-2.5-flash,v2,2.295150807051282,0.75,PARETO_EFFICIENT,PROVIDER_REPORTED_AI_PLUS_ASSUMED_FALLBACK

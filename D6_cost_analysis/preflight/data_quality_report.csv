@@ -1,0 +1,6 @@
+check,observed,expected,status
+selected_scored_runs,278,278,PASS
+provider_cost_coverage,278,278,PASS
+selected_scored_spend_usd,2.13502002,2.13502002,PASS
+saved_tool_calls,1115,RECOMPUTED,PASS
+invalid_output_failures,89,89,PASS
