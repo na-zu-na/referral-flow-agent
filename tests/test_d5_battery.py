@@ -5,6 +5,7 @@ from config import RunConfig
 from run_d5_battery import (
     EXPECTED_NEGATIVE_RUNS,
     EXPECTED_RUNS,
+    NEGATIVE_ONLY_RUNS,
     build_plan,
     charge,
 )
@@ -25,6 +26,22 @@ class D5BatteryTests(unittest.TestCase):
             sorted(trial for case_id, trial in plan if case_id == negative_id) == [1, 2, 3]
             for negative_id in negative_ids
         ))
+
+    def test_negative_only_plan_runs_each_of_six_negative_cases_three_times(self):
+        cases = [
+            {"case_id": f"C{index:02d}", "negative_case": index < 6}
+            for index in range(40)
+        ]
+        plan = build_plan(cases, negative_only=True)
+        negative_ids = {case["case_id"] for case in cases if case["negative_case"]}
+        self.assertEqual(len(plan), NEGATIVE_ONLY_RUNS)
+        self.assertEqual(len(set(plan)), NEGATIVE_ONLY_RUNS)
+        self.assertEqual({case_id for case_id, _ in plan}, negative_ids)
+        for case_id in negative_ids:
+            self.assertEqual(
+                sorted(trial for planned_id, trial in plan if planned_id == case_id),
+                [1, 2, 3],
+            )
 
     def test_unknown_provider_cost_is_recalculated_from_measured_tokens(self):
         settings = RunConfig(price_input_per_million=1.0, price_output_per_million=5.0)

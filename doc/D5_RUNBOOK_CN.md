@@ -154,3 +154,23 @@ python3 build_d5_comparison.py \
 汇总器会拒绝不完整、未审核、非 live、没有 API 实测 token 用量、raw/reviewed 记录不一致、model 重复、配置不同、Git commit 不同或分母错误的结果，并输出总体通过率、negative pass rate、错误预约尝试、tokens、费用、cost source、case-level divergences、failure categories 和同模型 V1/V2 对照。
 
 最终报告还需要人工解释模型家族、价格档、具体失败案例、最便宜达标模型，以及昂贵模型是否值得差价。实际 token 与费用数据应交给 D6 使用。
+
+## Frontier 模型 negative-only 运行
+
+`--negative-only` 只运行 6 个 negative cases，每个 case 运行 3 次，共 18
+runs。新实验应使用新的输出目录；模型、operator、Git commit 与 manifest
+必须保持一致才能使用 `--resume`：
+
+```bash
+python3 run_d5_battery.py \
+  --model 'anthropic/claude-opus-5' \
+  --prompt-version v2 \
+  --negative-only \
+  --operator 'ACTUAL OPERATOR' \
+  --max-cost-usd 10.00 \
+  --out results/live/claude_opus5_frontier_negative_v2
+```
+
+该模式生成 `scope=negative_only`、`case_count=6`、
+`planned_run_count=18` 的 manifest。结果只能与其他模型的 negative-case
+指标比较，不能当作完整的 40-case battery。
