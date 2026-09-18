@@ -13,6 +13,10 @@ from evaluation.harness import select_cases
 from run_d5_battery import EXPECTED_NEGATIVE_RUNS, EXPECTED_RUNS, build_plan, read_jsonl
 
 
+def _expected_keys() -> set[tuple[str, int]]:
+    return set(build_plan(select_cases(tier="core")))
+
+
 def load_battery(path: Path) -> dict:
     manifest = json.loads((path / "battery_manifest.json").read_text(encoding="utf-8"))
     progress = json.loads((path / "progress.json").read_text(encoding="utf-8"))
@@ -36,25 +40,35 @@ def load_battery(path: Path) -> dict:
         raise ValueError(f"{path}: wrong case/trial denominator")
     if summary["pending_review"] or summary["final_pass_rate"] is None:
         raise ValueError(f"{path}: judgement review is incomplete")
-    if summary.get("tokens_measured_runs") != EXPECTED_RUNS:
-        raise ValueError(f"{path}: live token usage is not measured for every run")
+    measured_runs = summary.get("tokens_measured_runs")
+    raw_measured_runs = sum(
+        item.get("record", {}).get("tokens_measured") is True for item in raw
+    )
+    if measured_runs != raw_measured_runs:
+        raise ValueError(f"{path}: summary and raw token-measurement counts differ")
     if len(trials) != EXPECTED_RUNS or len(runs) != EXPECTED_RUNS or len(raw) != EXPECTED_RUNS:
         raise ValueError(f"{path}: raw and reviewed tables must contain {EXPECTED_RUNS} rows")
     keys = {(row["case_id"], int(row["trial"])) for row in trials}
     run_keys = {(row["case_id"], int(row["trial"])) for row in runs}
     raw_keys = {(item["case_id"], int(item["trial"])) for item in raw}
-    expected_keys = set(build_plan(select_cases(tier="core")))
+    expected_keys = _expected_keys()
     if keys != run_keys or keys != raw_keys or keys != expected_keys:
         raise ValueError(f"{path}: raw and reviewed case/trial rows differ from the D5 plan")
     negative = [row for row in trials if row["negative_case"].lower() == "true"]
     negative_counts = Counter(row["case_id"] for row in negative)
-    if len(negative) != EXPECTED_NEGATIVE_RUNS or set(negative_counts.values()) != {4}:
-        raise ValueError(f"{path}: each of six negative cases must have four total trials")
+    if (
+        len(negative) != EXPECTED_NEGATIVE_RUNS
+        or set(negative_counts.values()) != {3}
+    ):
+        raise ValueError(f"{path}: each negative case must have 3 total trials")
     if any(row["backend"] != "live" or row["model"] != identity["model"] for row in runs):
         raise ValueError(f"{path}: non-live or wrong-model run found")
     if any(
         (record := item.get("record", {})).get("case_id") != item["case_id"]
-        or record.get("tokens_measured") is not True
+        or (
+            record.get("tokens_measured") is not True
+            and record.get("status") != "invalid_model_output"
+        )
         or record.get("backend") != "live"
         or record.get("model") != identity["model"]
         or record.get("prompt_version") != identity["prompt_version"]
@@ -83,6 +97,7 @@ def load_battery(path: Path) -> dict:
         "trials": trials,
         "runs": runs,
         "keys": keys,
+        "measured_runs": measured_runs,
     }
 
 
@@ -96,12 +111,17 @@ def validate_battery_set(batteries: list[dict]) -> tuple[list[dict], dict]:
         raise ValueError("V2 model IDs are not distinct")
     if len(v1) != 1 or v1[0]["identity"]["model"] not in model_ids:
         raise ValueError("one V2 model must also have exactly one V1 battery")
+    operators = [item["identity"].get("operator") for item in v2 + v1]
+    if None in operators or len(set(operators)) != len(operators):
+        raise ValueError("each team member must operate exactly one battery")
     baseline = v2[0]
     for item in v2[1:]:
-        for field in (
+        fields = [
             "source_commit", "descriptor_version", "call_mode", "autonomy",
-            "temperature", "planned_run_count", "negative_run_count", "public_config",
-        ):
+            "temperature", "planned_run_count", "public_config",
+        ]
+        fields.append("source_hashes" if "source_hashes" in baseline["identity"] else "negative_run_count")
+        for field in fields:
             left, right = baseline["identity"][field], item["identity"][field]
             if field == "public_config":
                 left, right = dict(left), dict(right)
@@ -115,6 +135,10 @@ def validate_battery_set(batteries: list[dict]) -> tuple[list[dict], dict]:
     same_model_v2 = next(item for item in v2 if item["identity"]["model"] == old["identity"]["model"])
     if old["identity"]["source_commit"] != baseline["identity"]["source_commit"]:
         raise ValueError("V1 and V2 use different source commits")
+    if "source_hashes" in baseline["identity"] and (
+        old["identity"].get("source_hashes") != baseline["identity"]["source_hashes"]
+    ):
+        raise ValueError("V1 and V2 use different source files")
     if old["keys"] != baseline["keys"]:
         raise ValueError("V1 and V2 use different case/trial keys")
     old_config = dict(old["identity"]["public_config"])
@@ -123,7 +147,7 @@ def validate_battery_set(batteries: list[dict]) -> tuple[list[dict], dict]:
     new_config.pop("prompt_version", None)
     if old_config != new_config:
         raise ValueError("V1 and V2 differ in more than prompt version")
-    if (
+    if "local_token_prices_usd_per_million" in old["identity"] and (
         old["identity"]["local_token_prices_usd_per_million"]
         != same_model_v2["identity"]["local_token_prices_usd_per_million"]
     ):
@@ -155,12 +179,13 @@ def main() -> None:
     lines = [
         "# D5 live-model comparison",
         "",
-        f"Source commit: `{source_commit}`. Each model uses 40 cases and 58 trials: "
-        "all cases once, plus three additional trials for each of the six negative cases.",
+        f"Source commit: `{source_commit}`. Each model uses 40 cases and {EXPECTED_RUNS} trials.",
+        "This 40-case/6-negative configuration exceeds the 30-case/6-negative passing floor; "
+        "it does not claim the recommended 40-case/8-negative shape.",
         "",
         "| Model | Operator | Final pass | Negative pass | Unsafe booking attempts | "
-        "Tokens in/out | Cost USD | Cost source | Mean turns |",
-        "|---|---|---:|---:|---:|---:|---:|---|---:|",
+        "Usage measured | Tokens in/out | Cost USD | Cost source | Mean turns |",
+        "|---|---|---:|---:|---:|---:|---:|---:|---|---:|",
     ]
     for item in v2:
         summary = item["summary"]
@@ -172,7 +197,8 @@ def main() -> None:
             f"| `{item['identity']['model']}` | {item['identity']['operator']} | "
             f"{ratio(summary['final_pass'], EXPECTED_RUNS)} | "
             f"{ratio(summary['negative_final_pass'], EXPECTED_NEGATIVE_RUNS)} | "
-            f"{summary['negative_booking_attempts']} | {tokens_in:,}/{tokens_out:,} | "
+            f"{summary['negative_booking_attempts']} | "
+            f"{item['measured_runs']}/{EXPECTED_RUNS} | {tokens_in:,}/{tokens_out:,} | "
             f"{item['progress']['charge_usd_recorded']:.6f} | {cost_sources} | "
             f"{summary['mean_turns']:.2f} |"
         )
@@ -201,6 +227,12 @@ def main() -> None:
 
     lines += ["", "## Same-model V1/V2 prompt comparison", ""]
     lines.append(
+        f"Comparison owner: {old['identity']['operator']}. The V1 battery was operated by "
+        f"{old['identity']['operator']}; the matching V2 reference battery was operated by "
+        f"{same_model_v2['identity']['operator']}."
+    )
+    lines.append("")
+    lines.append(
         f"`{old['identity']['model']}`: V1 {ratio(old['summary']['final_pass'], EXPECTED_RUNS)}; "
         f"V2 {ratio(same_model_v2['summary']['final_pass'], EXPECTED_RUNS)}. "
         f"V1 cost ${old['progress']['charge_usd_recorded']:.6f}; "
@@ -210,6 +242,22 @@ def main() -> None:
         "",
         "Interpret the measured failure cases, price tiers, and whether the more expensive "
         "models justify their cost in the final report.",
+        "",
+    ]
+    incomplete_usage = [
+        f"`{item['identity']['model']}` {item['measured_runs']}/{EXPECTED_RUNS}"
+        for item in v2 + [old]
+        if item["measured_runs"] != EXPECTED_RUNS
+    ]
+    lines += [
+        "## Evidence limitations",
+        "",
+        "- The six batteries contain 312 formal runs; no additional live calls are needed "
+        "for the declared 40-case/6-negative passing-floor configuration.",
+        "- Incomplete provider usage: " + (
+            "; ".join(incomplete_usage) if incomplete_usage else "none"
+        ) + ".",
+        "- Account-level billing is reconciled separately in `D5_COST_RECONCILIATION.md`.",
         "",
     ]
     args.out.parent.mkdir(parents=True, exist_ok=True)

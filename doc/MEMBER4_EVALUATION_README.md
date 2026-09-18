@@ -38,7 +38,7 @@ python3 run_eval.py --rescore results/member4_core_scripted/trials.jsonl --revie
 
 D4 的最终 `passed` 现在严格按 outcome 评分：最终 decision、正确 trigger、工具证据、缺失材料、预约结果和负面案例中的禁止操作属于 `outcome_checks`。额外查询、调用次数、gate trace 等路径与效率信息保留在 `diagnostic_checks`，只产生 `diagnostic_warnings`，不会因为一条无害的不同路径降低 outcome pass rate。`summary.json` 分别输出 `outcome_pass_rate` 和 `diagnostic_clean_rate`；`trials.csv` 分别保存 `outcome_failures` 和 `diagnostic_warnings`。
 
-已提交的免费 scripted 证据位于 `results/d4_scripted_v1/`、`results/d4_scripted_v2/` 和 `results/d4_policy_model_summary.csv`。两种 policy 均运行 40 cases × 3 trials；结构化自动评分、outcome 评分、diagnostic clean 评分和经 `OpenAI Codex (GPT-5)` 复核的最终评分均为 120/120，6 个 negative cases 的 18 次 trials 均通过。Scripted policy 对比用于复现和回归，不代表 live 模型准确率。
+已提交的免费 scripted 证据位于 `results/d4_scripted_v1/`、`results/d4_scripted_v2/` 和 `results/d4_policy_model_summary.csv`。两种 policy 均按 ordinary case 1 次、negative case 3 次运行，共 52 runs；结构化自动评分、outcome 评分、diagnostic clean 评分和经 `OpenAI Codex (GPT-5)` 复核的最终评分均为 52/52，6 个 negative cases 的 18 次 trials 均通过。Scripted policy 对比用于复现和回归，不代表 live 模型准确率。
 
 为 D4 报告，汇总还给出 `median_turns`、`worst_turns`、`final_failures`、`manual_rejections` 和 `automatic_failure_categories`。预期的恶意输入 Guardrail stop 单列在 `statuses`，不要当作错误预约或普通失败。
 

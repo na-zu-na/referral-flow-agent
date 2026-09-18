@@ -38,8 +38,8 @@ python3 experiments/run_d2_experiments.py
 The design table, poka-yoke evidence, measurements, and live reproduction
 command are in [`D2_TOOL_EVIDENCE.md`](D2_TOOL_EVIDENCE.md).
 
-Run the D4 evaluation harness on the 40-case team-authored core set, including
-six negative cases (three isolated trials per case):
+Run the D4 evaluation harness on the 40-case team-authored core set. Ordinary
+cases run once and the six negative cases run three times, for 52 runs:
 
 ```bash
 python3 run_eval.py --tier core --prompt-version v2 --descriptors v2 \
@@ -53,8 +53,9 @@ Reviewed scripted V1/V2 evidence is summarized in
 [`results/d4_policy_model_summary.csv`](results/d4_policy_model_summary.csv).
 
 Run the resumable D5 live battery only after choosing five models and approving
-the budget. Each battery runs 58 trials: all 40 cases once plus three additional
-trials for each of the six negative cases.
+the budget. Each battery runs 52 trials: all 40 cases once plus two additional
+trials for each of the six negative cases. This exceeds the 30-case/6-negative
+passing floor without claiming the recommended 40-case/8-negative shape.
 
 ```bash
 python3 run_d5_battery.py --model PROVIDER/MODEL --prompt-version v2 \
@@ -64,6 +65,13 @@ python3 run_d5_battery.py --model PROVIDER/MODEL --prompt-version v2 \
 The five-model plan, one-model V1/V2 comparison, review workflow, resume rules,
 and final aggregation command are documented in
 [`doc/D5_RUNBOOK_CN.md`](doc/D5_RUNBOOK_CN.md).
+
+The preserved D5 evidence contains 260 V2 runs across Qwen 3 30B, Mistral
+Small 3.2, GPT-4o-mini, Llama 3.3 70B, and Gemini 2.5 Flash, plus 52 Qwen V1
+runs. See [`doc/D5_COMPARISON.md`](doc/D5_COMPARISON.md) for measured performance and
+[`doc/D5_COST_RECONCILIATION.md`](doc/D5_COST_RECONCILIATION.md) for the US$0.653968992
+account-level cost increment. Raw and reviewed records are under
+[`results/live/`](results/live/).
 
 Reproduce the two D7 controlled failures and regenerate their evidence:
 

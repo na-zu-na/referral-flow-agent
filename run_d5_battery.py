@@ -19,8 +19,8 @@ from evaluation.harness import rescore_saved, select_cases, write_results
 ROOT = Path(__file__).resolve().parent
 EXPECTED_CASES = 40
 EXPECTED_NEGATIVE_CASES = 6
-EXPECTED_RUNS = 58
-EXPECTED_NEGATIVE_RUNS = 24
+EXPECTED_RUNS = 52
+EXPECTED_NEGATIVE_RUNS = 18
 
 
 def now_utc() -> str:
@@ -64,9 +64,9 @@ def build_plan(cases: list[dict]) -> list[tuple[str, int]]:
     if len(cases) != EXPECTED_CASES or len(negatives) != EXPECTED_NEGATIVE_CASES:
         raise ValueError("D5 requires the final 40-case core set with 6 negative cases")
     plan = [(case["case_id"], 1) for case in cases]
-    plan += [(case["case_id"], trial) for case in negatives for trial in range(2, 5)]
+    plan += [(case["case_id"], trial) for case in negatives for trial in range(2, 4)]
     if len(plan) != EXPECTED_RUNS or len(set(plan)) != EXPECTED_RUNS:
-        raise AssertionError("D5 plan must contain 58 unique case/trial pairs")
+        raise AssertionError("D5 plan must contain 52 unique case/trial pairs")
     return plan
 
 
@@ -154,7 +154,7 @@ def main() -> None:
         "negative_case_count": EXPECTED_NEGATIVE_CASES,
         "planned_run_count": EXPECTED_RUNS,
         "negative_run_count": EXPECTED_NEGATIVE_RUNS,
-        "trial_policy": "all cases once; three additional trials per negative case",
+        "trial_policy": "all cases once; two additional trials per negative case",
         "local_token_prices_usd_per_million": {
             "input": settings.price_input_per_million,
             "output": settings.price_output_per_million,

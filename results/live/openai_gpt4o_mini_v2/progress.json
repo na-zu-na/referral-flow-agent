@@ -1,0 +1,9 @@
+{
+  "updated_at_utc": "2026-09-17T13:08:28.118078Z",
+  "completed": 52,
+  "planned": 52,
+  "complete": true,
+  "charge_usd_recorded": 0.06240015,
+  "cost_cap_usd": 1.8,
+  "review_status": "reviewed; see reviewed.csv and scored_reviewed/"
+}

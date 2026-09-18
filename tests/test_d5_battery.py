@@ -11,7 +11,7 @@ from run_d5_battery import (
 
 
 class D5BatteryTests(unittest.TestCase):
-    def test_plan_runs_all_cases_once_plus_three_extra_negative_trials(self):
+    def test_plan_runs_all_cases_once_plus_two_extra_negative_trials(self):
         cases = [
             {"case_id": f"C{index:02d}", "negative_case": index < 6}
             for index in range(40)
@@ -22,7 +22,7 @@ class D5BatteryTests(unittest.TestCase):
         self.assertEqual(len(set(plan)), EXPECTED_RUNS)
         self.assertEqual(sum(case_id in negative_ids for case_id, _ in plan), EXPECTED_NEGATIVE_RUNS)
         self.assertTrue(all(
-            sorted(trial for case_id, trial in plan if case_id == negative_id) == [1, 2, 3, 4]
+            sorted(trial for case_id, trial in plan if case_id == negative_id) == [1, 2, 3]
             for negative_id in negative_ids
         ))
 
@@ -51,6 +51,7 @@ class D5BatteryTests(unittest.TestCase):
     def battery(model, prompt_version="v2"):
         identity = {
             "model": model,
+            "operator": f"{prompt_version}:{model}",
             "prompt_version": prompt_version,
             "source_commit": "abc123",
             "descriptor_version": "v2",
@@ -83,6 +84,13 @@ class D5BatteryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "exactly five"):
             validate_battery_set(batteries)
 
+    def test_each_battery_requires_a_distinct_operator(self):
+        batteries = [self.battery(f"provider/model-{index}") for index in range(5)]
+        batteries.append(self.battery("provider/model-0", "v1"))
+        batteries[-1]["identity"]["operator"] = batteries[0]["identity"]["operator"]
+        with self.assertRaisesRegex(ValueError, "each team member"):
+            validate_battery_set(batteries)
+
     def test_v1_control_may_only_change_prompt_version(self):
         v2 = [self.battery(f"provider/model-{index}") for index in range(5)]
         v1 = self.battery("provider/model-0", "v1")
@@ -97,6 +105,17 @@ class D5BatteryTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "different local token prices"):
             validate_battery_set(v2 + [v1])
 
+    def test_legacy_52_identity_without_new_price_fields_is_accepted(self):
+        batteries = [self.battery(f"provider/model-{index}") for index in range(5)]
+        batteries.append(self.battery("provider/model-0", "v1"))
+        for battery in batteries:
+            identity = battery["identity"]
+            identity["source_hashes"] = {"agent/loop.py": "hash"}
+            identity.pop("negative_run_count")
+            identity.pop("local_token_prices_usd_per_million")
+        selected, same_model = validate_battery_set(batteries)
+        self.assertEqual(len(selected), 5)
+        self.assertEqual(same_model["identity"]["model"], "provider/model-0")
 
 if __name__ == "__main__":
     unittest.main()

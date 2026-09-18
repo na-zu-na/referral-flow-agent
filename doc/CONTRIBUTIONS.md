@@ -20,3 +20,12 @@ ZHOU YU designed and implemented the two deterministic D7 failure
 reproductions, generated the before-and-after metrics, measured the 40-case turn
 distribution, added the D7 regression tests, and documented the reproduction
 commands and findings.
+
+## D5 model ownership
+
+FAN YANXI ran Qwen 3 30B V2, HOU YUXUAN ran Mistral Small 3.2 V2,
+LIN SIYUAN ran GPT-4o-mini V2, WEN HAO ran Llama 3.3 70B V2, and ZHOU YU
+ran Gemini 2.5 Flash V2. CHEN CHANG owned the Qwen 3 30B V1/V2 prompt
+comparison: CHEN CHANG ran the additional V1 battery and compared it with
+FAN YANXI's matching Qwen V2 battery. Together the team preserved 312 formal
+live traces and their cost evidence.

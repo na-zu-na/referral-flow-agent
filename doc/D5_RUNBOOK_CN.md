@@ -1,5 +1,34 @@
 # D5 Live Model Battery 执行说明
 
+## 已合并的 live 证据
+
+`results/live/` 保留了 312 次正式 live runs：Qwen 3 30B、Mistral
+Small 3.2、GPT-4o-mini、Llama 3.3 70B 和 Gemini 2.5 Flash 各 52 次 V2，
+另有 Qwen 3 30B 的 52 次 V1 对照。第五个正式 V2 模型是 Llama，不是
+Claude。这些结果使用符合最低通过配置的 52-run 计划：40 个案例中包含
+6 个 negative cases；ordinary case 运行 1 次，negative case 运行 3 次。
+
+- 模型对比：`D5_COMPARISON.md`
+- 费用对账：`D5_COST_RECONCILIATION.md`
+- 原始和审核记录：`results/live/`
+
+用当前评分器重现这批历史结果（不调用模型）：
+
+```bash
+python3 build_d5_comparison.py \
+  --battery results/live/qwen3_30b_v2 \
+  --battery results/live/mistral_small_3_2_v2 \
+  --battery results/live/openai_gpt4o_mini_v2 \
+  --battery results/live/llama3_3_70b_v2 \
+  --battery results/live/gemini2_5_flash_v2 \
+  --battery results/live/qwen3_30b_v1 \
+  --out D5_COMPARISON.md
+```
+
+52 runs 是本仓库声明的最低通过配置，不代表推荐的 40 cases / 8 negative
+cases 配置。历史源码提交 `3d842b7` 的测试结果为 82/82；当前仓库的测试数另行记录，不用
+82/82 描述当前 HEAD。
+
 ## 已完成的离线基线
 
 仓库已经保存最终 40 个 core cases 的 reviewed scripted 结果：
@@ -9,18 +38,18 @@
 - `results/d4_scripted_v2/trials.jsonl`
 - `results/d4_scripted_v2/judgement_queue.csv`
 
-共 40 cases × 3 trials = 120 runs，最终评分 120/120，6 个 negative cases 共 18/18，pending review 为 0。不要再提交 package 中未复核、`final_pass_rate=null` 的重复 scripted 副本。
+ordinary cases 各运行 1 次、6 个 negative cases 各运行 3 次，共 52 runs；最终评分 52/52，negative trials 为 18/18，pending review 为 0。不要再提交 package 中未复核、`final_pass_rate=null` 的重复 scripted 副本。
 
 ## 团队实验设计
 
-本团队运行 5 个不同的 V2 live models，其中一个模型额外运行 V1 prompt 对照。每个 battery 使用同一个 Git commit、40 个案例、V2 descriptors、parallel calls、confirm autonomy 和 temperature 0；V1 对照只改变 prompt version。
+本团队由 5 位成员分别运行 5 个不同的 V2 live models。CHEN CHANG 负责 Qwen 3 30B 的 V1/V2 prompt comparison：额外运行 Qwen V1，并与 FAN YANXI 运行的同模型 Qwen V2 结果比较。每个 battery 使用同一个 Git commit、40 个案例、V2 descriptors、parallel calls、confirm autonomy 和 temperature 0；V1 对照只改变 prompt version。
 
 PDF 的运行规模按严格口径执行：
 
 - 40 个案例各运行 1 次；
-- 6 个 negative cases 各额外运行 3 次；
-- 每个 battery 共 58 runs，其中 negative runs 共 24 次；
-- 5 个 V2 batteries 加 1 个 V1 battery，共 348 runs。
+- 6 个 negative cases 各额外运行 2 次，即每个 negative 总共 3 次；
+- 每个 battery 共 52 runs，其中 negative runs 共 18 次；
+- 5 个 V2 batteries 加 1 个 V1 battery，共 312 runs。
 
 `run_d5_battery.py` 会读取真实 Git HEAD，并拒绝 tracked files 尚未提交的工作区。所有 live batteries 必须在同一个提交上运行。
 
@@ -77,7 +106,7 @@ python3 run_d5_battery.py \
 
 ## Judgement review
 
-完成条件是 `progress.json` 中 `complete=true`、`completed=58`。复制 `scored_unreviewed/judgement_queue.csv` 为 `reviewed.csv`，逐条填写 `accept`/`reject`、真实 reviewer 和日期，然后只对已保存 traces 复评分：
+完成条件是 `progress.json` 中 `complete=true`、`completed=52`。复制 `scored_unreviewed/judgement_queue.csv` 为 `reviewed.csv`，逐条填写 `accept`/`reject`、真实 reviewer 和日期，然后只对已保存 traces 复评分：
 
 ```bash
 python3 run_eval.py \

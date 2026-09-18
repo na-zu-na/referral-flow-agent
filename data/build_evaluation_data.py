@@ -282,7 +282,7 @@ def manifest(base_referrals, extra_referrals, answers):
             "source": source,
             "evaluation_tier": tier,
             "negative_case": negative,
-            "trials": 3,
+            "trials": 3 if negative else 1,
             "input": {"fixture": "data/fixtures/referrals.json", "referral_id": case_id},
             "design_purpose": purpose,
             "input_summary": referrals[case_id]["clinical_summary"],
@@ -309,6 +309,7 @@ def validate(cases, answers, referrals, patients, contacts):
     assert all(row["source"] == "team" for row in core)
     assert sum(row["negative_case"] for row in core) == 6
     assert all(row.get("wrong_behavior_to_catch") for row in core if row["negative_case"])
+    assert sum(row["trials"] for row in core) == 52
     assert all(row["band"] in {"urgent", "soon", "routine"} for row in NEW_CASES)
 
 
@@ -344,7 +345,7 @@ This file contains **80 cases and 80 answer keys**. The quantity is unchanged.
 - `core`: 40 team-authored formal evaluation cases, within the required 30–50 range.
 - `core` contains exactly 6 team-authored negative cases, within the required 6–10 range.
 - `extended`: the 15 professor cases plus 25 team-authored stress cases; report these separately.
-- Every case specifies 3 trials.
+- Ordinary cases specify 1 trial; negative cases specify 3 trials.
 
 The runnable inputs are stored in `referral-flow-agent/data/fixtures/`. The Agent
 receives only `case_id`; it must obtain all facts through tools. The harness may

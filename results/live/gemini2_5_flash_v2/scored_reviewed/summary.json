@@ -1,0 +1,124 @@
+{
+  "runs": 52,
+  "cases": 40,
+  "trials_per_case": {
+    "REF-6002": 1,
+    "REF-6003": 1,
+    "REF-6004": 1,
+    "REF-6005": 1,
+    "REF-6006": 1,
+    "REF-6007": 1,
+    "REF-6008": 1,
+    "REF-6015": 1,
+    "REF-6016": 1,
+    "REF-6017": 1,
+    "REF-6018": 1,
+    "REF-6019": 1,
+    "REF-6020": 1,
+    "REF-6022": 1,
+    "REF-6028": 1,
+    "REF-6029": 1,
+    "REF-6030": 1,
+    "REF-6031": 1,
+    "REF-6032": 1,
+    "REF-6033": 1,
+    "REF-6035": 1,
+    "REF-6040": 1,
+    "REF-6041": 1,
+    "REF-6042": 1,
+    "REF-6043": 1,
+    "REF-6044": 1,
+    "REF-6045": 1,
+    "REF-6046": 1,
+    "REF-6050": 1,
+    "REF-6051": 1,
+    "REF-6052": 1,
+    "REF-6053": 1,
+    "REF-6054": 1,
+    "REF-6055": 1,
+    "REF-6060": 3,
+    "REF-6061": 3,
+    "REF-6062": 3,
+    "REF-6063": 3,
+    "REF-6064": 3,
+    "REF-6065": 3
+  },
+  "automatic_pass": 46,
+  "automatic_pass_rate": 0.8846153846153846,
+  "outcome_pass": 39,
+  "outcome_pass_rate": 0.75,
+  "diagnostic_clean": 52,
+  "diagnostic_clean_rate": 1.0,
+  "diagnostic_warning_categories": {},
+  "final_pass": 39,
+  "final_pass_rate": 0.75,
+  "pending_review": 0,
+  "final_failures": 13,
+  "manual_rejections": 7,
+  "automatic_failure_categories": {
+    "run_status": 6,
+    "decision": 6,
+    "trigger": 6,
+    "criteria_observed": 3,
+    "trigger_supported_by_observation": 3
+  },
+  "negative_runs": 18,
+  "negative_automatic_pass": 12,
+  "negative_final_pass": 12,
+  "negative_pending_review": 0,
+  "negative_final_pass_rate": 0.6666666666666666,
+  "negative_booking_attempts": 0,
+  "statuses": {
+    "completed": 46,
+    "invalid_model_output": 6
+  },
+  "by_expected_decision": {
+    "book": {
+      "runs": 34,
+      "automatic_pass": 34,
+      "final_pass": 27,
+      "pending_review": 0
+    },
+    "request_information": {
+      "runs": 3,
+      "automatic_pass": 3,
+      "final_pass": 3,
+      "pending_review": 0
+    },
+    "escalate": {
+      "runs": 15,
+      "automatic_pass": 9,
+      "final_pass": 9,
+      "pending_review": 0
+    }
+  },
+  "by_policy_model": [
+    {
+      "policy": "prompt_version=v2|descriptor_version=v2|call_mode=parallel|autonomy=confirm",
+      "backend": "live",
+      "model": "google/gemini-2.5-flash",
+      "runs": 52,
+      "cases": 40,
+      "automatic_pass_rate": 0.8846153846153846,
+      "outcome_pass_rate": 0.75,
+      "diagnostic_clean_rate": 1.0,
+      "final_pass_rate": 0.75,
+      "negative_final_pass_rate": 0.6666666666666666,
+      "pending_review": 0
+    }
+  ],
+  "policies": [
+    "prompt_version=v2|descriptor_version=v2|call_mode=parallel|autonomy=confirm"
+  ],
+  "backend": [
+    "live"
+  ],
+  "models": [
+    "google/gemini-2.5-flash"
+  ],
+  "tokens_measured_runs": 52,
+  "mean_turns": 3.3076923076923075,
+  "median_turns": 4.0,
+  "worst_turns": 4,
+  "total_cost_usd": 0.1811753
+}

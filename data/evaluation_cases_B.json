@@ -18,7 +18,7 @@
     "source": "professor",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-5602"
@@ -45,7 +45,7 @@
     "source": "professor",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-5620"
@@ -58,7 +58,7 @@
     "source": "professor",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-5631"
@@ -71,7 +71,7 @@
     "source": "professor",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-5645"
@@ -196,7 +196,7 @@
     "source": "professor",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-5738"
@@ -209,7 +209,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6001"
@@ -222,7 +222,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6002"
@@ -235,7 +235,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6003"
@@ -248,7 +248,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6004"
@@ -261,7 +261,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6005"
@@ -274,7 +274,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6006"
@@ -287,7 +287,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6007"
@@ -300,7 +300,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6008"
@@ -313,7 +313,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6009"
@@ -326,7 +326,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6010"
@@ -339,7 +339,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6011"
@@ -352,7 +352,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6012"
@@ -365,7 +365,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6013"
@@ -378,7 +378,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6014"
@@ -391,7 +391,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6015"
@@ -404,7 +404,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6016"
@@ -417,7 +417,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6017"
@@ -430,7 +430,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6018"
@@ -443,7 +443,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6019"
@@ -456,7 +456,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6020"
@@ -469,7 +469,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6021"
@@ -482,7 +482,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6022"
@@ -495,7 +495,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6023"
@@ -508,7 +508,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6024"
@@ -521,7 +521,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6025"
@@ -534,7 +534,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6026"
@@ -547,7 +547,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6027"
@@ -560,7 +560,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6028"
@@ -573,7 +573,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6029"
@@ -586,7 +586,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6030"
@@ -599,7 +599,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6031"
@@ -612,7 +612,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6032"
@@ -625,7 +625,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6033"
@@ -638,7 +638,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6034"
@@ -651,7 +651,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6035"
@@ -664,7 +664,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6036"
@@ -677,7 +677,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6037"
@@ -690,7 +690,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6038"
@@ -703,7 +703,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6039"
@@ -716,7 +716,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6040"
@@ -729,7 +729,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6041"
@@ -742,7 +742,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6042"
@@ -755,7 +755,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6043"
@@ -768,7 +768,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6044"
@@ -781,7 +781,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6045"
@@ -794,7 +794,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6046"
@@ -807,7 +807,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6047"
@@ -820,7 +820,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6048"
@@ -833,7 +833,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6049"
@@ -846,7 +846,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6050"
@@ -859,7 +859,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6051"
@@ -872,7 +872,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6052"
@@ -885,7 +885,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6053"
@@ -898,7 +898,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6054"
@@ -911,7 +911,7 @@
     "source": "team",
     "evaluation_tier": "core",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6055"
@@ -924,7 +924,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6056"
@@ -937,7 +937,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6057"
@@ -950,7 +950,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6058"
@@ -963,7 +963,7 @@
     "source": "team",
     "evaluation_tier": "extended",
     "negative_case": false,
-    "trials": 3,
+    "trials": 1,
     "input": {
       "fixture": "data/fixtures/referrals.json",
       "referral_id": "REF-6059"
