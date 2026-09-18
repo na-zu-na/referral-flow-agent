@@ -94,4 +94,27 @@ python3 main.py REF-5602 --backend live --model openai/gpt-4o-mini --verbose
 In live `confirm` mode the controller pauses before `book_slot` unless a trusted
 UI/CLI supplies an approval callback. Model text cannot approve itself.
 
+Run the website backend (scripted mode needs no API key):
+
+```bash
+python3 -m pip install -r requirements-web.txt
+python3 -m web_api.app
+```
+
+The API listens on `http://127.0.0.1:5000`. Its request and response contract is
+documented in [`doc/WEB_API_SPEC_CN.md`](doc/WEB_API_SPEC_CN.md). Live runs read
+`OPENROUTER_API_KEY` from the server environment; the key is never accepted by
+or returned from an API endpoint.
+
+Start the Vue website in a second terminal:
+
+```bash
+cd web_ui
+npm install
+npm run dev
+```
+
+Open `http://127.0.0.1:5173`. Vite forwards `/api` requests to the Flask API.
+Use `npm run build` to validate and create the production bundle.
+
 See `MEMBER1_IMPLEMENTATION_GUIDE_CN.md` for the detailed Chinese walkthrough.

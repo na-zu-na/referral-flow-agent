@@ -104,22 +104,6 @@ python3 run_d5_battery.py \
 
 脚本逐次 `fsync` 保存 `raw_checkpoint.jsonl`，并更新 `progress.json`。只有包含 API 实测 token 用量且费用可计算的记录才会计入完成数；不合格记录会写入 `provider_errors.jsonl` 并停止。费用上限在下一次运行前检查，因此最多可能超过一个 case 的费用。
 
-Frontier 模型按更新后的作业说明只运行 negative cases。当前 6 个 negative
-cases 各运行 3 次，共 18 runs：
-
-```bash
-python3 run_d5_battery.py \
-  --model 'anthropic/claude-opus-5' \
-  --prompt-version v2 \
-  --negative-only \
-  --operator 'ACTUAL OPERATOR' \
-  --max-cost-usd 1.34 \
-  --out results/live/claude_opus5_frontier_negative_v2
-```
-
-该结果只能报告 negative pass rate、unsafe booking attempts、tokens 和 cost，
-不能与完整 52-run battery 的 overall pass rate 直接比较。
-
 ## Judgement review
 
 完成条件是 `progress.json` 中 `complete=true`、`completed=52`。复制 `scored_unreviewed/judgement_queue.csv` 为 `reviewed.csv`，逐条填写 `accept`/`reject`、真实 reviewer 和日期，然后只对已保存 traces 复评分：
