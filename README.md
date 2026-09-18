@@ -52,6 +52,19 @@ The scoring and judgement-review workflow is documented in
 Reviewed scripted V1/V2 evidence is summarized in
 [`results/d4_policy_model_summary.csv`](results/d4_policy_model_summary.csv).
 
+Run the resumable D5 live battery only after choosing five models and approving
+the budget. Each battery runs 58 trials: all 40 cases once plus three additional
+trials for each of the six negative cases.
+
+```bash
+python3 run_d5_battery.py --model PROVIDER/MODEL --prompt-version v2 \
+  --operator "ACTUAL OPERATOR" --max-cost-usd 1.50 --out results/d5_model_v2
+```
+
+The five-model plan, one-model V1/V2 comparison, review workflow, resume rules,
+and final aggregation command are documented in
+[`doc/D5_RUNBOOK_CN.md`](doc/D5_RUNBOOK_CN.md).
+
 Reproduce the two D7 controlled failures and regenerate their evidence:
 
 ```bash
