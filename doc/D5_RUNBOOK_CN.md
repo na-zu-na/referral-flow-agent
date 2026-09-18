@@ -145,3 +145,23 @@ python3 build_d5_comparison.py \
 汇总器会拒绝不完整、未审核、非 live、没有 API 实测 token 用量、raw/reviewed 记录不一致、model 重复、配置不同、Git commit 不同或分母错误的结果，并输出总体通过率、negative pass rate、错误预约尝试、tokens、费用、cost source、case-level divergences、failure categories 和同模型 V1/V2 对照。
 
 最终报告还需要人工解释模型家族、价格档、具体失败案例、最便宜达标模型，以及昂贵模型是否值得差价。实际 token 与费用数据应交给 D6 使用。
+
+## Frontier 模型补跑：仅 negative cases
+
+准备使用 OpenRouter 模型 `anthropic/claude-opus-5`，仅补跑 6 个 negative cases，每个 case 运行 trial 1、2、3，共 18 runs。运行预算上限为 US$1.34；使用另建的同额硬额度 API key。实际运行前须重新核对模型 ID、当日价格及剩余额度，并在干净的已提交 worktree 中执行。本节只说明准备与操作方式，不表示已启动 live battery。
+
+将独立 key 仅在运行进程的环境中设为 `OPENROUTER_API_KEY`，同时按当天官方价格设置 `A2_PRICE_INPUT` 和 `A2_PRICE_OUTPUT`；不要将 key 写入命令、日志或提交记录。运行时使用：
+
+```bash
+python3 run_d5_battery.py \
+  --model 'anthropic/claude-opus-5' \
+  --prompt-version v2 \
+  --operator 'ACTUAL OPERATOR' \
+  --negative-only \
+  --max-cost-usd 1.34 \
+  --out results/d5_claude_opus_5_negative_v2
+```
+
+manifest 的 `scope` 为 `negative_only`、`case_count` 为 6、`planned_run_count` 和 `negative_run_count` 均为 18。程序预算检查发生在下一次调用之前，单次调用仍可能超过软件上限，因此必须使用独立硬额度 key。
+
+这组结果只能与其他模型的 negative-case 指标比较，不能当作完整的 40-case battery，也不能并入要求完整 battery 的五模型汇总。

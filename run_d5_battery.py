@@ -21,6 +21,7 @@ EXPECTED_CASES = 40
 EXPECTED_NEGATIVE_CASES = 6
 EXPECTED_RUNS = 52
 EXPECTED_NEGATIVE_RUNS = 18
+NEGATIVE_ONLY_RUNS = 18
 
 
 def now_utc() -> str:
@@ -59,14 +60,19 @@ def runner_is_tracked(root: Path = ROOT) -> bool:
     ).returncode == 0
 
 
-def build_plan(cases: list[dict]) -> list[tuple[str, int]]:
+def build_plan(cases: list[dict], *, negative_only: bool = False) -> list[tuple[str, int]]:
     negatives = [case for case in cases if case["negative_case"]]
     if len(cases) != EXPECTED_CASES or len(negatives) != EXPECTED_NEGATIVE_CASES:
         raise ValueError("D5 requires the final 40-case core set with 6 negative cases")
-    plan = [(case["case_id"], 1) for case in cases]
-    plan += [(case["case_id"], trial) for case in negatives for trial in range(2, 4)]
-    if len(plan) != EXPECTED_RUNS or len(set(plan)) != EXPECTED_RUNS:
-        raise AssertionError("D5 plan must contain 52 unique case/trial pairs")
+    if negative_only:
+        plan = [(case["case_id"], trial) for case in negatives for trial in range(1, 4)]
+        expected_runs = NEGATIVE_ONLY_RUNS
+    else:
+        plan = [(case["case_id"], 1) for case in cases]
+        plan += [(case["case_id"], trial) for case in negatives for trial in range(2, 4)]
+        expected_runs = EXPECTED_RUNS
+    if len(plan) != expected_runs or len(set(plan)) != expected_runs:
+        raise AssertionError(f"D5 plan must contain {expected_runs} unique case/trial pairs")
     return plan
 
 
@@ -115,6 +121,7 @@ def main() -> None:
     parser.add_argument("--max-cost-usd", required=True, type=float, help="cap for this battery")
     parser.add_argument("--operator", required=True, help="person actually operating this battery")
     parser.add_argument("--resume", action="store_true")
+    parser.add_argument("--negative-only", action="store_true", help="run only negative cases (18 trials)")
     args = parser.parse_args()
     if args.max_cost_usd <= 0:
         parser.error("--max-cost-usd must be positive")
@@ -125,7 +132,7 @@ def main() -> None:
         if not runner_is_tracked() or not tracked_tree_is_clean():
             parser.error("D5 runner is uncommitted or tracked files differ from HEAD")
         cases = select_cases(tier="core")
-        plan = build_plan(cases)
+        plan = build_plan(cases, negative_only=args.negative_only)
     except ValueError as exc:
         parser.error(str(exc))
 
@@ -150,11 +157,15 @@ def main() -> None:
         "call_mode": "parallel",
         "autonomy": "confirm",
         "temperature": 0.0,
-        "case_count": EXPECTED_CASES,
+        "scope": "negative_only" if args.negative_only else "full",
+        "case_count": EXPECTED_NEGATIVE_CASES if args.negative_only else EXPECTED_CASES,
         "negative_case_count": EXPECTED_NEGATIVE_CASES,
-        "planned_run_count": EXPECTED_RUNS,
+        "planned_run_count": len(plan),
         "negative_run_count": EXPECTED_NEGATIVE_RUNS,
-        "trial_policy": "all cases once; two additional trials per negative case",
+        "trial_policy": (
+            "negative cases three trials each" if args.negative_only
+            else "all cases once; two additional trials per negative case"
+        ),
         "local_token_prices_usd_per_million": {
             "input": settings.price_input_per_million,
             "output": settings.price_output_per_million,
@@ -236,7 +247,7 @@ def main() -> None:
             append_jsonl(raw_path, item)
             completed.add((case_id, trial))
             print(
-                f"[{index}/{EXPECTED_RUNS}] {case_id} trial {trial}: "
+                f"[{index}/{len(plan)}] {case_id} trial {trial}: "
                 f"{record['status']}; charge={cost if cost is not None else 'unknown'}",
                 flush=True,
             )
@@ -248,8 +259,8 @@ def main() -> None:
         (out / "progress.json").write_text(json.dumps({
             "updated_at_utc": now_utc(),
             "completed": len(completed),
-            "planned": EXPECTED_RUNS,
-            "complete": len(completed) == EXPECTED_RUNS,
+            "planned": len(plan),
+            "complete": len(completed) == len(plan),
             "charge_usd_recorded": round(spent, 8),
             "current_cost_cap_usd": args.max_cost_usd,
             "review_status": "not reviewed; see scored_unreviewed/judgement_queue.csv",
