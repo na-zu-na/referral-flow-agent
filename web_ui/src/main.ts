@@ -8,10 +8,10 @@ import App from './App.vue'
 const router = createRouter({
   history: createWebHistory(),
   routes: [
-    { path: '/', component: () => import('./views/OverviewView.vue'), meta: { title: '系统概览' } },
-    { path: '/run', component: () => import('./views/RunView.vue'), meta: { title: 'Agent 运行演示' } },
-    { path: '/evidence', component: () => import('./views/EvidenceView.vue'), meta: { title: '实验证据' } },
-    { path: '/audit', component: () => import('./views/AuditView.vue'), meta: { title: '审计日志' } },
+    { path: '/', component: () => import('./views/OverviewView.vue'), meta: { title: 'System Overview' } },
+    { path: '/run', component: () => import('./views/RunView.vue'), meta: { title: 'Agent Run' } },
+    { path: '/evidence', component: () => import('./views/EvidenceView.vue'), meta: { title: 'Evaluation Evidence' } },
+    { path: '/audit', component: () => import('./views/AuditView.vue'), meta: { title: 'Audit Logs' } },
   ],
 })
 

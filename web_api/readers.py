@@ -91,10 +91,14 @@ def read_evidence() -> dict[str, Any]:
         if not policies:
             continue
         item = policies[0]
+        policy_config = dict(
+            part.split("=", 1) for part in str(item.get("policy") or "").split("|") if "=" in part
+        )
         run_rows = _csv_if_present(summary_path.with_name("runs.csv"))
         sources = sorted({str(row["cost_source"]) for row in run_rows if row.get("cost_source")})
         d5_models.append({
             "model": item.get("model"),
+            "prompt_version": policy_config.get("prompt_version"),
             "runs": item.get("runs"),
             "final_pass_rate": item.get("final_pass_rate"),
             "negative_final_pass_rate": item.get("negative_final_pass_rate"),

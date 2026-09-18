@@ -14,7 +14,7 @@ const modelOptions = ref<string[]>([])
 const filters = reactive({ case_id: '', model: '', passed: '', negative_case: '', limit: 100 })
 
 const statusType = (status: string) => status === 'completed' ? 'success' : status === 'guardrail_stopped' ? 'warning' : status?.includes('invalid') || status === 'failed' ? 'danger' : 'info'
-const passLabel = (value: unknown) => value === true ? '通过' : value === false ? '失败' : '待评审'
+const passLabel = (value: unknown) => value === true ? 'Passed' : value === false ? 'Failed' : 'Pending review'
 const passedCount = computed(() => rows.value.filter((row) => row.passed === true).length)
 
 async function load() {
@@ -43,19 +43,19 @@ onMounted(load)
 
 <template>
   <div class="page-stack">
-    <div class="page-intro"><div><span class="eyebrow">Traceability</span><h2>Run-level 与 Tool-call 审计日志</h2><p>查看现有 live evaluation 记录，追溯模型、Prompt、Descriptor、决策、Cost 和每次工具调用。</p></div></div>
+    <div class="page-intro"><div><span class="eyebrow">Traceability</span><h2>Run-level and tool-call audit logs</h2><p>Inspect existing live evaluation records and trace the model, prompt, descriptor, decision, cost, and each tool call.</p></div></div>
     <el-alert v-if="error" :title="error" type="error" show-icon closable @close="error = ''" />
     <section class="panel audit-panel">
       <el-form :inline="true" class="audit-filters" @submit.prevent="load">
         <el-form-item label="Case ID"><el-input v-model="filters.case_id" placeholder="REF-5703" clearable /></el-form-item>
-        <el-form-item label="Model"><el-select v-model="filters.model" placeholder="全部模型" clearable filterable><el-option v-for="model in modelOptions" :key="model" :label="model" :value="model" /></el-select></el-form-item>
-        <el-form-item label="Passed"><el-select v-model="filters.passed" placeholder="全部" clearable><el-option label="通过" value="true" /><el-option label="失败" value="false" /></el-select></el-form-item>
-        <el-form-item label="Case type"><el-select v-model="filters.negative_case" placeholder="全部" clearable><el-option label="Negative" value="true" /><el-option label="Positive" value="false" /></el-select></el-form-item>
-        <el-form-item><el-button native-type="submit" type="primary" :icon="Search" :loading="loading">查询</el-button><el-button @click="reset">重置</el-button></el-form-item>
+        <el-form-item label="Model"><el-select v-model="filters.model" placeholder="All models" clearable filterable><el-option v-for="model in modelOptions" :key="model" :label="model" :value="model" /></el-select></el-form-item>
+        <el-form-item label="Passed"><el-select v-model="filters.passed" placeholder="All results" clearable><el-option label="Passed" value="true" /><el-option label="Failed" value="false" /></el-select></el-form-item>
+        <el-form-item label="Case type"><el-select v-model="filters.negative_case" placeholder="All case types" clearable><el-option label="Negative" value="true" /><el-option label="Positive" value="false" /></el-select></el-form-item>
+        <el-form-item><el-button native-type="submit" type="primary" :icon="Search" :loading="loading">Search</el-button><el-button @click="reset">Reset</el-button></el-form-item>
       </el-form>
-      <div class="table-summary"><span>当前 {{ rows.length }} 条记录</span><span>{{ passedCount }} 条通过</span><small>点击行查看 Tool-call 详情</small></div>
+      <div class="table-summary"><span>{{ rows.length }} records shown</span><span>{{ passedCount }} passed</span><small>Click a row to inspect its tool calls</small></div>
       <el-table v-loading="loading" :data="rows" stripe row-key="run_id" class="clickable-table" @row-click="showDetail">
-        <template #empty><el-empty description="没有符合当前筛选条件的审计记录" /></template>
+        <template #empty><el-empty description="No audit records match the current filters." /></template>
         <el-table-column prop="case_id" label="Case" width="105" fixed><template #default="{row}"><strong>{{ row.case_id }}</strong><el-tag v-if="row.negative_case" type="danger" size="small" effect="plain" class="cell-tag">NEG</el-tag></template></el-table-column>
         <el-table-column prop="model" label="Model" min-width="205" show-overflow-tooltip />
         <el-table-column label="Policy" min-width="150"><template #default="{row}"><span class="policy-cell">{{ row.prompt_version }} / {{ row.descriptor_version }}<small>{{ row.execution_mode }}</small></span></template></el-table-column>
@@ -85,8 +85,8 @@ onMounted(load)
           <el-descriptions-item v-if="selected.failure_reason" label="Failure" :span="2">{{ selected.failure_reason }}</el-descriptions-item>
           <el-descriptions-item v-if="selected.error" label="Error" :span="2">{{ selected.error }}</el-descriptions-item>
         </el-descriptions>
-        <div class="subsection-heading"><div><h4>Tool-call log</h4><p>Observation size 是 D2(b)/D6 中的 cost lever。</p></div><el-tag effect="plain">{{ toolCalls.length }} calls</el-tag></div>
-        <el-table :data="toolCalls" stripe><template #empty><el-empty description="该 Run 没有 Tool-call 记录" /></template><el-table-column prop="turn" label="Turn" width="65" /><el-table-column prop="tool_name" label="Tool" min-width="160" /><el-table-column prop="descriptor_version" label="Descriptor" width="100" /><el-table-column prop="observation_tokens" label="Obs. tokens" width="105" /><el-table-column prop="observation_chars" label="Obs. chars" width="100" /><el-table-column label="Latency" width="100"><template #default="{row}">{{ row.latency_ms == null ? '—' : `${formatNumber(row.latency_ms, 2)} ms` }}</template></el-table-column><el-table-column label="OK" width="65"><template #default="{row}"><el-tag :type="row.ok ? 'success' : 'danger'" size="small">{{ row.ok ? 'Yes' : 'No' }}</el-tag></template></el-table-column></el-table>
+        <div class="subsection-heading"><div><h4>Tool-call log</h4><p>Observation size is the cost lever used in D2(b)/D6.</p></div><el-tag effect="plain">{{ toolCalls.length }} calls</el-tag></div>
+        <el-table :data="toolCalls" stripe><template #empty><el-empty description="This run has no tool-call records." /></template><el-table-column prop="turn" label="Turn" width="65" /><el-table-column prop="tool_name" label="Tool" min-width="160" /><el-table-column prop="descriptor_version" label="Descriptor" width="100" /><el-table-column prop="observation_tokens" label="Obs. tokens" width="105" /><el-table-column prop="observation_chars" label="Obs. chars" width="100" /><el-table-column label="Latency" width="100"><template #default="{row}">{{ row.latency_ms == null ? '—' : `${formatNumber(row.latency_ms, 2)} ms` }}</template></el-table-column><el-table-column label="OK" width="65"><template #default="{row}"><el-tag :type="row.ok ? 'success' : 'danger'" size="small">{{ row.ok ? 'Yes' : 'No' }}</el-tag></template></el-table-column></el-table>
       </div>
     </el-drawer>
   </div>

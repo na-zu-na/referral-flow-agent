@@ -13,7 +13,7 @@ async function request<T>(path: string, options?: RequestInit): Promise<T> {
   })
   const payload = await response.json().catch(() => null)
   if (!response.ok || !payload?.ok) {
-    throw new ApiError(payload?.error?.code || 'REQUEST_FAILED', payload?.error?.message || '请求失败', response.status)
+    throw new ApiError(payload?.error?.code || 'REQUEST_FAILED', payload?.error?.message || 'Request failed.', response.status)
   }
   return payload.data as T
 }
@@ -44,7 +44,7 @@ export const api = {
 export const formatNumber = (value: unknown, digits = 2) => {
   if (value === null || value === undefined || value === '') return '—'
   const number = Number(value)
-  return Number.isFinite(number) ? number.toLocaleString('zh-CN', { maximumFractionDigits: digits }) : String(value)
+  return Number.isFinite(number) ? number.toLocaleString('en-US', { maximumFractionDigits: digits }) : String(value)
 }
 
 export const formatPercent = (value: unknown) => value === null || value === undefined ? '—' : `${(Number(value) * 100).toFixed(1)}%`

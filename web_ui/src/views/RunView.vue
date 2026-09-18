@@ -31,12 +31,12 @@ const observations = computed(() => new Map<string, Row>((record.value?.observat
 const confirmation = computed(() => job.value?.confirmation?.call?.arguments || {})
 
 const statusMap: Record<string, { label: string; type: 'success' | 'warning' | 'danger' | 'info' | 'primary' }> = {
-  queued: { label: '排队中', type: 'info' }, running: { label: '运行中', type: 'primary' },
-  confirmation_required: { label: '等待人工确认', type: 'warning' },
-  confirmation_rejected: { label: '人工已拒绝', type: 'warning' }, completed: { label: '已完成', type: 'success' },
-  guardrail_stopped: { label: 'Guardrail 安全停止', type: 'warning' }, failed: { label: '运行失败', type: 'danger' },
+  queued: { label: 'Queued', type: 'info' }, running: { label: 'Running', type: 'primary' },
+  confirmation_required: { label: 'Awaiting human confirmation', type: 'warning' },
+  confirmation_rejected: { label: 'Rejected by human', type: 'warning' }, completed: { label: 'Completed', type: 'success' },
+  guardrail_stopped: { label: 'Stopped safely by guardrail', type: 'warning' }, failed: { label: 'Run failed', type: 'danger' },
 }
-const status = computed(() => statusMap[job.value?.status] || { label: job.value?.status || '未开始', type: 'info' as const })
+const status = computed(() => statusMap[job.value?.status] || { label: job.value?.status || 'Not started', type: 'info' as const })
 
 async function loadCases() {
   loadingCases.value = true
@@ -63,7 +63,7 @@ async function poll() {
 async function startRun() {
   if (!form.case_id) return
   if (form.backend === 'live' && !form.model.trim()) {
-    error.value = 'Live backend 需要填写 exact model ID。'; return
+    error.value = 'Live backend requires an exact model ID.'; return
   }
   window.clearTimeout(timer); submitting.value = true; error.value = ''; job.value = null
   try {
@@ -79,7 +79,7 @@ async function submitConfirmation(approved: boolean) {
   try {
     await api.confirm(job.value.job_id, approved)
     confirmationOpen.value = false
-    ElMessage.success(approved ? '已批准预约' : '已拒绝预约')
+    ElMessage.success(approved ? 'Booking approved.' : 'Booking rejected.')
     await poll()
   } catch (exc: any) { error.value = exc.message }
   finally { confirmationSubmitting.value = false }
@@ -92,20 +92,20 @@ onBeforeUnmount(() => window.clearTimeout(timer))
 <template>
   <div class="page-stack">
     <div class="page-intro">
-      <div><span class="eyebrow">Live workflow</span><h2>运行一次完整的 Agent 决策</h2><p>选择案例与运行配置，实时观察工具调用、Guardrail 和最终决策。</p></div>
-      <div class="scenario-buttons"><el-button :disabled="isActive" @click="chooseScenario('REF-5602')">安全预约</el-button><el-button type="warning" plain :disabled="isActive" @click="chooseScenario('REF-5703')">负面案例</el-button></div>
+      <div><span class="eyebrow">Live workflow</span><h2>Run a complete Agent decision</h2><p>Select a case and configuration, then observe tool calls, guardrails, and the final decision in real time.</p></div>
+      <div class="scenario-buttons"><el-button :disabled="isActive" @click="chooseScenario('REF-5602')">Safe booking</el-button><el-button type="warning" plain :disabled="isActive" @click="chooseScenario('REF-5703')">Negative case</el-button></div>
     </div>
     <el-alert v-if="error" :title="error" type="error" show-icon closable @close="error = ''" />
 
     <div class="run-layout">
       <section class="panel run-config" v-loading="loadingCases">
-        <div class="panel-heading"><div><span class="step-label">STEP 1</span><h3>配置运行</h3></div><el-tag v-if="selectedCase?.negative_case" type="danger" effect="light">Negative case</el-tag></div>
+        <div class="panel-heading"><div><span class="step-label">STEP 1</span><h3>Configure run</h3></div><el-tag v-if="selectedCase?.negative_case" type="danger" effect="light">Negative case</el-tag></div>
         <el-form label-position="top" @submit.prevent="startRun">
           <div class="filter-row">
-            <el-select v-model="filters.tier" aria-label="案例等级"><el-option label="全部等级" value="all" /><el-option label="Core" value="core" /><el-option label="Extended" value="extended" /></el-select>
-            <el-select v-model="filters.kind" aria-label="案例类型"><el-option label="全部类型" value="all" /><el-option label="Positive" value="false" /><el-option label="Negative" value="true" /></el-select>
+            <el-select v-model="filters.tier" aria-label="Case tier"><el-option label="All tiers" value="all" /><el-option label="Core" value="core" /><el-option label="Extended" value="extended" /></el-select>
+            <el-select v-model="filters.kind" aria-label="Case type"><el-option label="All case types" value="all" /><el-option label="Positive" value="false" /><el-option label="Negative" value="true" /></el-select>
           </div>
-          <el-form-item label="Referral 案例" required>
+          <el-form-item label="Referral case" required>
             <el-select v-model="form.case_id" filterable :disabled="isActive" class="full-width">
               <el-option v-for="item in filteredCases" :key="item.case_id" :label="`${item.case_id} · ${item.design_purpose}`" :value="item.case_id"><span>{{ item.case_id }} · {{ item.design_purpose }}</span><span v-if="item.negative_case" class="option-danger">NEG</span></el-option>
             </el-select>
@@ -122,21 +122,21 @@ onBeforeUnmount(() => window.clearTimeout(timer))
             <el-form-item label="Execution"><el-select v-model="form.execution_mode" :disabled="isActive"><el-option label="Parallel" value="parallel" /><el-option label="Sequential" value="sequential" /></el-select></el-form-item>
             <el-form-item label="Temperature"><el-input-number v-model="form.temperature" :min="0" :step="0.1" :disabled="isActive" /></el-form-item>
           </div>
-          <el-form-item v-if="form.backend === 'live'" label="Exact model ID" required><el-input v-model="form.model" placeholder="openai/gpt-4o-mini" :disabled="isActive" /><div class="form-help">API Key 只从后端环境变量读取。</div></el-form-item>
-          <el-button native-type="submit" type="primary" size="large" class="full-width" :loading="submitting" :disabled="isActive || !form.case_id">{{ isActive ? 'Agent 正在运行' : '运行 Agent' }}</el-button>
+          <el-form-item v-if="form.backend === 'live'" label="Exact model ID" required><el-input v-model="form.model" placeholder="openai/gpt-4o-mini" :disabled="isActive" /><div class="form-help">The API key is read only from the backend environment.</div></el-form-item>
+          <el-button native-type="submit" type="primary" size="large" class="full-width" :loading="submitting" :disabled="isActive || !form.case_id">{{ isActive ? 'Agent is running' : 'Run Agent' }}</el-button>
         </el-form>
       </section>
 
       <section class="panel run-output">
-        <div class="panel-heading"><div><span class="step-label">STEP 2</span><h3>运行过程</h3></div><el-tag :type="status.type" effect="light" round>{{ status.label }}</el-tag></div>
-        <el-empty v-if="!job" description="配置案例后启动 Agent，此处将显示完整执行轨迹。" />
+        <div class="panel-heading"><div><span class="step-label">STEP 2</span><h3>Run trace</h3></div><el-tag :type="status.type" effect="light" round>{{ status.label }}</el-tag></div>
+        <el-empty v-if="!job" description="Configure a case and start the Agent to view the complete execution trace." />
         <template v-else>
-          <div class="run-meta"><span>Job {{ job.job_id }}</span><span>{{ job.case_id }}</span><span v-if="job.updated_at">更新 {{ new Date(job.updated_at).toLocaleTimeString() }}</span></div>
+          <div class="run-meta"><span>Job {{ job.job_id }}</span><span>{{ job.case_id }}</span><span v-if="job.updated_at">Updated {{ new Date(job.updated_at).toLocaleTimeString() }}</span></div>
           <el-progress v-if="isActive" :percentage="job.status === 'confirmation_required' ? 80 : 45" :indeterminate="job.status !== 'confirmation_required'" :duration="2" />
 
           <div v-if="record?.final" class="decision-card" :class="record.final.decision">
             <div><span class="eyebrow">Final decision</span><h3>{{ record.final.decision }}</h3><p>{{ record.final.reason }}</p></div>
-            <div class="decision-result"><span>预期 {{ job.expected?.decision || '—' }}</span><el-tag :type="job.evaluation?.passed === false ? 'danger' : job.evaluation?.passed === true ? 'success' : 'info'">{{ job.evaluation?.passed === true ? '评估通过' : job.evaluation?.passed === false ? '评估失败' : '等待人工评审' }}</el-tag></div>
+            <div class="decision-result"><span>Expected: {{ job.expected?.decision || '—' }}</span><el-tag :type="job.evaluation?.passed === false ? 'danger' : job.evaluation?.passed === true ? 'success' : 'info'">{{ job.evaluation?.passed === true ? 'Evaluation passed' : job.evaluation?.passed === false ? 'Evaluation failed' : 'Pending human review' }}</el-tag></div>
           </div>
           <el-alert v-if="record?.stopped_by" :title="record.stopped_by.code" :description="record.stopped_by.message" type="warning" show-icon :closable="false" class="result-alert" />
           <el-alert v-if="job.error" :title="job.error.type" :description="job.error.message" type="error" show-icon :closable="false" class="result-alert" />
@@ -156,7 +156,7 @@ onBeforeUnmount(() => window.clearTimeout(timer))
               <div class="timeline-content">
                 <div class="timeline-title"><strong>{{ call.name }}</strong><el-tag size="small" :type="call.ok ? 'success' : 'danger'">{{ call.ok ? 'OK' : call.error_code }}</el-tag></div>
                 <div class="timeline-meta"><span>{{ call.observation_tokens }} observation tokens</span><span v-if="call.latency_ms != null">{{ formatNumber(call.latency_ms, 2) }} ms</span></div>
-                <el-collapse><el-collapse-item title="查看参数与 Observation"><div class="json-grid"><div><small>Arguments</small><pre>{{ JSON.stringify(call.arguments, null, 2) }}</pre></div><div><small>Observation</small><pre>{{ JSON.stringify(observations.get(call.id)?.result, null, 2) }}</pre></div></div></el-collapse-item></el-collapse>
+                <el-collapse><el-collapse-item title="View arguments and observation"><div class="json-grid"><div><small>Arguments</small><pre>{{ JSON.stringify(call.arguments, null, 2) }}</pre></div><div><small>Observation</small><pre>{{ JSON.stringify(observations.get(call.id)?.result, null, 2) }}</pre></div></div></el-collapse-item></el-collapse>
               </div>
             </div>
           </div>
@@ -165,14 +165,14 @@ onBeforeUnmount(() => window.clearTimeout(timer))
       </section>
     </div>
 
-    <el-dialog v-model="confirmationOpen" title="人工预约确认" width="min(520px, 92vw)" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
-      <el-alert title="Agent 即将执行不可逆的预约操作" type="warning" show-icon :closable="false" />
+    <el-dialog v-model="confirmationOpen" title="Human booking confirmation" width="min(520px, 92vw)" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
+      <el-alert title="The Agent is about to perform an irreversible booking action." type="warning" show-icon :closable="false" />
       <el-descriptions :column="2" border class="confirmation-details">
         <el-descriptions-item label="Referral">{{ confirmation.referral_id }}</el-descriptions-item><el-descriptions-item label="Clinic">{{ confirmation.clinic }}</el-descriptions-item>
         <el-descriptions-item label="Specialty">{{ confirmation.specialty }}</el-descriptions-item><el-descriptions-item label="Band">{{ confirmation.band }}</el-descriptions-item>
         <el-descriptions-item label="Date">{{ confirmation.date }}</el-descriptions-item><el-descriptions-item label="Time">{{ confirmation.time }}</el-descriptions-item>
       </el-descriptions>
-      <template #footer><el-button :disabled="confirmationSubmitting" @click="submitConfirmation(false)">拒绝预约</el-button><el-button type="primary" :loading="confirmationSubmitting" @click="submitConfirmation(true)">批准预约</el-button></template>
+      <template #footer><el-button :disabled="confirmationSubmitting" @click="submitConfirmation(false)">Reject booking</el-button><el-button type="primary" :loading="confirmationSubmitting" @click="submitConfirmation(true)">Approve booking</el-button></template>
     </el-dialog>
   </div>
 </template>

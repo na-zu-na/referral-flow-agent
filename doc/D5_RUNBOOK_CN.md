@@ -12,6 +12,15 @@ Claude。这些结果使用符合最低通过配置的 52-run 计划：40 个案
 - 费用对账：`D5_COST_RECONCILIATION.md`
 - 原始和审核记录：`results/live/`
 
+在上述 312 次完整 battery 之外，CHEN CHANG 另行完成了
+`anthropic/claude-opus-5` frontier negative-only 补跑：6 个 negative cases
+各运行 3 次，共 18 次，最终通过 10/18，错误预约尝试为 0，实测输入/输出
+tokens 为 272,906/11,195，记录费用为 $1.644405。结果保存在
+`results/live/claude_opus5_frontier_negative_v2_a009c01/`。该结果不包含
+ordinary cases，只能用于 negative-case 对比，不能作为第六个 52-run 全量
+battery。补跑署名及 live-run operator：**CHEN CHANG**；AI judgement review
+由 OpenAI Codex 于 2026-09-18 完成，并建议 operator sign-off。
+
 用当前评分器重现这批历史结果（不调用模型）：
 
 ```bash

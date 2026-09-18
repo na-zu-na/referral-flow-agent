@@ -22,20 +22,20 @@ onMounted(async () => {
         <div v-if="!collapsed" class="brand-copy"><strong>Referral Flow</strong><span>Agent Console</span></div>
       </div>
       <el-menu :default-active="route.path" router class="nav-menu" :collapse="collapsed">
-        <el-menu-item index="/"><el-icon><Monitor /></el-icon><template #title>系统概览</template></el-menu-item>
-        <el-menu-item index="/run"><el-icon><Operation /></el-icon><template #title>Agent 运行</template></el-menu-item>
-        <el-menu-item index="/evidence"><el-icon><DataAnalysis /></el-icon><template #title>实验证据</template></el-menu-item>
-        <el-menu-item index="/audit"><el-icon><Files /></el-icon><template #title>审计日志</template></el-menu-item>
+        <el-menu-item index="/"><el-icon><Monitor /></el-icon><template #title>System Overview</template></el-menu-item>
+        <el-menu-item index="/run"><el-icon><Operation /></el-icon><template #title>Agent Run</template></el-menu-item>
+        <el-menu-item index="/evidence"><el-icon><DataAnalysis /></el-icon><template #title>Evaluation Evidence</template></el-menu-item>
+        <el-menu-item index="/audit"><el-icon><Files /></el-icon><template #title>Audit Logs</template></el-menu-item>
       </el-menu>
-      <button class="collapse-button" type="button" @click="collapsed = !collapsed" :aria-label="collapsed ? '展开导航' : '收起导航'">
-        {{ collapsed ? '»' : '« 收起导航' }}
+      <button class="collapse-button" type="button" @click="collapsed = !collapsed" :aria-label="collapsed ? 'Expand navigation' : 'Collapse navigation'">
+        {{ collapsed ? '»' : '« Collapse' }}
       </button>
     </el-aside>
     <el-container>
       <el-header class="topbar">
         <div><span class="eyebrow">PE6201 · Problem B</span><h1>{{ pageTitle }}</h1></div>
         <el-tag :type="online ? 'success' : 'danger'" effect="light" round>
-          <span class="status-dot" />{{ online ? '后端已连接' : '后端未连接' }}
+          <span class="status-dot" />{{ online ? 'Backend connected' : 'Backend unavailable' }}
         </el-tag>
       </el-header>
       <el-main class="main-content"><router-view /></el-main>

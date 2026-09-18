@@ -34,6 +34,8 @@ class WebApiTests(unittest.TestCase):
         evidence = client.get("/api/evidence")
         self.assertEqual(evidence.status_code, 200)
         self.assertTrue(evidence.get_json()["data"]["d2"]["variants"])
+        qwen = [item for item in evidence.get_json()["data"]["d5"]["models"] if item["model"].startswith("qwen/")]
+        self.assertEqual({item["prompt_version"] for item in qwen}, {"v1", "v2"})
 
     def test_negative_case_run_is_exposed_as_normal_guardrail_result(self):
         client = _client()

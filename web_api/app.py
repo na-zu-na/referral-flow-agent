@@ -9,7 +9,9 @@ from flask import Flask, jsonify, request
 
 from .readers import DataReadError, get_case, list_cases, read_audit_runs, read_evidence, read_tool_calls
 from .run_manager import ConfirmationConflict, RunAlreadyActive, RunManager, RunNotFound
+from dotenv import load_dotenv
 
+load_dotenv()
 
 def _ok(data: Any, status: int = 200):
     return jsonify({"ok": True, "data": data}), status
