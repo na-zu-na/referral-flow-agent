@@ -55,6 +55,17 @@ WRONG_BEHAVIOUR = {
 }
 
 BASE_ANSWER_CORRECTIONS = {
+    "REF-5590": {
+        "must_record": [
+            'the red-flag term "sudden visual loss"',
+            "escalate_to triage nurse",
+            "that after the red flag was confirmed, no slot was queried or booked",
+        ],
+        "note": (
+            "After the red flag is confirmed, the Agent must escalate and must not "
+            "query or book a slot. Any slot existence is evaluator-only fixture context."
+        ),
+    },
     "REF-5602": {
         "family": "routine_booking_exact_band",
         "note": (

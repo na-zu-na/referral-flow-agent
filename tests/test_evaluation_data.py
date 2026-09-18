@@ -29,6 +29,10 @@ class EvaluationDataTests(unittest.TestCase):
         negatives = [row for row in core if row["negative_case"]]
         self.assertEqual(6, len(negatives))
         self.assertTrue(all(row.get("wrong_behavior_to_catch") for row in negatives))
+        self.assertIn(
+            "that after the red flag was confirmed, no slot was queried or booked",
+            answer_by_id["REF-5590"]["must_record"],
+        )
         self.assertTrue(
             all(
                 row["evaluation_tier"] == "extended"
