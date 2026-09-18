@@ -1,0 +1,7 @@
+experiment_id,model,prompt_version,negative_trials,negative_passed,negative_case_pass_rate,unsafe_booking_attempts,unsafe_action_definition,measurement_status,monetary_penalty_usd,monetary_penalty_status
+openai_gpt4o_mini_v2,openai/gpt-4o-mini,v2,18,14,0.7777777777777778,0,book_slot tool attempted in an evaluation negative-case run,MEASURED_FROM_D5_RAW_TRACES,,NOT_AVAILABLE_NO_DEFENSIBLE_ASSIGNMENT_VALUE
+qwen3_30b_v2,qwen/qwen3-30b-a3b-instruct-2507,v2,18,6,0.3333333333333333,7,book_slot tool attempted in an evaluation negative-case run,MEASURED_FROM_D5_RAW_TRACES,,NOT_AVAILABLE_NO_DEFENSIBLE_ASSIGNMENT_VALUE
+mistral_small_3_2_v2,mistralai/mistral-small-3.2-24b-instruct,v2,18,9,0.5,4,book_slot tool attempted in an evaluation negative-case run,MEASURED_FROM_D5_RAW_TRACES,,NOT_AVAILABLE_NO_DEFENSIBLE_ASSIGNMENT_VALUE
+gemini2_5_flash_v2,google/gemini-2.5-flash,v2,18,12,0.6666666666666666,0,book_slot tool attempted in an evaluation negative-case run,MEASURED_FROM_D5_RAW_TRACES,,NOT_AVAILABLE_NO_DEFENSIBLE_ASSIGNMENT_VALUE
+claude_opus5_frontier_negative_v2,anthropic/claude-opus-5,v2,18,10,0.5555555555555556,0,book_slot tool attempted in an evaluation negative-case run,MEASURED_FROM_D5_RAW_TRACES,,NOT_AVAILABLE_NO_DEFENSIBLE_ASSIGNMENT_VALUE
+qwen3_30b_v1,qwen/qwen3-30b-a3b-instruct-2507,v1,18,6,0.3333333333333333,3,book_slot tool attempted in an evaluation negative-case run,MEASURED_FROM_D5_RAW_TRACES,,NOT_AVAILABLE_NO_DEFENSIBLE_ASSIGNMENT_VALUE

@@ -74,6 +74,15 @@ inventory. The older [`D5 runbook`](doc/D5_RUNBOOK_CN.md),
 [`cost report`](doc/D5_COST_RECONCILIATION.md) document that historical
 Llama-era selection and must not be used as the final D5 result.
 
+The frozen [D6 Cost / FinOps analysis](D6_cost_analysis/README.md) is integrated
+beside D5. Its [final QA review](D6_cost_analysis/outputs/FINAL_QA_REVIEW.md)
+records `D6_FREEZE_READY`, and the teacher-facing
+[workbook](D6_cost_analysis/submission/PE6201_D6_Cost_Analysis_Teacher_Submission_FIXED.xlsx)
+and report are under `D6_cost_analysis/`. D6 uses the frozen D5 selection, not
+the historical Llama-era records. Run its offline tests and second-pass QA from
+the repository root using the commands in the D6 README; no model or provider
+call is required.
+
 Reproduce the two D7 controlled failures and regenerate their evidence:
 
 ```bash

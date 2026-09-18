@@ -1,2 +1,3 @@
 # Keep the frozen D5 evidence byte-for-byte, including its original line endings.
 D5/** -text whitespace=cr-at-eol
+D6_cost_analysis/** -text whitespace=cr-at-eol
