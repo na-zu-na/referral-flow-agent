@@ -80,6 +80,10 @@ class WebApiTests(unittest.TestCase):
 
     def test_audit_and_validation_endpoints(self):
         client = _client()
+        all_runs = client.get("/api/audit/runs?limit=500").get_json()["data"]
+        self.assertEqual(all_runs["count"], 278)
+        self.assertEqual(len(all_runs["models"]), 5)
+        self.assertFalse(any(item["model"].startswith("meta-llama/") for item in all_runs["items"]))
         runs = client.get("/api/audit/runs?negative_case=true&limit=2")
         self.assertEqual(runs.status_code, 200)
         items = runs.get_json()["data"]["items"]

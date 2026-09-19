@@ -143,6 +143,9 @@ pre { max-height: 260px; overflow: auto; margin: 5px 0 0; padding: 10px; border-
 .model-chart .chart.chart--compact { height: 360px; }
 .model-comparison-note { margin-bottom: 14px; padding: 11px 14px; color: #516479; background: #f5f9fb; border: 1px solid #d8e5eb; border-radius: 8px; font-size: 12px; line-height: 1.55; }
 .model-comparison-note strong { color: var(--primary); }
+.claude-stress { margin: 0 0 18px; padding: 18px; border: 1px solid #ead8c2; border-radius: 9px; background: #fffbf5; }
+.claude-stress .distribution-strip { margin: 14px 0 10px; }
+.claude-stress-note { margin: 0; color: #7a6b59; font-size: 12px; }
 .model-id-cell { min-width: 0; display: flex; align-items: flex-start; flex-direction: column; gap: 5px; }
 .model-name-ellipsis { display: block; width: 100%; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .policy-heading { margin-bottom: 16px; }

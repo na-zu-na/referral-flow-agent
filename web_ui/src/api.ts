@@ -37,7 +37,7 @@ export const api = {
     method: 'POST', body: JSON.stringify({ approved }),
   }),
   evidence: () => request<Row>('/api/evidence'),
-  auditRuns: (filters: Row) => request<{ items: Row[]; count: number }>(`/api/audit/runs${query(filters)}`),
+  auditRuns: (filters: Row) => request<{ items: Row[]; count: number; models: string[] }>(`/api/audit/runs${query(filters)}`),
   toolCalls: (runId: string) => request<{ items: Row[]; count: number }>(`/api/audit/tool-calls?run_id=${encodeURIComponent(runId)}`),
 }
 

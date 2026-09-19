@@ -22,7 +22,7 @@ async function load() {
   try {
     const data = await api.auditRuns(filters)
     rows.value = data.items
-    if (!modelOptions.value.length) modelOptions.value = [...new Set(rows.value.map((row) => row.model).filter(Boolean))].sort()
+    modelOptions.value = data.models
   } catch (exc: any) { error.value = exc.message }
   finally { loading.value = false }
 }

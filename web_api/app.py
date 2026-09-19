@@ -7,7 +7,7 @@ from typing import Any
 
 from flask import Flask, jsonify, request
 
-from .readers import DataReadError, get_case, list_cases, read_audit_runs, read_evidence, read_tool_calls
+from .readers import DataReadError, get_case, list_cases, read_audit_models, read_audit_runs, read_evidence, read_tool_calls
 from .run_manager import ConfirmationConflict, RunAlreadyActive, RunManager, RunNotFound
 from dotenv import load_dotenv
 
@@ -130,7 +130,7 @@ def create_app(*, manager: RunManager | None = None) -> Flask:
             case_id=request.args.get("case_id"), model=request.args.get("model"),
             passed=passed, negative_case=negative, limit=limit,
         )
-        return _ok({"items": items, "count": len(items)})
+        return _ok({"items": items, "count": len(items), "models": read_audit_models()})
 
     @app.get("/api/audit/tool-calls")
     def audit_tool_calls():

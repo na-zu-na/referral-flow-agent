@@ -130,18 +130,24 @@ def read_evidence() -> dict[str, Any]:
     }
 
 
-def _live_csv(name: str) -> list[dict[str, Any]]:
+def _selected_d5_csv(name: str) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
-    for path in sorted((RESULTS / "live").glob(f"*/scored_reviewed/{name}")):
-        rows.extend(_csv(path))
+    selected = _json(D5_PACKAGE / "live" / "SELECTED_FINAL_INDEX.json")
+    for experiment in selected.get("selected_v2", []) + selected.get("prompt_control", []):
+        path = D5_PACKAGE / "live" / experiment["experiment_id"] / "scored_reviewed" / name
+        rows.extend(_csv_if_present(path))
     return rows
+
+
+def read_audit_models() -> list[str]:
+    return sorted({str(row["model"]) for row in _selected_d5_csv("runs.csv") if row.get("model")})
 
 
 def read_audit_runs(
     *, case_id: str | None = None, model: str | None = None,
     passed: bool | None = None, negative_case: bool | None = None, limit: int = 100,
 ) -> list[dict[str, Any]]:
-    rows = _live_csv("runs.csv")
+    rows = _selected_d5_csv("runs.csv")
     return [
         row for row in rows
         if (case_id is None or row.get("case_id") == case_id)
@@ -152,11 +158,11 @@ def read_audit_runs(
 
 
 def read_tool_calls(run_id: str) -> list[dict[str, Any]] | None:
-    run_ids = {row.get("run_id") for row in _live_csv("runs.csv")}
+    run_ids = {row.get("run_id") for row in _selected_d5_csv("runs.csv")}
     if run_id not in run_ids:
         return None
     keys = ["turn", "tool_name", "descriptor_version", "observation_tokens", "observation_chars", "latency_ms", "ok", "error_code"]
     return [
         {key: row.get(key) for key in keys}
-        for row in _live_csv("tool_calls.csv") if row.get("run_id") == run_id
+        for row in _selected_d5_csv("tool_calls.csv") if row.get("run_id") == run_id
     ]
