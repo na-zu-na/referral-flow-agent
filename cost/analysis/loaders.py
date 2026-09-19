@@ -18,7 +18,7 @@ def jsonl_rows(path: Path) -> list[dict]:
 
 def inventory() -> list[dict]:
     rows = csv_rows(D5 / "SELECTED_5PLUS1_INVENTORY.csv")
-    index = json.loads((D5 / "results" / "live" / "SELECTED_FINAL_INDEX.json").read_text(encoding="utf-8"))
+    index = json.loads((D5 / "live" / "SELECTED_FINAL_INDEX.json").read_text(encoding="utf-8"))
     selected = index["selected_v2"] + index["prompt_control"]
     if len(rows) != 6 or {r["experiment_id"] for r in rows} != {r["experiment_id"] for r in selected}:
         raise ValueError("Frozen D5 inventory/index disagree")
@@ -35,14 +35,14 @@ def inventory() -> list[dict]:
 
 
 def score_rows() -> list[dict]:
-    return csv_rows(ROOT / "D5" / "D5_NORMALIZED_SCORE_CHANGES.csv")
+    return csv_rows(D5 / "D5_NORMALIZED_SCORE_CHANGES.csv")
 
 
 def load_batteries() -> dict[str, dict]:
     result = {}
     for item in inventory():
         bid = item["experiment_id"]
-        base = D5 / "results" / "live" / bid
+        base = D5 / "live" / bid
         result[bid] = {
             "inventory": item,
             "runs": csv_rows(base / "scored_reviewed" / "runs.csv"),

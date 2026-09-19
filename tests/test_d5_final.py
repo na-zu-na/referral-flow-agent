@@ -2,16 +2,11 @@
 
 import csv
 import json
-import sys
 import unittest
 from collections import Counter
 from decimal import Decimal
-from pathlib import Path
 
-D5 = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(D5))
-
-import final_5plus1 as final  # noqa: E402
+from evaluation import d5_final as final
 
 
 class FinalFivePlusOneTest(unittest.TestCase):

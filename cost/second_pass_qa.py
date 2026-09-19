@@ -18,19 +18,19 @@ from openpyxl import load_workbook
 
 
 ROOT = Path(__file__).resolve().parent.parent
-D5 = ROOT / "D5"
-D6 = ROOT / "D6_cost_analysis"
-OUT = D6 / "outputs"
-XLSX = D6 / "submission" / "PE6201_D6_Cost_Analysis_Teacher_Submission_FIXED.xlsx"
+D5 = ROOT / "results" / "d5"
+D6 = ROOT / "results" / "d6"
+OUT = D6
+XLSX = ROOT / "doc" / "PE6201_D6_Cost_Analysis_Teacher_Submission_FIXED.xlsx"
 
 FROZEN_SHA256 = {
-    "D5/FINAL_5PLUS1_QA.md": "46B64DEAE2836383463C253FC9E14DED1A694B2E240EE4490EB329C183B1881B",
-    "D5/D5_NORMALIZED_SCORE_CHANGES.csv": "B747D93283CB7394AA8F1E72CB620AD29CE43ABC962568EB24A94AB7A3E5086F",
-    "D5/SCORING_NORMALIZATION_AUDIT.md": "378E8B5B1F9E15451DEEB7A892E86FA74F0197FE68D1764FF8D2AFC20C996EBC",
-    "D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/SELECTED_5PLUS1_INVENTORY.csv": "824B0A69E15FD01E3D6EF7D4BE44164490D52CB69A907ACEA219E3CF97513E2F",
-    "D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/results/live/SELECTED_FINAL_INDEX.json": "4EE79A84FF3C02AB99DCD69A7685D0C6D9044C854D34637F20EF1D6B583C4FC8",
-    "D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/D5_COMPARISON.md": "EDD927B78DFB1D75B7F5795ECBC0503929C2ED44744400B914DDED32BBCFE249",
-    "D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/D5_COST_RECONCILIATION.md": "7A4AB7DA3C2C2B3A28F8DD1B91569D0FE5DF57C46BE9ED697C1F8DB511716B9A",
+    "doc/D5_FINAL_QA.md": "3D15ECD7B9AE8612240428D3E07293BCD4EDB0C5FC7610B4922EBB00FB403403",
+    "results/d5/D5_NORMALIZED_SCORE_CHANGES.csv": "B747D93283CB7394AA8F1E72CB620AD29CE43ABC962568EB24A94AB7A3E5086F",
+    "doc/D5_SCORING_NORMALIZATION_AUDIT.md": "378E8B5B1F9E15451DEEB7A892E86FA74F0197FE68D1764FF8D2AFC20C996EBC",
+    "results/d5/SELECTED_5PLUS1_INVENTORY.csv": "824B0A69E15FD01E3D6EF7D4BE44164490D52CB69A907ACEA219E3CF97513E2F",
+    "results/d5/live/SELECTED_FINAL_INDEX.json": "51070EC767DCBC94124CD3E90917DFD03E5F10475B3A5E34C918DB4AEE4783C3",
+    "results/d5/D5_COMPARISON.md": "64AC68F4D0827DA61B59DC9207B2BB403740E8C4DFB963A828CEA2B359A67C4E",
+    "results/d5/D5_COST_RECONCILIATION.md": "7A4AB7DA3C2C2B3A28F8DD1B91569D0FE5DF57C46BE9ED697C1F8DB511716B9A",
 }
 EXPECTED = {
     "openai_gpt4o_mini_v2": (52, 17, 35, 0, 14, 4, 0, 29644.075883888887),
@@ -42,8 +42,8 @@ EXPECTED = {
 }
 V2_ORDER = list(EXPECTED)[:5]
 LEGACY = [
-    "outputs/missing_cost_sensitivity.csv",
-    "outputs/pareto_frontier.csv",
+    "missing_cost_sensitivity.csv",
+    "pareto_frontier.csv",
     "preflight/d6_readiness_matrix.csv",
     "preflight/experiment_integrity.md",
     "preflight/phase_a_summary.md",
@@ -79,7 +79,7 @@ def main() -> None:
         check(digest == expected_digest, f"Frozen D5 hash drift: {relative}: {digest}")
     print(f"PASS: current D5 SHA-256 baseline matched ({len(FROZEN_SHA256)}/{len(FROZEN_SHA256)} key files)")
 
-    index = json.loads((D5 / "outputs/D5_MINIMAL_GITHUB_PACKAGE/results/live/SELECTED_FINAL_INDEX.json").read_text(encoding="utf-8"))
+    index = json.loads((D5 / "live/SELECTED_FINAL_INDEX.json").read_text(encoding="utf-8"))
     experiments = index["selected_v2"] + index["prompt_control"]
     check([e["experiment_id"] for e in experiments] == list(EXPECTED), "Selected D5 5+1 inventory/order")
     source = rows(D5 / "D5_NORMALIZED_SCORE_CHANGES.csv")
@@ -209,11 +209,10 @@ def main() -> None:
     print("PASS: 11-sheet workbook cached formulas, row values, visible scope and layout checks")
 
     current_paths = [p for p in OUT.rglob("*") if p.is_file() and p.suffix.lower() in {".csv", ".json", ".md"} and p.name not in {"FINAL_QA_REVIEW.md", "missing_cost_sensitivity.csv", "pareto_frontier.csv"}]
-    current_paths += [p for p in (D6 / "src").rglob("*") if p.is_file() and p.suffix.lower() in {".py", ".yaml"}]
-    current_paths += [p for p in (D6 / "preflight").rglob("*") if p.is_file() and p.suffix.lower() in {".csv", ".md", ".py"} and str(p.relative_to(D6)).replace("\\", "/") not in LEGACY]
+    current_paths += [p for p in (ROOT / "cost" / "analysis").rglob("*") if p.is_file() and p.suffix.lower() in {".py", ".yaml"}]
     for path in current_paths:
         content = path.read_text(encoding="utf-8-sig").lower()
-        check(not any(term in content for term in STALE), f"Active stale string in {path.relative_to(D6)}")
+        check(not any(term in content for term in STALE), f"Active stale string in {path.relative_to(ROOT)}")
     legacy_present = [relative for relative in LEGACY if (D6 / relative).exists()]
     print(f"PASS: active generated/source stale-string sweep ({len(current_paths)} files)")
     print(f"BLOCKER: {len(legacy_present)} superseded Llama-era audit/output files retained after automatic deletion review rejection")

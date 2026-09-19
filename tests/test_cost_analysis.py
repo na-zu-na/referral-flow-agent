@@ -7,18 +7,18 @@ from pathlib import Path
 
 import numpy as np
 
-from D6_cost_analysis.src.bootstrap import bootstrap_metrics, cluster_sample
-from D6_cost_analysis.src.config import D6, FAILURE_COST_USD, MONTHLY_REFERRALS
-from D6_cost_analysis.src.cost_engine import break_even, case_balanced_mean, pass_rates, sensitivity_rates
-from D6_cost_analysis.src.loaders import inventory, load_batteries, score_rows
-from D6_cost_analysis.src.normalization import normalized_runs, normalized_tool_calls
-from D6_cost_analysis.src.pareto import pareto_status
-from D6_cost_analysis.src.pipeline import _common_negative, _safety, _spend, _summaries
-from D6_cost_analysis.src.failure_analysis import taxonomy_rows
+from cost.analysis.bootstrap import bootstrap_metrics, cluster_sample
+from cost.analysis.config import D6, FAILURE_COST_USD, MONTHLY_REFERRALS
+from cost.analysis.cost_engine import break_even, case_balanced_mean, pass_rates, sensitivity_rates
+from cost.analysis.loaders import inventory, load_batteries, score_rows
+from cost.analysis.normalization import normalized_runs, normalized_tool_calls
+from cost.analysis.pareto import pareto_status
+from cost.analysis.pipeline import _common_negative, _safety, _spend, _summaries
+from cost.analysis.failure_analysis import taxonomy_rows
 
 
 def output_rows(name):
-    with (D6/"outputs"/name).open(encoding="utf-8",newline="") as stream:
+    with (D6/name).open(encoding="utf-8",newline="") as stream:
         return list(csv.DictReader(stream))
 
 
@@ -122,7 +122,7 @@ class OutputTests(unittest.TestCase):
         self.assertEqual(claude["trial_weighted_monthly_cost"],"")
 
     def test_output_reconciliation(self):
-        report=json.loads((D6/"outputs"/"cost_report.json").read_text(encoding="utf-8"))
+        report=json.loads((D6/"cost_report.json").read_text(encoding="utf-8"))
         runs=output_rows("formal_runs_normalized.csv")
         spend=output_rows("evaluation_spend_reconciliation.csv")
         self.assertEqual((len(runs),report["selected_scored_run_count"],report["provider_cost_coverage"]),(278,278,"278/278"))

@@ -5,7 +5,8 @@ import { fileURLToPath } from "node:url";
 import { SpreadsheetFile, Workbook } from "@oai/artifact-tool";
 
 const root=path.dirname(fileURLToPath(import.meta.url));
-const report=JSON.parse(await fs.readFile(path.join(root,"outputs/cost_report.json"),"utf8"));
+const repo=path.dirname(root);
+const report=JSON.parse(await fs.readFile(path.join(repo,"results/d6/cost_report.json"),"utf8"));
 const wb=Workbook.create();
 const names=["Executive_Summary","Model_Cost","Prompt_Impact","Evaluation_Spend","Sensitivity",
              "Break_Even","Uncertainty","Cost_Levers","Safety_Reliability","Cost_Guardrails","Methodology_Limits"];
@@ -256,7 +257,7 @@ for(const name of names){
   const preview=await wb.render({sheetName:name,range:previewRanges[name],scale:1,format:"png"});
   await fs.writeFile(path.join(previewDir,name+".png"),new Uint8Array(await preview.arrayBuffer()));
 }
-const outputDir=path.join(root,"submission");
+const outputDir=path.join(repo,"doc");
 await fs.mkdir(outputDir,{recursive:true});
 const output=await SpreadsheetFile.exportXlsx(wb);
 const target=path.join(outputDir,"PE6201_D6_Cost_Analysis_Teacher_Submission_FIXED.xlsx");

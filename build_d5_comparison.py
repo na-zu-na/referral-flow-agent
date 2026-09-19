@@ -266,6 +266,6 @@ def main() -> None:
 
 
 if __name__ == "__main__":
-    from D5.final_5plus1 import main as final_main
+    from evaluation.d5_final import main as final_main
 
     final_main()

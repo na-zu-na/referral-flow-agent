@@ -2,10 +2,10 @@ from decimal import Decimal
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-D6 = ROOT / "D6_cost_analysis"
-OUT = D6 / "outputs"
-D5 = ROOT / "D5" / "outputs" / "D5_MINIMAL_GITHUB_PACKAGE"
-REPO = ROOT if (ROOT / "evaluation").is_dir() else ROOT / "referral-flow-agent"
+D6 = ROOT / "results" / "d6"
+OUT = D6
+D5 = ROOT / "results" / "d5"
+REPO = ROOT
 
 MONTHLY_REFERRALS = 4000
 NURSE_HOURLY_COST_USD = Decimal("55")

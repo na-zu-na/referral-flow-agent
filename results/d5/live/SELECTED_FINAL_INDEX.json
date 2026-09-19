@@ -81,7 +81,7 @@
       "selected_final": true
     }
   ],
-  "scoring_basis": "D5/SCORING_NORMALIZATION_AUDIT.md",
+  "scoring_basis": "doc/D5_SCORING_NORMALIZATION_AUDIT.md",
   "normalization_rows": 278,
   "changed_score_rows": 0,
   "claude_overall_pass_rate": "N/A_NEGATIVE_ONLY_SCOPE",

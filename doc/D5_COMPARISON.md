@@ -1,7 +1,7 @@
 # D5 live-model comparison (historical archive)
 
 > Superseded Llama-era selection. The final frozen 5+1 comparison is
-> [D5_COMPARISON.md](../D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/D5_COMPARISON.md).
+> [D5_COMPARISON.md](../results/d5/D5_COMPARISON.md).
 > Do not use the figures below as the final D5 inventory or selected spend.
 
 Source commit: `3d842b705afb58610a781b2351ddc27d3d9ccc0b`. Each model uses 40 cases and 52 trials.

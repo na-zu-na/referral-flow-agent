@@ -6,19 +6,19 @@
 
 ## Frozen provenance and selection
 
-The primary source is `D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/`: `SELECTED_5PLUS1_INVENTORY.csv`; `results/live/SELECTED_FINAL_INDEX.json`; and each selected experiment's `scored_reviewed/runs.csv`, `trials.csv`, `tool_calls.csv`, `raw_checkpoint.jsonl`, `battery_manifest.json`, and any `provider_errors.jsonl`. Score normalization is joined from `D5/D5_NORMALIZED_SCORE_CHANGES.csv`; `D5/FINAL_5PLUS1_QA.md`, `D5/SCORING_NORMALIZATION_AUDIT.md`, `D5_COMPARISON.md` and `D5_COST_RECONCILIATION.md` document the freeze. The Agent repository's `results/live` is **not** substituted as primary evidence. Its D2 compact control is separate engineering evidence only.
+The primary source is `results/d5/`: `SELECTED_5PLUS1_INVENTORY.csv`; `live/SELECTED_FINAL_INDEX.json`; and each selected experiment's `scored_reviewed/runs.csv`, `trials.csv`, `tool_calls.csv`, `raw_checkpoint.jsonl`, `battery_manifest.json`, and any `provider_errors.jsonl`. Score normalization is joined from `results/d5/D5_NORMALIZED_SCORE_CHANGES.csv`; `doc/D5_FINAL_QA.md`, `doc/D5_SCORING_NORMALIZATION_AUDIT.md`, `results/d5/D5_COMPARISON.md` and `results/d5/D5_COST_RECONCILIATION.md` document the freeze. The historical `results/live/` archive is **not** substituted as primary evidence. Its D2 compact control is separate engineering evidence only.
 
 The following SHA-256 values are the current D5 baseline checked by D6. The D5 QA hash was refreshed after the operator-responsibility metadata correction; the other six analytical evidence files are unchanged. D5 test discovery passes 5/5.
 
 | D5 file (relative to workspace) | Current SHA-256 baseline |
 | --- | --- |
-| `D5/FINAL_5PLUS1_QA.md` | `46B64DEAE2836383463C253FC9E14DED1A694B2E240EE4490EB329C183B1881B` |
-| `D5/D5_NORMALIZED_SCORE_CHANGES.csv` | `B747D93283CB7394AA8F1E72CB620AD29CE43ABC962568EB24A94AB7A3E5086F` |
-| `D5/SCORING_NORMALIZATION_AUDIT.md` | `378E8B5B1F9E15451DEEB7A892E86FA74F0197FE68D1764FF8D2AFC20C996EBC` |
-| `D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/SELECTED_5PLUS1_INVENTORY.csv` | `824B0A69E15FD01E3D6EF7D4BE44164490D52CB69A907ACEA219E3CF97513E2F` |
-| `D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/results/live/SELECTED_FINAL_INDEX.json` | `4EE79A84FF3C02AB99DCD69A7685D0C6D9044C854D34637F20EF1D6B583C4FC8` |
-| `D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/D5_COMPARISON.md` | `EDD927B78DFB1D75B7F5795ECBC0503929C2ED44744400B914DDED32BBCFE249` |
-| `D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/D5_COST_RECONCILIATION.md` | `7A4AB7DA3C2C2B3A28F8DD1B91569D0FE5DF57C46BE9ED697C1F8DB511716B9A` |
+| `doc/D5_FINAL_QA.md` | `3D15ECD7B9AE8612240428D3E07293BCD4EDB0C5FC7610B4922EBB00FB403403` |
+| `results/d5/D5_NORMALIZED_SCORE_CHANGES.csv` | `B747D93283CB7394AA8F1E72CB620AD29CE43ABC962568EB24A94AB7A3E5086F` |
+| `doc/D5_SCORING_NORMALIZATION_AUDIT.md` | `378E8B5B1F9E15451DEEB7A892E86FA74F0197FE68D1764FF8D2AFC20C996EBC` |
+| `results/d5/SELECTED_5PLUS1_INVENTORY.csv` | `824B0A69E15FD01E3D6EF7D4BE44164490D52CB69A907ACEA219E3CF97513E2F` |
+| `results/d5/live/SELECTED_FINAL_INDEX.json` | `51070EC767DCBC94124CD3E90917DFD03E5F10475B3A5E34C918DB4AEE4783C3` |
+| `results/d5/D5_COMPARISON.md` | `64AC68F4D0827DA61B59DC9207B2BB403740E8C4DFB963A828CEA2B359A67C4E` |
+| `results/d5/D5_COST_RECONCILIATION.md` | `7A4AB7DA3C2C2B3A28F8DD1B91569D0FE5DF57C46BE9ED697C1F8DB511716B9A` |
 
 Final 5+1: four 52-run full-battery V2 models (GPT-4o-mini, Qwen 3 30B, Mistral Small 3.2, Gemini 2.5 Flash); Claude Opus 5 V2 on 18 negative-only trials; and Qwen V1 on 52 matched prompt-control trials. Thus **4 × 52 + 18 + 52 = 278** selected scored rows, **278/278** measured provider charges, zero score-label changes, and 89 invalid model outputs. The five V2 families are OpenAI, Qwen, Mistral, Google and Anthropic. GPT/Qwen/Mistral/Gemini are the team's lower-price tier and Claude the team-selected Frontier tier: two tiers. No official course mapping of these exact model IDs is claimed. Claude used the Section 7 Frontier negative-only exception.
 
@@ -68,14 +68,14 @@ General sensitivity moves success by **±10 percentage points**, clamps to [0,1]
 
 ## Second-pass tests and integrity
 
-All commands were local; no model, OpenRouter, LLM/provider or other external API call was made. The Python 3.13 path previously supplied does not exist on this machine; the installed bundled Python at `C:\Users\13238\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe` was used.
+All current integration checks were local; no model, OpenRouter, LLM/provider or other external API call was made.
 
 | Suite / working directory | Exact command | Result |
 | --- | --- | --- |
-| D6 / `D:\fuckingwork` | `& 'C:\Users\13238\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' -B -m unittest discover -s D6_cost_analysis/tests -p 'test_*.py' -v` | 11/11 pass |
-| Frozen D5 / `D:\fuckingwork` | `& 'C:\Users\13238\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' -B -m unittest discover -s D5/tests -p 'test_*.py' -v` | 5/5 pass |
-| Agent / `D:\fuckingwork\referral-flow-agent` | `& 'C:\Users\13238\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' -B -m unittest discover -s tests -p 'test_*.py' -q` | 94/94 pass |
-| Independent second pass / `D:\fuckingwork` | `& 'C:\Users\13238\.cache\codex-runtimes\codex-primary-runtime\dependencies\python\python.exe' -B D6_cost_analysis/second_pass_qa.py` | 2,169 calculation/integrity assertions pass; 0 legacy release blockers after authorized removal |
+| D6 integrated cost tests / repository root | `.venv\Scripts\python.exe -B -m unittest tests.test_cost_analysis -v` | 11/11 pass |
+| D5 integrated final tests / repository root | `.venv\Scripts\python.exe -B -m unittest tests.test_d5_final -v` | 5/5 pass |
+| Complete repository suite / repository root | `.venv\Scripts\python.exe -B -m unittest discover -s tests -p 'test_*.py' -q` | 116/116 pass |
+| Independent second pass / repository root | `.venv\Scripts\python.exe -B -m cost.second_pass_qa` | 2,169 calculation/integrity assertions pass; 0 release blockers |
 
 The second pass re-read frozen D5 row-level scores, usage and provider charges; compared selected keys and all 18 common negative keys; compared D6 CSV with Markdown and JSON; reopened all 11 XLSX sheets with openpyxl in formula and cached-value modes; checked formula errors, hidden rows, scope, displayed numerators, key values, column width and wrapping. Workbook previews were rendered and visually inspected during the build. After removal, the read-only release QA passed 2,169 assertions and a stale-string sweep of 44 active source/generated/preflight files, with zero retained legacy blockers. The seven files in the disposition table are absent; the audit table itself is historical metadata, not active model logic.
 
@@ -107,7 +107,7 @@ Automatic command review initially rejected deletion because of audit-evidence r
 6. `preflight/repository_audit.md`
 7. `preflight/scripts/audit_phase_a.py`
 
-The earlier D6 rebuild changed/new implementation files `run_cost_analysis.py`, `src/`, `tests/test_cost_analysis.py`, `build_teacher_workbook.mjs`, and `second_pass_qa.py`, and generated the current analysis outputs and workbook. **This authorized disposition turn did not rerun or regenerate any of those.** It changed only `README.md` and this QA review in addition to the seven removals. A before/after SHA-256 comparison found **37/37 current valid D6 deliverables unchanged**, including all current CSV/Markdown/JSON/PNG/preflight results and the teacher XLSX. Frozen D5 key hashes remained **7/7 unchanged**. D5 and Agent code/results changed: **zero**.
+The earlier D6 rebuild generated the current analysis outputs and workbook. The later repository integration moved implementation into `cost/`, evidence into `results/d5/` and `results/d6/`, tests into `tests/`, and documentation/workbook into `doc/`. Analytical CSV/JSON/PNG/XLSX values were not regenerated by the layout change. Current D5 baseline hashes match **7/7** and the complete integrated suite passes **116/116**.
 
 The locally unavailable matching Section 7 update PDF remains a **WARN only**; the user-supplied updated reference figures are labelled as unverified from that local official PDF.
 

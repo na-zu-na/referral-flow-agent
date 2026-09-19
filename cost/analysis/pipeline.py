@@ -1,4 +1,4 @@
-"""Deterministic D6 pipeline. Reads only D5/repository; writes only D6/outputs."""
+"""Deterministic D6 pipeline. Reads selected D5 evidence and writes results/d6."""
 from __future__ import annotations
 
 import csv

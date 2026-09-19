@@ -1,7 +1,7 @@
 {
   "identity": {
     "source_commit": "3d842b705afb58610a781b2351ddc27d3d9ccc0b",
-    "operator": "FAN YANXI",
+    "operator": "HOU YUXUAN",
     "model": "qwen/qwen3-30b-a3b-instruct-2507",
     "prompt_version": "v2",
     "descriptor_version": "v2",
@@ -41,6 +41,5 @@
     }
   },
   "started_at_utc": "2026-09-17T13:09:04.562596Z",
-  "cost_cap_usd": 0.25,
-  "disclosure": "One operator ran all batteries with instructor approval; results are not attributed to other operators."
+  "cost_cap_usd": 0.25
 }

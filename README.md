@@ -6,6 +6,7 @@ guardrails with the complete Member 1 single-agent ReAct controller.
 The default is free and offline:
 
 ```bash
+python3 -m pip install -r requirements.txt
 python3 main.py REF-5602 --verbose
 ```
 
@@ -52,11 +53,11 @@ The scoring and judgement-review workflow is documented in
 Reviewed scripted V1/V2 evidence is summarized in
 [`results/d4_policy_model_summary.csv`](results/d4_policy_model_summary.csv).
 
-The frozen final D5 5+1 selection is in [`D5/`](D5/FINAL_5PLUS1_QA.md).
-Its authoritative [model comparison](D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/D5_COMPARISON.md),
-[cost reconciliation](D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/D5_COST_RECONCILIATION.md),
-[selected inventory](D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/SELECTED_5PLUS1_INVENTORY.csv),
-and [scoring audit](D5/SCORING_NORMALIZATION_AUDIT.md) are based on 278 saved
+The frozen final D5 5+1 evidence is integrated under [`results/d5/`](results/d5/).
+Its authoritative [model comparison](results/d5/D5_COMPARISON.md),
+[cost reconciliation](results/d5/D5_COST_RECONCILIATION.md),
+[selected inventory](results/d5/SELECTED_5PLUS1_INVENTORY.csv),
+and [scoring audit](doc/D5_SCORING_NORMALIZATION_AUDIT.md) are based on 278 saved
 scored runs: four 52-run full V2 batteries, 18 Claude Opus 5 negative-only
 runs, and the 52-run Qwen V1 prompt control. The V2 models span five families
 and two team-selected price tiers (GPT/Qwen/Mistral/Gemini lower-price;
@@ -65,8 +66,8 @@ course officially maps these exact model IDs to tiers. The selected scored
 provider spend is US$2.13502002. Claude has no full-battery pass rate; Llama
 is not in the final selection.
 
-For offline verification, run `python D5/final_5plus1.py --audit-only` and
-`python -m unittest discover -s D5/tests -v`. These commands do not call a
+For offline verification, run `python -m evaluation.d5_final --audit-only` and
+`python -m unittest tests.test_d5_final -v`. These commands do not call a
 model or provider. The source-run archive in [`results/live/`](results/live/)
 is retained, including superseded Llama evidence; it is not the final selected
 inventory. The older [`D5 runbook`](doc/D5_RUNBOOK_CN.md),
@@ -74,11 +75,11 @@ inventory. The older [`D5 runbook`](doc/D5_RUNBOOK_CN.md),
 [`cost report`](doc/D5_COST_RECONCILIATION.md) document that historical
 Llama-era selection and must not be used as the final D5 result.
 
-The frozen [D6 Cost / FinOps analysis](D6_cost_analysis/README.md) is integrated
-beside D5. Its [final QA review](D6_cost_analysis/outputs/FINAL_QA_REVIEW.md)
+The frozen [D6 Cost / FinOps analysis](doc/D6_COST_ANALYSIS.md) is integrated
+with the project cost package. Its [final QA review](results/d6/FINAL_QA_REVIEW.md)
 records `D6_FREEZE_READY`, and the teacher-facing
-[workbook](D6_cost_analysis/submission/PE6201_D6_Cost_Analysis_Teacher_Submission_FIXED.xlsx)
-and report are under `D6_cost_analysis/`. D6 uses the frozen D5 selection, not
+[workbook](doc/PE6201_D6_Cost_Analysis_Teacher_Submission_FIXED.xlsx)
+and reports are under `results/d6/`. D6 uses the frozen D5 selection, not
 the historical Llama-era records. Run its offline tests and second-pass QA from
 the repository root using the commands in the D6 README; no model or provider
 call is required.

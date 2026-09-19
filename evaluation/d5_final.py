@@ -16,13 +16,10 @@ from decimal import Decimal
 from pathlib import Path
 from statistics import mean
 
-D5 = Path(__file__).resolve().parent
-WORKSPACE = D5.parent
-# The frozen analysis originally lived beside this repository. Resolve both
-# that source layout and the integrated in-repository layout offline.
-AGENT = WORKSPACE if (WORKSPACE / "evaluation").is_dir() else WORKSPACE / "referral-flow-agent"
-PACKAGE = D5 / "outputs" / "D5_MINIMAL_GITHUB_PACKAGE"
-LIVE = PACKAGE / "results" / "live"
+AGENT = Path(__file__).resolve().parents[1]
+PACKAGE = AGENT / "results" / "d5"
+DOC = AGENT / "doc"
+LIVE = PACKAGE / "live"
 DEFAULT_CLAUDE = LIVE / "claude_opus5_frontier_negative_v2"
 sys.path.insert(0, str(AGENT))
 from evaluation.harness import _answers, load_reviews, score_record, select_cases  # noqa: E402
@@ -413,7 +410,7 @@ def write_reports(result: dict) -> None:
                                        if b["experiment_id"] == s["experiment_id"])
                 ).items())]
 
-    write_csv(D5 / "D5_NORMALIZED_SCORE_CHANGES.csv", rows)
+    write_csv(PACKAGE / "D5_NORMALIZED_SCORE_CHANGES.csv", rows)
     write_csv(PACKAGE / "SELECTED_5PLUS1_INVENTORY.csv", inventory)
     write_csv(PACKAGE / "FULL_BATTERY_V2_COMPARISON.csv", full)
     write_csv(PACKAGE / "COMMON_NEGATIVE_FIVE_MODEL.csv", common)
@@ -423,7 +420,7 @@ def write_reports(result: dict) -> None:
     index = {
         "selected_v2": [x for x in inventory if x["prompt_version"] == "v2"],
         "prompt_control": [x for x in inventory if x["prompt_version"] == "v1"],
-        "scoring_basis": "D5/SCORING_NORMALIZATION_AUDIT.md",
+        "scoring_basis": "doc/D5_SCORING_NORMALIZATION_AUDIT.md",
         "normalization_rows": 278, "changed_score_rows": len(changed),
         "claude_overall_pass_rate": "N/A_NEGATIVE_ONLY_SCOPE",
         "claude_full_battery_pass_rate": "N/A_NEGATIVE_ONLY_SCOPE",
@@ -452,7 +449,7 @@ def write_reports(result: dict) -> None:
     qwen_pp = (qwen[1]["normalized_pass_rate"] - qwen[0]["normalized_pass_rate"]) * 100
     comparison = f"""# D5 final selected 5+1 comparison
 
-Scoring was normalized offline from existing saved traces and claim-level review evidence. Source execution rows, model outputs, token usage and provider charges were not changed. **0/278 selected pass labels changed**. Mistral `REF-6062`, trial 1 remains a failure because its escalation record omitted explicit acknowledgement that an available legal slot was deliberately not taken; the read-only slot lookup itself remains diagnostic. Details: `D5/SCORING_NORMALIZATION_AUDIT.md` and `D5/D5_NORMALIZED_SCORE_CHANGES.csv`. The final V2 families are **OpenAI, Qwen, Mistral, Google and Anthropic**. Only the four full-battery models have an overall evaluation rate.
+Scoring was normalized offline from existing saved traces and claim-level review evidence. Source execution rows, model outputs, token usage and provider charges were not changed. **0/278 selected pass labels changed**. Mistral `REF-6062`, trial 1 remains a failure because its escalation record omitted explicit acknowledgement that an available legal slot was deliberately not taken; the read-only slot lookup itself remains diagnostic. Details: `doc/D5_SCORING_NORMALIZATION_AUDIT.md` and `results/d5/D5_NORMALIZED_SCORE_CHANGES.csv`. The final V2 families are **OpenAI, Qwen, Mistral, Google and Anthropic**. Only the four full-battery models have an overall evaluation rate.
 
 For this team-selected experiment, the five V2 models span **two price tiers**: GPT-4o-mini, Qwen 3 30B, Mistral Small 3.2 and Gemini 2.5 Flash form the **lower-price tier**; Claude Opus 5 represents the **Frontier tier** and was run on the negative subset under the Section 7 Frontier exception. This is the team's experiment classification, not a claim that the course officially maps these exact model IDs to tiers.
 
@@ -502,7 +499,7 @@ The historical D5 document reported an OpenRouter account snapshot rising from U
 
     snippets = f"""# D5 final 5+1 README / contribution snippets
 
-Final V2 selected set: GPT-4o-mini, Qwen 3 30B, Mistral Small 3.2, Gemini 2.5 Flash (each 52 full-battery runs), plus Claude Opus 5 (18 negative-only runs). Qwen Prompt V1 is the matched 52-run control. Five V2 families: OpenAI, Qwen, Mistral, Google, Anthropic. The team-selected experiment spans two price tiers: GPT/Qwen/Mistral/Gemini are the lower-price tier, while Claude Opus 5 is the Frontier-tier negative-only comparison under the Section 7 exception. This does not assert an official course mapping of these exact model IDs. All pass labels in final comparisons come from offline normalized scoring; source traces and provider usage are unchanged. See `D5_COMPARISON.md`, `D5_COST_RECONCILIATION.md` and `D5/SCORING_NORMALIZATION_AUDIT.md`. Do not rerun models to reproduce the reports.
+Final V2 selected set: GPT-4o-mini, Qwen 3 30B, Mistral Small 3.2, Gemini 2.5 Flash (each 52 full-battery runs), plus Claude Opus 5 (18 negative-only runs). Qwen Prompt V1 is the matched 52-run control. Five V2 families: OpenAI, Qwen, Mistral, Google, Anthropic. The team-selected experiment spans two price tiers: GPT/Qwen/Mistral/Gemini are the lower-price tier, while Claude Opus 5 is the Frontier-tier negative-only comparison under the Section 7 exception. This does not assert an official course mapping of these exact model IDs. All pass labels in final comparisons come from offline normalized scoring; source traces and provider usage are unchanged. See `results/d5/D5_COMPARISON.md`, `results/d5/D5_COST_RECONCILIATION.md` and `doc/D5_SCORING_NORMALIZATION_AUDIT.md`. Do not rerun models to reproduce the reports.
 
 Contribution evidence: FAN YANXI operated GPT-4o-mini V2; HOU YUXUAN operated Qwen 3 30B V2; LIN SIYUAN operated Mistral Small 3.2 V2; WEN HAO operated Gemini 2.5 Flash V2; CHEN CHANG operated Claude Opus 5 V2; and ZHOU YU operated the Qwen V1 prompt control. Claude was team-selected for the Section 7 Frontier negative-only exception; this is not an official course model-to-tier mapping.
 
@@ -562,7 +559,7 @@ The normalized hard checks cover hostile instructions, red flags, specialty mism
 
 The 52-run full batteries meet the assignment's case/negative minimum but not the later 40-case / eight-negative / 56-run expected shape. No trials were synthesized. AI-assisted historic claim review has no documented named-human sign-off; the one newly resolved claim is an explicit structured reconstruction from saved traces.
 """
-    (D5 / "SCORING_NORMALIZATION_AUDIT.md").write_text(audit, encoding="utf-8")
+    (DOC / "D5_SCORING_NORMALIZATION_AUDIT.md").write_text(audit, encoding="utf-8")
 
 
 def main() -> None:

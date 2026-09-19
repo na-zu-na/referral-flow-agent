@@ -11,8 +11,8 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
 RESULTS = ROOT / "results"
-D5_PACKAGE = ROOT / "D5" / "outputs" / "D5_MINIMAL_GITHUB_PACKAGE"
-D6_OUTPUTS = ROOT / "D6_cost_analysis" / "outputs"
+D5_PACKAGE = RESULTS / "d5"
+D6_OUTPUTS = RESULTS / "d6"
 
 
 class DataReadError(RuntimeError):
@@ -87,9 +87,9 @@ def get_case_and_answer(case_id: str) -> tuple[dict[str, Any], dict[str, Any]] |
 
 def read_evidence() -> dict[str, Any]:
     d5_models: list[dict[str, Any]] = []
-    selected = _json(D5_PACKAGE / "results" / "live" / "SELECTED_FINAL_INDEX.json")
+    selected = _json(D5_PACKAGE / "live" / "SELECTED_FINAL_INDEX.json")
     for experiment in selected.get("selected_v2", []) + selected.get("prompt_control", []):
-        summary_path = D5_PACKAGE / "results" / "live" / experiment["experiment_id"] / "scored_reviewed" / "summary.json"
+        summary_path = D5_PACKAGE / "live" / experiment["experiment_id"] / "scored_reviewed" / "summary.json"
         summary = _json(summary_path)
         policies = summary.get("by_policy_model") or []
         if not policies:

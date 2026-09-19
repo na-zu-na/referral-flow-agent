@@ -10,7 +10,7 @@ Exactly **0/278** selected pass labels changed. Mistral `mistralai/mistral-small
 
 Old formal source commit: `3d842b705afb58610a781b2351ddc27d3d9ccc0b`. Claude manifest source commit: `a009c01c5343313a11eeddd895dd2faa0836e378`. The Claude Git object is unavailable locally, so a complete two-commit diff is **unverified**. The common 18 negative `(case_id, trial)` keys, six saved referral payloads, expected decisions, negative designations, V2 prompt hash, descriptors, live backend, parallel mode, confirm autonomy and temperature 0 match across the five V2 sets. Known score-layer drift was normalized. Result: **comparable for the common negative subset, with source-commit provenance limitation**; not comparable as five full batteries.
 
-The selected V2 models are `openai/gpt-4o-mini`, `qwen/qwen3-30b-a3b-instruct-2507`, `mistralai/mistral-small-3.2-24b-instruct`, `google/gemini-2.5-flash`, and `anthropic/claude-opus-5`. They span five distinct families: OpenAI, Qwen, Mistral, Google, Anthropic. The sixth experiment is the matched Qwen V1 prompt control. Claude alone has `negative_only` scope, with six cases and 18 runs; its ordinary and full-battery pass rates are **N/A — NEGATIVE_ONLY_SCOPE**. The machine-readable inventory is [SELECTED_5PLUS1_INVENTORY.csv](outputs/D5_MINIMAL_GITHUB_PACKAGE/SELECTED_5PLUS1_INVENTORY.csv).
+The selected V2 models are `openai/gpt-4o-mini`, `qwen/qwen3-30b-a3b-instruct-2507`, `mistralai/mistral-small-3.2-24b-instruct`, `google/gemini-2.5-flash`, and `anthropic/claude-opus-5`. They span five distinct families: OpenAI, Qwen, Mistral, Google, Anthropic. The sixth experiment is the matched Qwen V1 prompt control. Claude alone has `negative_only` scope, with six cases and 18 runs; its ordinary and full-battery pass rates are **N/A — NEGATIVE_ONLY_SCOPE**. The machine-readable inventory is [SELECTED_5PLUS1_INVENTORY.csv](../results/d5/SELECTED_5PLUS1_INVENTORY.csv).
 
 ## 8–10. Normalized results
 
@@ -29,13 +29,13 @@ The selected V2 models are `openai/gpt-4o-mini`, `qwen/qwen3-30b-a3b-instruct-25
 | Gemini 2.5 Flash | 12/18 | 6/18 | 0 |
 | Claude Opus 5 | 10/18 | 8/18 | 0 |
 
-Qwen V1 is **20/52 (38.46%)** and Qwen V2 is **28/52 (53.85%)**, a V2–V1 difference of **+15.38 percentage points** on matched keys. The complete model IDs, pass rates, failure taxonomies, turns, usage, and provider costs are in [D5_COMPARISON.md](outputs/D5_MINIMAL_GITHUB_PACKAGE/D5_COMPARISON.md) and the three scope-specific CSVs beside it. These are observed evaluation-set rates, not production estimates.
+Qwen V1 is **20/52 (38.46%)** and Qwen V2 is **28/52 (53.85%)**, a V2–V1 difference of **+15.38 percentage points** on matched keys. The complete model IDs, pass rates, failure taxonomies, turns, usage, and provider costs are in [D5_COMPARISON.md](../results/d5/D5_COMPARISON.md) and the three scope-specific CSVs beside it. These are observed evaluation-set rates, not production estimates.
 
 ## 11–13. Claude usage, spend and Llama removal
 
 Claude row-level recomputation: 18 runs, six cases, three trials per negative case, original **10 pass / 8 fail**, normalized **10 pass / 8 fail**, eight `invalid_model_output`, zero unsafe `book_slot` attempts, **272,906 input**, **11,195 output**, **0 cached input**, **502 reasoning** tokens, **US$1.644405** provider-recorded cost (18/18 coverage). Its raw records and historical scores were not edited. The `battery_manifest.json` operator field was subsequently corrected as team contribution metadata, so the final package no longer claims byte identity for that one metadata file against the originally supplied extraction.
 
-**SELECTED_FINAL_EXPERIMENT_SPEND is US$2.13502002**, the sum of 278/278 measured provider charges for the selected scored runs. The extra charged Mistral provider-error attempt is **US$0.00031845** separately; including it gives **US$2.13533847** recorded selected-model evaluation charges, not another scored run. The old account snapshot increment, **US$0.653968992**, is **HISTORICAL_ACCOUNT_SPEND**, from a different selection/time and is not reconciled to the new 5+1 total. The prior US$0.018762122 account residual remains unattributed. See [D5_COST_RECONCILIATION.md](outputs/D5_MINIMAL_GITHUB_PACKAGE/D5_COST_RECONCILIATION.md).
+**SELECTED_FINAL_EXPERIMENT_SPEND is US$2.13502002**, the sum of 278/278 measured provider charges for the selected scored runs. The extra charged Mistral provider-error attempt is **US$0.00031845** separately; including it gives **US$2.13533847** recorded selected-model evaluation charges, not another scored run. The old account snapshot increment, **US$0.653968992**, is **HISTORICAL_ACCOUNT_SPEND**, from a different selection/time and is not reconciled to the new 5+1 total. The prior US$0.018762122 account residual remains unattributed. See [D5_COST_RECONCILIATION.md](../results/d5/D5_COST_RECONCILIATION.md).
 
 The superseded Llama result directory was removed from the final D5 package only after report generation and checks. Its eight files were each SHA-256 matched to an independent desktop mirror before removal; they remain recoverable there. The Agent repository/history and its raw results were not changed. Llama is absent from the final selected inventory, indexes, normalized rows, tables and selected-spend calculations. Historical-cost prose can still mention the superseded model to avoid falsely reconciling old account evidence.
 
@@ -51,7 +51,7 @@ Updated existing outputs: `D5_COMPARISON.md`, `D5_COST_RECONCILIATION.md`, `GITH
 
 Validation: offline generator and package entrypoint passed; all six selected batteries and 278 source rows asserted; five V2 families, matched negative and Qwen keys, exact denominators, Claude usage/cost, preserved raw token/cost fields, zero pass-label changes, the explicit Mistral escalation-record failure, invalid-output failures, selected-spend sum and Llama absence asserted. D5-specific local tests: **5/5 passed**. Original Agent unit tests: **94/94 passed**. No model, OpenRouter, LLM or other external API was called.
 
-**D6 freeze:** no file under `D6_cost_analysis/` was written. Its 62 files all retain timestamps before this D5 rewrite; the latest is 2026-09-18 10:54:31 local time. The Agent Git working tree was clean after testing. D6 changes caused by this task: **zero**.
+The final D6 implementation is integrated under `cost/`; generated outputs are under `results/d6/` and the teacher workbook is under `doc/`.
 
 ## 20. Remaining limitations
 
