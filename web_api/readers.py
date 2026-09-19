@@ -11,6 +11,8 @@ from typing import Any
 ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data"
 RESULTS = ROOT / "results"
+D5_PACKAGE = ROOT / "D5" / "outputs" / "D5_MINIMAL_GITHUB_PACKAGE"
+D6_OUTPUTS = ROOT / "D6_cost_analysis" / "outputs"
 
 
 class DataReadError(RuntimeError):
@@ -85,22 +87,25 @@ def get_case_and_answer(case_id: str) -> tuple[dict[str, Any], dict[str, Any]] |
 
 def read_evidence() -> dict[str, Any]:
     d5_models: list[dict[str, Any]] = []
-    for summary_path in sorted((RESULTS / "live").glob("*/scored_reviewed/summary.json")):
+    selected = _json(D5_PACKAGE / "results" / "live" / "SELECTED_FINAL_INDEX.json")
+    for experiment in selected.get("selected_v2", []) + selected.get("prompt_control", []):
+        summary_path = D5_PACKAGE / "results" / "live" / experiment["experiment_id"] / "scored_reviewed" / "summary.json"
         summary = _json(summary_path)
         policies = summary.get("by_policy_model") or []
         if not policies:
             continue
         item = policies[0]
-        policy_config = dict(
-            part.split("=", 1) for part in str(item.get("policy") or "").split("|") if "=" in part
-        )
         run_rows = _csv_if_present(summary_path.with_name("runs.csv"))
         sources = sorted({str(row["cost_source"]) for row in run_rows if row.get("cost_source")})
+        scope = experiment.get("scope")
         d5_models.append({
+            "experiment_id": experiment.get("experiment_id"),
             "model": item.get("model"),
-            "prompt_version": policy_config.get("prompt_version"),
+            "family": experiment.get("family"),
+            "scope": scope,
+            "prompt_version": experiment.get("prompt_version"),
             "runs": item.get("runs"),
-            "final_pass_rate": item.get("final_pass_rate"),
+            "final_pass_rate": None if scope == "negative_only" else item.get("final_pass_rate"),
             "negative_final_pass_rate": item.get("negative_final_pass_rate"),
             "unsafe_booking_attempts": summary.get("negative_booking_attempts"),
             "tokens_in": sum(row.get("tokens_in") or 0 for row in run_rows),
@@ -114,6 +119,13 @@ def read_evidence() -> dict[str, Any]:
         "d2": {"variants": _csv_if_present(RESULTS / "d2_experiment_summary.csv")},
         "d4": {"policies": _csv_if_present(RESULTS / "d4_policy_model_summary.csv")},
         "d5": {"models": d5_models},
+        "d6": {
+            "models": _csv_if_present(D6_OUTPUTS / "model_cost_summary.csv"),
+            "pareto": _csv_if_present(D6_OUTPUTS / "pareto_analysis.csv"),
+            "qwen_prompt_ablation": _csv_if_present(D6_OUTPUTS / "qwen_prompt_ablation.csv"),
+            "cost_levers": _csv_if_present(D6_OUTPUTS / "cost_lever_attribution.csv"),
+            "spend_reconciliation": _csv_if_present(D6_OUTPUTS / "evaluation_spend_reconciliation.csv"),
+        },
         "d7": _json(d7_path) if d7_path.exists() else None,
     }
 
