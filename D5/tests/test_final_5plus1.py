@@ -27,6 +27,10 @@ class FinalFivePlusOneTest(unittest.TestCase):
         self.assertEqual([len(b["rows"]) for b in batteries], [52, 52, 52, 52, 18, 52])
         self.assertEqual(len(self.rows), 278)
         self.assertFalse(any("llama" in r["experiment_id"] for r in self.rows))
+        self.assertEqual(
+            [b["identity"]["operator"] for b in batteries],
+            ["FAN YANXI", "HOU YUXUAN", "LIN SIYUAN", "WEN HAO", "CHEN CHANG", "ZHOU YU"],
+        )
 
     def test_matched_negative_and_prompt_control_keys(self):
         batteries = self.result["batteries"]

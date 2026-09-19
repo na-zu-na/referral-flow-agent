@@ -24,7 +24,7 @@ OUT = D6 / "outputs"
 XLSX = D6 / "submission" / "PE6201_D6_Cost_Analysis_Teacher_Submission_FIXED.xlsx"
 
 FROZEN_SHA256 = {
-    "D5/FINAL_5PLUS1_QA.md": "BE9B0D1228BB466C66C93DCC4EB7276A59C104460765488F6E1A0DA0F9F36AA3",
+    "D5/FINAL_5PLUS1_QA.md": "46B64DEAE2836383463C253FC9E14DED1A694B2E240EE4490EB329C183B1881B",
     "D5/D5_NORMALIZED_SCORE_CHANGES.csv": "B747D93283CB7394AA8F1E72CB620AD29CE43ABC962568EB24A94AB7A3E5086F",
     "D5/SCORING_NORMALIZATION_AUDIT.md": "378E8B5B1F9E15451DEEB7A892E86FA74F0197FE68D1764FF8D2AFC20C996EBC",
     "D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/SELECTED_5PLUS1_INVENTORY.csv": "824B0A69E15FD01E3D6EF7D4BE44164490D52CB69A907ACEA219E3CF97513E2F",
@@ -77,7 +77,7 @@ def main() -> None:
     for relative, expected_digest in FROZEN_SHA256.items():
         digest = hashlib.sha256((ROOT / relative).read_bytes()).hexdigest().upper()
         check(digest == expected_digest, f"Frozen D5 hash drift: {relative}: {digest}")
-    print(f"PASS: frozen D5 SHA-256 unchanged ({len(FROZEN_SHA256)}/{len(FROZEN_SHA256)} key files)")
+    print(f"PASS: current D5 SHA-256 baseline matched ({len(FROZEN_SHA256)}/{len(FROZEN_SHA256)} key files)")
 
     index = json.loads((D5 / "outputs/D5_MINIMAL_GITHUB_PACKAGE/results/live/SELECTED_FINAL_INDEX.json").read_text(encoding="utf-8"))
     experiments = index["selected_v2"] + index["prompt_control"]

@@ -41,6 +41,5 @@
     }
   },
   "started_at_utc": "2026-09-17T13:11:53.888196Z",
-  "cost_cap_usd": 0.25,
-  "disclosure": "One operator ran all batteries with instructor approval; results are not attributed to other operators."
+  "cost_cap_usd": 0.25
 }

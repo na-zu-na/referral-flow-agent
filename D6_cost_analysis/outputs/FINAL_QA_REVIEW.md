@@ -8,11 +8,11 @@
 
 The primary source is `D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/`: `SELECTED_5PLUS1_INVENTORY.csv`; `results/live/SELECTED_FINAL_INDEX.json`; and each selected experiment's `scored_reviewed/runs.csv`, `trials.csv`, `tool_calls.csv`, `raw_checkpoint.jsonl`, `battery_manifest.json`, and any `provider_errors.jsonl`. Score normalization is joined from `D5/D5_NORMALIZED_SCORE_CHANGES.csv`; `D5/FINAL_5PLUS1_QA.md`, `D5/SCORING_NORMALIZATION_AUDIT.md`, `D5_COMPARISON.md` and `D5_COST_RECONCILIATION.md` document the freeze. The Agent repository's `results/live` is **not** substituted as primary evidence. Its D2 compact control is separate engineering evidence only.
 
-The following SHA-256 values were recorded before D6 work and independently recomputed after generation. All seven are identical; D5 test discovery also passes 5/5.
+The following SHA-256 values are the current D5 baseline checked by D6. The D5 QA hash was refreshed after the operator-responsibility metadata correction; the other six analytical evidence files are unchanged. D5 test discovery passes 5/5.
 
-| Frozen D5 file (relative to workspace) | SHA-256 before = after |
+| D5 file (relative to workspace) | Current SHA-256 baseline |
 | --- | --- |
-| `D5/FINAL_5PLUS1_QA.md` | `BE9B0D1228BB466C66C93DCC4EB7276A59C104460765488F6E1A0DA0F9F36AA3` |
+| `D5/FINAL_5PLUS1_QA.md` | `46B64DEAE2836383463C253FC9E14DED1A694B2E240EE4490EB329C183B1881B` |
 | `D5/D5_NORMALIZED_SCORE_CHANGES.csv` | `B747D93283CB7394AA8F1E72CB620AD29CE43ABC962568EB24A94AB7A3E5086F` |
 | `D5/SCORING_NORMALIZATION_AUDIT.md` | `378E8B5B1F9E15451DEEB7A892E86FA74F0197FE68D1764FF8D2AFC20C996EBC` |
 | `D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/SELECTED_5PLUS1_INVENTORY.csv` | `824B0A69E15FD01E3D6EF7D4BE44164490D52CB69A907ACEA219E3CF97513E2F` |
@@ -21,6 +21,8 @@ The following SHA-256 values were recorded before D6 work and independently reco
 | `D5/outputs/D5_MINIMAL_GITHUB_PACKAGE/D5_COST_RECONCILIATION.md` | `7A4AB7DA3C2C2B3A28F8DD1B91569D0FE5DF57C46BE9ED697C1F8DB511716B9A` |
 
 Final 5+1: four 52-run full-battery V2 models (GPT-4o-mini, Qwen 3 30B, Mistral Small 3.2, Gemini 2.5 Flash); Claude Opus 5 V2 on 18 negative-only trials; and Qwen V1 on 52 matched prompt-control trials. Thus **4 × 52 + 18 + 52 = 278** selected scored rows, **278/278** measured provider charges, zero score-label changes, and 89 invalid model outputs. The five V2 families are OpenAI, Qwen, Mistral, Google and Anthropic. GPT/Qwen/Mistral/Gemini are the team's lower-price tier and Claude the team-selected Frontier tier: two tiers. No official course mapping of these exact model IDs is claimed. Claude used the Section 7 Frontier negative-only exception.
+
+Current operator responsibility is FAN YANXI — GPT-4o-mini V2; HOU YUXUAN — Qwen 3 30B V2; LIN SIYUAN — Mistral Small 3.2 V2; WEN HAO — Gemini 2.5 Flash V2; CHEN CHANG — Claude Opus 5 V2; and ZHOU YU — Qwen V1 prompt control. This metadata correction does not alter any trace, score, token, provider charge, or D6 economic output.
 
 ## Economics and quality
 

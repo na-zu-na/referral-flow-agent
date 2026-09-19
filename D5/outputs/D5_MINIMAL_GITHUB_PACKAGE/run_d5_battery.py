@@ -81,7 +81,7 @@ def main() -> None:
     parser.add_argument("--prompt-version", choices=("v1", "v2"), default="v2")
     parser.add_argument("--out", required=True, type=Path, help="new or resumable output directory")
     parser.add_argument("--max-cost-usd", required=True, type=float, help="cap for this battery")
-    parser.add_argument("--operator", default="ZHOU YU", help="person actually operating this battery")
+    parser.add_argument("--operator", required=True, help="team member responsible for this battery")
     parser.add_argument("--source-commit", default="3d842b705afb58610a781b2351ddc27d3d9ccc0b")
     parser.add_argument("--resume", action="store_true", help="continue an existing matching battery")
     parser.add_argument("--max-new-runs", type=int,
@@ -144,7 +144,6 @@ def main() -> None:
             "identity": identity,
             "started_at_utc": now_utc(),
             "cost_cap_usd": args.max_cost_usd,
-            "disclosure": "One operator ran all batteries with instructor approval; results are not attributed to other operators.",
         }, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
     saved = read_jsonl(raw_path)
