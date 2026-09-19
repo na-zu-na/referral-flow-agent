@@ -1,180 +1,64 @@
-> 历史运行手册：下文的 Llama-era 选择和旧汇总命令仅供追溯，不代表最终 D5。
-> 最终冻结 5+1 结果见 [D5_FINAL_QA.md](D5_FINAL_QA.md)；
-> 离线核验请运行 `python -m evaluation.d5_final --audit-only`，勿重跑模型。
+# D5 最终证据与复核说明
 
-# D5 Live Model Battery 执行说明
+当前 D5 已经冻结，不需要为了生成报告重新调用模型。最终事实来源是：
 
-## 已合并的 live 证据
+- `results/d5/live/SELECTED_FINAL_INDEX.json`
+- `results/d5/SELECTED_5PLUS1_INVENTORY.csv`
+- 各 selected experiment 的 `scored_reviewed/` 逐次记录
+- `results/d5/D5_COMPARISON.md`
+- `results/d5/D5_COST_RECONCILIATION.md`
+- `doc/D5_FINAL_QA.md`
+- `doc/D5_SCORING_NORMALIZATION_AUDIT.md`
 
-`results/live/` 保留了 312 次正式 live runs：Qwen 3 30B、Mistral
-Small 3.2、GPT-4o-mini、Llama 3.3 70B 和 Gemini 2.5 Flash 各 52 次 V2，
-另有 Qwen 3 30B 的 52 次 V1 对照。第五个正式 V2 模型是 Llama，不是
-Claude。这些结果使用符合最低通过配置的 52-run 计划：40 个案例中包含
-6 个 negative cases；ordinary case 运行 1 次，negative case 运行 3 次。
+`results/live/` 是历史 source-run archive，其中包括已经被替代的 Llama
+证据；它不是最终 selected inventory，也不能用于替换 `results/d5/`。
 
-- 模型对比：`D5_COMPARISON.md`
-- 费用对账：`D5_COST_RECONCILIATION.md`
-- 原始和审核记录：`results/live/`
+## 最终 5+1 设计
 
-在上述 312 次完整 battery 之外，CHEN CHANG 另行完成了
-`anthropic/claude-opus-5` frontier negative-only 补跑：6 个 negative cases
-各运行 3 次，共 18 次，最终通过 10/18，错误预约尝试为 0，实测输入/输出
-tokens 为 272,906/11,195，记录费用为 $1.644405。结果保存在
-`results/live/claude_opus5_frontier_negative_v2_a009c01/`。该结果不包含
-ordinary cases，只能用于 negative-case 对比，不能作为第六个 52-run 全量
-battery。补跑署名及 live-run operator：**CHEN CHANG**；AI judgement review
-由 OpenAI Codex 于 2026-09-18 完成，并建议 operator sign-off。
+| Operator | Experiment | Scope |
+|---|---|---|
+| FAN YANXI | GPT-4o-mini V2 | 40 cases / 52 runs |
+| HOU YUXUAN | Qwen 3 30B V2 | 40 cases / 52 runs |
+| LIN SIYUAN | Mistral Small 3.2 V2 | 40 cases / 52 runs |
+| WEN HAO | Gemini 2.5 Flash V2 | 40 cases / 52 runs |
+| CHEN CHANG | Claude Opus 5 V2 | 6 negative cases / 18 runs |
+| ZHOU YU | Qwen 3 30B V1 prompt control | 40 cases / 52 runs |
 
-用当前评分器重现这批历史结果（不调用模型）：
+四个完整 V2 batteries 使用 34 个普通案例各一次、六个 negative cases
+各三次。Claude 按 Frontier exception 只运行相同的 18 个 negative trials，
+不能报告完整案例通过率。Qwen V1 与 V2 使用相同 model 和 52 个匹配 keys。
+
+## 离线复核
+
+以下命令不会调用 OpenRouter，也不会产生模型费用：
 
 ```bash
-python3 build_d5_comparison.py \
-  --battery results/live/qwen3_30b_v2 \
-  --battery results/live/mistral_small_3_2_v2 \
-  --battery results/live/openai_gpt4o_mini_v2 \
-  --battery results/live/llama3_3_70b_v2 \
-  --battery results/live/gemini2_5_flash_v2 \
-  --battery results/live/qwen3_30b_v1 \
-  --out D5_COMPARISON.md
+python -m evaluation.d5_final --audit-only
+python -m unittest tests.test_d5_final -v
 ```
 
-52 runs 是本仓库声明的最低通过配置，不代表推荐的 40 cases / 8 negative
-cases 配置。历史源码提交 `3d842b7` 的测试结果为 82/82；当前仓库的测试数另行记录，不用
-82/82 描述当前 HEAD。
+最终规模为 278 个 selected scored runs，278/278 有 provider cost。Selected
+scored-run spend 为 US$2.13502002；计入额外 Mistral provider-error charge 后
+为 US$2.13533847。
 
-## 已完成的离线基线
+## 仅在明确要求新实验时运行 live battery
 
-仓库已经保存最终 40 个 core cases 的 reviewed scripted 结果：
-
-- `results/d4_scripted_v2/summary.json`
-- `results/d4_scripted_v2/trials.csv`
-- `results/d4_scripted_v2/trials.jsonl`
-- `results/d4_scripted_v2/judgement_queue.csv`
-
-ordinary cases 各运行 1 次、6 个 negative cases 各运行 3 次，共 52 runs；最终评分 52/52，negative trials 为 18/18，pending review 为 0。不要再提交 package 中未复核、`final_pass_rate=null` 的重复 scripted 副本。
-
-## 团队实验设计
-
-本团队由 5 位成员分别运行 5 个不同的 V2 live models。CHEN CHANG 负责 Qwen 3 30B 的 V1/V2 prompt comparison：额外运行 Qwen V1，并与 FAN YANXI 运行的同模型 Qwen V2 结果比较。每个 battery 使用同一个 Git commit、40 个案例、V2 descriptors、parallel calls、confirm autonomy 和 temperature 0；V1 对照只改变 prompt version。
-
-PDF 的运行规模按严格口径执行：
-
-- 40 个案例各运行 1 次；
-- 6 个 negative cases 各额外运行 2 次，即每个 negative 总共 3 次；
-- 每个 battery 共 52 runs，其中 negative runs 共 18 次；
-- 5 个 V2 batteries 加 1 个 V1 battery，共 312 runs。
-
-`run_d5_battery.py` 会读取真实 Git HEAD，并拒绝 tracked files 尚未提交的工作区。所有 live batteries 必须在同一个提交上运行。
-
-## 运行前
-
-1. 提交并推送所有 D5 代码。
-2. 确认五个 OpenRouter model IDs 当前可用。
-3. 查询运行当天价格并估算每个 battery 的费用。
-4. 设置 `OPENROUTER_API_KEY`，不要把 key 写入文件或聊天。
-5. 如果 provider 不返回费用，设置每百万 token 的输入和输出价格：
+现有最终报告不需要重跑。若将来明确要求新增实验，应使用新目录，不能覆盖
+冻结证据：
 
 ```bash
-export A2_PRICE_INPUT="0.10"
-export A2_PRICE_OUTPUT="0.40"
-```
-
-## 运行和续跑
-
-每个 model 使用不同输出目录：
-
-```bash
-python3 run_d5_battery.py \
-  --model 'PROVIDER/MODEL_A' \
+python run_d5_battery.py \
+  --model 'PROVIDER/MODEL' \
   --prompt-version v2 \
-  --operator 'ACTUAL OPERATOR' \
-  --max-cost-usd 1.50 \
-  --out results/d5_model_a_v2
-```
-
-中断、provider error 或费用上限停止后，保持相同 model、prompt version、operator 和 Git commit：
-
-```bash
-python3 run_d5_battery.py \
-  --model 'PROVIDER/MODEL_A' \
-  --prompt-version v2 \
-  --operator 'ACTUAL OPERATOR' \
-  --max-cost-usd 1.50 \
-  --out results/d5_model_a_v2 \
-  --resume
-```
-
-选定其中一个已经运行 V2 的低成本模型，再用独立目录运行 V1：
-
-```bash
-python3 run_d5_battery.py \
-  --model 'PROVIDER/MODEL_A' \
-  --prompt-version v1 \
-  --operator 'ACTUAL OPERATOR' \
-  --max-cost-usd 1.50 \
-  --out results/d5_model_a_v1
-```
-
-脚本逐次 `fsync` 保存 `raw_checkpoint.jsonl`，并更新 `progress.json`。只有包含 API 实测 token 用量且费用可计算的记录才会计入完成数；不合格记录会写入 `provider_errors.jsonl` 并停止。费用上限在下一次运行前检查，因此最多可能超过一个 case 的费用。
-
-## Judgement review
-
-完成条件是 `progress.json` 中 `complete=true`、`completed=52`。复制 `scored_unreviewed/judgement_queue.csv` 为 `reviewed.csv`，逐条填写 `accept`/`reject`、真实 reviewer 和日期，然后只对已保存 traces 复评分：
-
-```bash
-python3 run_eval.py \
-  --rescore results/d5_model_a_v2/raw_checkpoint.jsonl \
-  --reviews results/d5_model_a_v2/reviewed.csv \
-  --out results/d5_model_a_v2/scored_reviewed
-```
-
-复评分不会再次调用模型。每个最终 battery 至少保留：
-
-- `battery_manifest.json`
-- `raw_checkpoint.jsonl`
-- `progress.json`
-- `reviewed.csv`
-- `scored_reviewed/summary.json`
-- `scored_reviewed/trials.csv`
-- `scored_reviewed/runs.csv`
-- `scored_reviewed/tool_calls.csv`
-- `provider_errors.jsonl`（如果出现 provider error）
-
-## 汇总五模型和 V1/V2 对照
-
-所有 6 个 batteries 完成复核后运行：
-
-```bash
-python3 build_d5_comparison.py \
-  --battery results/d5_model_a_v2 \
-  --battery results/d5_model_b_v2 \
-  --battery results/d5_model_c_v2 \
-  --battery results/d5_model_d_v2 \
-  --battery results/d5_model_e_v2 \
-  --battery results/d5_model_a_v1 \
-  --out results/D5_COMPARISON.md
-```
-
-汇总器会拒绝不完整、未审核、非 live、没有 API 实测 token 用量、raw/reviewed 记录不一致、model 重复、配置不同、Git commit 不同或分母错误的结果，并输出总体通过率、negative pass rate、错误预约尝试、tokens、费用、cost source、case-level divergences、failure categories 和同模型 V1/V2 对照。
-
-最终报告还需要人工解释模型家族、价格档、具体失败案例、最便宜达标模型，以及昂贵模型是否值得差价。实际 token 与费用数据应交给 D6 使用。
-
-## Frontier 模型 negative-only 运行
-
-`--negative-only` 只运行 6 个 negative cases，每个 case 运行 3 次，共 18
-runs。新实验应使用新的输出目录；模型、operator、Git commit 与 manifest
-必须保持一致才能使用 `--resume`：
-
-```bash
-python3 run_d5_battery.py \
-  --model 'anthropic/claude-opus-5' \
-  --prompt-version v2 \
-  --negative-only \
   --operator 'ACTUAL OPERATOR' \
   --max-cost-usd 10.00 \
-  --out results/live/claude_opus5_frontier_negative_v2
+  --out results/live/NEW_EXPERIMENT
 ```
 
-该模式生成 `scope=negative_only`、`case_count=6`、
-`planned_run_count=18` 的 manifest。结果只能与其他模型的 negative-case
-指标比较，不能当作完整的 40-case battery。
+Frontier negative-only 实验增加 `--negative-only`。中断后只有在 model、
+prompt、operator、source commit 和输出目录完全一致时才能使用 `--resume`。
+API key 必须从 `OPENROUTER_API_KEY` 环境变量读取，不得写入仓库。
+
+逐次保存文件包括 manifest、checkpoint、progress、reviewed claims、summary、
+runs、trials 和 tool calls。Judgement review 只对已保存 trace 复评分，不应
+再次调用模型，也不得修改原始 model output、token 或 provider charge。

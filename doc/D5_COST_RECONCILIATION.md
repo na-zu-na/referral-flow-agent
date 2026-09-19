@@ -1,51 +1,43 @@
-# D5 cost reconciliation (historical archive)
+# D5 final cost reconciliation
 
-> This account snapshot and Llama-era battery set are not the final selected
-> 5+1 experiment spend. See the frozen [D5 cost reconciliation](../results/d5/D5_COST_RECONCILIATION.md)
-> for the US$2.13502002 selected scored provider spend; the historical
-> account-level residual remains unattributed.
+The authoritative generated reconciliation is
+[`results/d5/D5_COST_RECONCILIATION.md`](../results/d5/D5_COST_RECONCILIATION.md).
+This page summarizes the current selected experiment and separates it from the
+superseded account snapshot.
 
-## Account-level check
+## Current selected experiment
 
-- OpenRouter key usage before D5 live work: **$0.271794400**
-- OpenRouter key usage after all D5 live work: **$0.925763392**
-- Account-level D5 increment: **$0.653968992**
-- User-approved ceiling: **$2.00**
-- Amount below ceiling: **$1.346031008**
+| Selected scored experiment | Scope | Provider USD | Coverage |
+|---|---|---:|---:|
+| GPT-4o-mini V2 | Full battery | 0.06240015 | 52/52 |
+| Qwen 3 30B V2 | Full battery | 0.07621029 | 52/52 |
+| Mistral Small 3.2 V2 | Full battery | 0.10114050 | 52/52 |
+| Gemini 2.5 Flash V2 | Full battery | 0.18117530 | 52/52 |
+| Claude Opus 5 V2 | Negative-only | 1.64440500 | 18/18 |
+| Qwen 3 30B V1 | Prompt control | 0.06968878 | 52/52 |
 
-## Formal batteries recorded locally
+**Selected scored-run spend = US$2.13502002** for 278 scored runs, with
+provider-reported cost coverage of 278/278.
 
-| Battery | Recorded cost (USD) | Note |
-|---|---:|---|
-| GPT-4o-mini V2 | 0.062400150 | 52/52 usage records measured |
-| Qwen 3 30B V2 | 0.076210290 | 52/52 usage records measured |
-| Mistral Small 3.2 V2 | 0.101458950 | Includes one provider-error response costing $0.000318450; 52 completed trials cost $0.101140500 |
-| Llama 3.3 70B V2 | 0.144273400 | 51/52 usage records measured; one invalid response had no measurable usage |
-| Gemini 2.5 Flash V2 | 0.181175300 | 52/52 usage records measured |
-| Qwen 3 30B V1 | 0.069688780 | 52/52 usage records measured |
-| **Formal local total** | **0.635206870** | 312 completed formal trials, plus the recorded Mistral provider error |
+One additional failed Mistral provider attempt incurred **US$0.00031845**. It
+is not a scored trial and is excluded from pass-rate and unit-cost
+denominators. Including that attempt, recorded selected-model charges are
+**US$2.13533847**.
 
-The difference between the account increment and the formal local total is **$0.018762122**. It covers the abandoned five-call Claude Haiku compatibility precheck, the Llama response whose provider usage was not returned, and other small precheck/unattributed provider charges. Therefore:
+## Historical account evidence
 
-- use **$0.653968992** when reporting the total amount actually added to the OpenRouter account during D5;
-- use each battery's recorded cost for per-model efficiency comparisons;
-- do not present the Llama local total as an exact fully measured bill.
+The earlier OpenRouter account snapshot increased by **US$0.653968992** and
+left **US$0.018762122** unattributed. That snapshot predates the final Claude
+package and includes or may include superseded Llama-era and precheck activity.
+It is retained as historical account evidence only and is not reconciled to the
+current 5+1 selected experiment.
 
-The API key is not stored in this package.
+Reporting rules:
 
-## Frontier-model supplement
-
-CHEN CHANG subsequently ran an additional negative-only frontier battery using
-`anthropic/claude-opus-5`. This supplement is outside the original 312-run
-account-level reconciliation above.
-
-| Battery | Runs | Input tokens | Output tokens | Recorded cost (USD) | Note |
-|---|---:|---:|---:|---:|---|
-| Claude Opus 5 V2 negative-only | 18 | 272,906 | 11,195 | 1.644405000 | 18/18 usage records measured; 6 negative cases with 3 trials each |
-| **All completed batteries recorded locally** | **330** |  |  | **2.279611870** | Original six batteries plus the frontier supplement |
-
-The frontier result should be reported separately from the five-model full
-battery comparison because it contains no ordinary cases. An abandoned
-preliminary attempt incurred at least one additional recorded charge of
-$0.032845 and one response without measurable usage; those charges are not
-included in the completed supplement's $1.644405 total.
+- use **US$2.13502002** for selected scored-run spend;
+- use **US$2.13533847** only when explicitly including the extra provider-error
+  charge;
+- do not report the historical account increment as the final 5+1 spend;
+- do not assign the historical residual to any model without billing evidence;
+- provider-vs-list-rate differences are diagnostics, not proof of billing
+  error.

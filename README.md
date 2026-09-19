@@ -36,8 +36,9 @@ Run the complete D2 descriptor/return-shape and same-turn batching experiment
 python3 experiments/run_d2_experiments.py
 ```
 
-The design table, poka-yoke evidence, measurements, and live reproduction
-command are in [`D2_TOOL_EVIDENCE.md`](D2_TOOL_EVIDENCE.md).
+The design table, poka-yoke evidence, measurements, and experiment conclusion
+are in
+[`results/D2_TOOL_EVIDENCE_TEST_CONCLUSION.md`](results/D2_TOOL_EVIDENCE_TEST_CONCLUSION.md).
 
 Run the D4 evaluation harness on the 40-case team-authored core set. Ordinary
 cases run once and the six negative cases run three times, for 52 runs:
@@ -70,10 +71,11 @@ For offline verification, run `python -m evaluation.d5_final --audit-only` and
 `python -m unittest tests.test_d5_final -v`. These commands do not call a
 model or provider. The source-run archive in [`results/live/`](results/live/)
 is retained, including superseded Llama evidence; it is not the final selected
-inventory. The older [`D5 runbook`](doc/D5_RUNBOOK_CN.md),
+inventory. Human-facing current summaries are available in the
+[`D5 runbook`](doc/D5_RUNBOOK_CN.md),
 [`comparison`](doc/D5_COMPARISON.md), and
-[`cost report`](doc/D5_COST_RECONCILIATION.md) document that historical
-Llama-era selection and must not be used as the final D5 result.
+[`cost reconciliation`](doc/D5_COST_RECONCILIATION.md); all three point back
+to the frozen `results/d5/` evidence.
 
 The frozen [D6 Cost / FinOps analysis](doc/D6_COST_ANALYSIS.md) is integrated
 with the project cost package. Its [final QA review](results/d6/FINAL_QA_REVIEW.md)
@@ -112,8 +114,10 @@ python3 -m pip install -r requirements-web.txt
 python3 -m web_api.app
 ```
 
-The API listens on `http://127.0.0.1:5000`. Its request and response contract is
-documented in [`doc/WEB_API_SPEC_CN.md`](doc/WEB_API_SPEC_CN.md). Live runs read
+The API listens on `http://127.0.0.1:5000`. Routes and validation are defined in
+[`web_api/app.py`](web_api/app.py), while result-file readers and background
+run management are in [`web_api/readers.py`](web_api/readers.py) and
+[`web_api/run_manager.py`](web_api/run_manager.py). Live runs read
 `OPENROUTER_API_KEY` from the server environment; the key is never accepted by
 or returned from an API endpoint.
 
@@ -127,5 +131,3 @@ npm run dev
 
 Open `http://127.0.0.1:5173`. Vite forwards `/api` requests to the Flask API.
 Use `npm run build` to validate and create the production bundle.
-
-See `MEMBER1_IMPLEMENTATION_GUIDE_CN.md` for the detailed Chinese walkthrough.
