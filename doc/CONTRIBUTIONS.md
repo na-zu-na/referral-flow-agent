@@ -14,7 +14,9 @@ provide the supporting evidence for completed work.
 | D7 two reproduced failures | **ZHOU YU** |
 | Team report and demonstration assembly | ZHOU YU |
 
-## CHEN CHANG integration contribution
+## CHEN CHANG individual contribution
+
+GitHub: [na-zu-na](https://github.com/na-zu-na)
 
 CHEN CHANG was primarily responsible for repository integration, refinement,
 validation, and final delivery preparation. Building on implementations
@@ -38,12 +40,56 @@ were based on work initially produced by other team members. CHEN CHANG's
 contribution focused on their integration, extension, correction, validation,
 and presentation.
 
-## ZHOU YU D7 contribution
+## FAN YANXI individual contribution
 
-ZHOU YU designed and implemented the two deterministic D7 failure
-reproductions, generated the before-and-after metrics, measured the 40-case turn
-distribution, added the D7 regression tests, and documented the reproduction
-commands and findings.
+GitHub: [yancey07-piiiigy](https://github.com/yancey07-piiiigy)
+
+FAN YANXI was primarily responsible for the design, implementation, refinement, and validation of the project’s core single-agent ReAct architecture. This work included developing the model–tool–observation loop, implementing structured AgentMove parsing and validation, maintaining isolated state and complete evidence traces for each run, and supporting parallel execution of independent referral checks. FAN YANXI also integrated the Agent controller with the project’s tools and guardrails to ensure that every final decision was grounded in trusted observations and limited to one of three permitted outcomes: book, request information, or escalate.
+
+FAN YANXI also contributed to the prompt-development and evaluation workflow, including the implementation and testing of the V1 and V2 system prompts and their integration with the Agent runtime. For the live-model battery, FAN YANXI was responsible for executing the GPT-4o-mini V2 experiment across the formal evaluation cases, preserving the raw execution traces, token usage, provider costs, and scored outputs. Additional contributions included analysing invalid structured outputs and negative-case behaviour, validating the safe-booking workflow, supporting scripted evaluation, maintaining Agent-related documentation, and preparing the Agent architecture and safe-booking sections of the final demonstration.
+
+The underlying tool implementations, guardrail components, evaluation harness, cost-analysis package, Web interface, and other live-model experiments were based on work initially produced by other team members. FAN YANXI’s contribution focused on the core Agent controller, prompt integration, GPT-4o-mini V2 experiment execution and analysis, Agent-level testing and validation, and the presentation of the system’s reasoning and safe-booking workflow.
+
+## HOU YUXUAN individual contribution
+#### Github: [yisionhou](https://github.com/yisionhou)
+
+- Contributed to the V1-to-V2 tool descriptor work and deterministic guardrail
+  layer recorded in the agreed team ownership table.
+- Co-developed and reviewed the D6 cost model, cost ledger, sensitivity
+  analysis, and break-even evidence.
+- Conducted the Qwen 3 30B V2 full battery for D5 and preserved the live-run
+  evidence. The final reviewed result records 28/52 passing runs, including
+  6/18 on the common negative subset, with US$0.07621029 in provider-reported
+  scored-run cost.
+
+## LIN SIYUAN individual contribution
+
+- Developed the Python evaluation scorer for D4, covering decisions,
+  escalation triggers, slot constraints, and prohibited booking attempts.
+- Reviewed the test cases and answer keys, incorporated the agreed rubric
+  corrections, and separated hard failures from diagnostic warnings and
+  claims requiring human review.
+- Verified the final scripted V1/V2 results: each passed 52/52 runs, including
+  18/18 negative runs, with no pending reviews. Prepared the summaries, trial
+  records, and reproducible evaluation commands.
+- Contributed the Mistral Small 3.2 V2 evaluation to D5, documenting 37/52
+  passing live runs, failure categories, token usage, and recorded costs.
+- Prepared the D4 demonstration video and supporting explanation, clearly
+  distinguishing scripted evaluation results from live-model performance.
+
+## WEN HAO individual contribution
+
+I wrote the D0 section, placing outpatient referral coordination on Class 4’s seven-rung ladder and explaining why its variable, evidence-driven sequence requires a rung-7 agent. I applied the workflow, ground-truth, governance-cliff and reliability tests, used project evidence to analyse compounded turn reliability, and defined five good-run criteria. I also ran the Gemini 2.5 Flash V2 live evaluation, consolidating its 39/52 overall pass result, 12/18 negative-case result and zero unsafe booking attempts. Finally, I wrote and analysed D6’s three-layer cost-to-serve model, sensitivity analysis and break-even calculations, showing that reliability and reduced human fallback outweighed small token-cost differences.
+
+## ZHOU YU individual contribution
+
+1. Led and completed the D7 controlled-failure experiments, covering repeated tool calls after action de-duplication was removed and unsafe dependency ordering after one planning rule was removed from the prompt. Compiled the before-and-after results, cost analysis, and recommendations for improvement.
+
+2. Conducted the Qwen 3 30B V1 matched prompt-control battery for D5 and preserved its live-run evidence.
+
+3. Managed the overall compilation and drafting of the team report, including verifying key figures and tables.
+
+4. Participated in planning the screen-recorded demonstration for the individual component.
 
 ## D5 model ownership
 

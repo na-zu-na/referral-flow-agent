@@ -1,7 +1,12 @@
 # PE6201 A2 — Problem B Referral Flow Agent
 
-This repository combines the existing Problem B data, tools, and deterministic
-guardrails with the complete Member 1 single-agent ReAct controller.
+This repository contains the team submission for Problem B: a single-agent
+ReAct controller with local data, tools, deterministic guardrails, evaluation
+evidence, live-model comparisons, and cost analysis.
+
+The design justification, seven-rung comparison, reliability calculation, and
+good-run criteria are documented in
+[`doc/D0_AGENT_JUSTIFICATION.md`](doc/D0_AGENT_JUSTIFICATION.md).
 
 The default is free and offline:
 
@@ -49,9 +54,9 @@ python3 run_eval.py --tier core --prompt-version v2 --descriptors v2 \
   --out results/member4_core_scripted
 ```
 
-The scoring and judgement-review workflow is documented in
-[`doc/MEMBER4_EVALUATION_README.md`](doc/MEMBER4_EVALUATION_README.md).
-Reviewed scripted V1/V2 evidence is summarized in
+The scoring and judgement-review workflow is implemented in
+[`evaluation/harness.py`](evaluation/harness.py), with reproducible commands
+provided by [`run_eval.py`](run_eval.py). Reviewed scripted V1/V2 evidence is summarized in
 [`results/d4_policy_model_summary.csv`](results/d4_policy_model_summary.csv).
 
 The frozen final D5 5+1 evidence is integrated under [`results/d5/`](results/d5/).
@@ -72,9 +77,8 @@ For offline verification, run `python -m evaluation.d5_final --audit-only` and
 model or provider. The source-run archive in [`results/live/`](results/live/)
 is retained, including superseded Llama evidence; it is not the final selected
 inventory. Human-facing current summaries are available in the
-[`D5 runbook`](doc/D5_RUNBOOK_CN.md),
-[`comparison`](doc/D5_COMPARISON.md), and
-[`cost reconciliation`](doc/D5_COST_RECONCILIATION.md); all three point back
+[`comparison`](doc/D5_COMPARISON.md) and
+[`cost reconciliation`](doc/D5_COST_RECONCILIATION.md); both point back
 to the frozen `results/d5/` evidence.
 
 The frozen [D6 Cost / FinOps analysis](doc/D6_COST_ANALYSIS.md) is integrated
@@ -92,10 +96,9 @@ Reproduce the two D7 controlled failures and regenerate their evidence:
 python3 -m experiments.d7_failures
 ```
 
-The experiment contract, report-ready analysis, and Chinese demo script are in
+The experiment contract and report-ready analysis are in
 [`doc/D7_README.md`](doc/D7_README.md),
-[`doc/D7_REPORT_SECTION.md`](doc/D7_REPORT_SECTION.md), and
-[`doc/D7_DEMO_SCRIPT_CN.md`](doc/D7_DEMO_SCRIPT_CN.md).
+and [`doc/D7_REPORT_SECTION.md`](doc/D7_REPORT_SECTION.md).
 
 Run a live OpenRouter model only when intentionally doing the model battery:
 
