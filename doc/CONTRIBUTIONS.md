@@ -53,14 +53,13 @@ The underlying tool implementations, guardrail components, evaluation harness, c
 ## HOU YUXUAN individual contribution
 #### Github: [yisionhou](https://github.com/yisionhou)
 
-- Contributed to the V1-to-V2 tool descriptor work and deterministic guardrail
-  layer recorded in the agreed team ownership table.
-- Co-developed and reviewed the D6 cost model, cost ledger, sensitivity
-  analysis, and break-even evidence.
-- Conducted the Qwen 3 30B V2 full battery for D5 and preserved the live-run
-  evidence. The final reviewed result records 28/52 passing runs, including
-  6/18 on the common negative subset, with US$0.07621029 in provider-reported
-  scored-run cost.
+My main contribution was the Prompt V1/V2 work, the Qwen 3 30B V2 experiment, and D6 Cost / FinOps analysis. I helped turn the referral rules into two testable prompts. V1 was the detailed baseline, while V2 clarified the tool sequence: retrieve the referral first, run the criteria and patient checks in parallel, search for slots only after these checks, and request confirmation before booking. I also strengthened the stop rules for hostile input, missing tests, red flags, and duplicate appointments, and required the model to use only observed clinical and booking information. This made the workflow easier to follow and test consistently.
+
+I compared the prompts using the same Qwen model and 52 evaluation runs. Passes improved from 20/52 with V1 to 28/52 with V2, an increase of 15.38 percentage points, while invalid outputs dropped from 26 to 14. Unsafe booking attempts still increased from three to seven, showing that prompt improvements cannot replace code-level guardrails. I kept this trade-off visible instead of reporting only the higher pass rate. My assigned D5 experiment was Qwen 3 30B V2. ZHOU YU handled the formal Qwen V1 control run, while I covered the prompt design, integration, and comparison.
+
+For D6, I built the Cost / FinOps analysis from the frozen D5 results without rerunning models or changing the evidence. All 278 scored runs had recorded provider cost. Using 4,000 referrals per month, USD 55 per nurse hour, and ten minutes of nurse work per failure, one failure costs about USD 9.17. The estimated monthly scenarios were USD 24.7k for GPT, USD 16.9k for Qwen, USD 10.6k for Mistral, and USD 9.2k for Gemini. Claude stayed outside the final general monthly comparison. I also completed sensitivity, break-even, Pareto, bootstrap, spend, and cost-lever analyses. The Qwen V1-to-V2 improvement reduced estimated monthly fallback by about USD 5.6k, and the recorded cost for all scored runs was USD 2.13502002.
+
+I prepared the D6 pipeline, reports, charts, 11-sheet Excel workbook, QA documents, and four-slide video material. Final checks included 11/11 D6 tests, 5/5 D5 tests, 94/94 Agent tests, and 2,169 independent checks, with no release blockers. My main conclusion is that reliability affects estimated operating cost much more than small token-price differences. These figures are evaluation scenarios rather than real hospital spending, zero fixed cost is only a baseline assumption, and Claude remains negative-only with no general monthly extrapolation.
 
 ## LIN SIYUAN individual contribution
 
